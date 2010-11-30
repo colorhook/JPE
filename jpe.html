@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>JPE Example</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<style>
+
+</style>
+</head>
+<body>
+	<h1>JPE Example</h1>
+
+	<canvas id='panel'></div>
+	<script src="http://k.kbcdn.com/k2/seed/seed-1-0-3.js"></script>
+
+<script>
+YUI({
+modules:{
+	'jpe': {
+		fullpath: 'jpe.js'
+	},
+	'jpe-vector': {
+		fullpath: 'jpe-vector.js'
+	},
+	'jpe-interval': {
+		fullpath: 'jpe-interval.js'
+	},
+	'jpe-math-util': {
+		fullpath: 'jpe-math-util.js'
+	},
+	'jpe-collision': {
+		fullpath: 'jpe-collision.js'
+	},
+	'jpe-collision-detector': {
+		fullpath: 'jpe-collision-detector.js'
+	},
+	'jpe-collision-resolver': {
+		fullpath: 'jpe-collision-resolver.js'
+	},
+	'jpe-abstract-item': {
+		fullpath: 'jpe-abstract-item.js'
+	},
+	'jpe-abstract-collection': {
+		fullpath: 'jpe-abstract-collection.js'
+	},
+	'jpe-abstract-constraint': {
+		fullpath: 'jpe-abstract-constraint.js'
+	},
+	'jpe-abstract-particle': {
+		fullpath: 'jpe-abstract-particle.js'
+	},
+	'jpe-spring-constraint': {
+		fullpath: 'jpe-spring-constraint.js',
+		requires:['jpe-abstract-constraint', 'jpe-spring-constraint-particle', 'jpe-verctor']
+	},
+	'jpe-rectangle-particle': {
+		fullpath: 'jpe-rectangle-particle.js'
+	},
+	'jpe-cicle-particle': {
+		fullpath: 'jpe-cicle-particle:.js'
+	},
+	'jpe-rim-particle': {
+		fullpath: 'jpe-rim-particle.js'
+	},
+	'jpe-spring-constaint-particle': {
+		fullpath: 'jpe-spring-constaint-particle.js'
+	},
+	'jpe-wheel-particle': {
+		fullpath: 'jpe-wheel-particle.js'
+	},
+	'jpe-composite': {
+		fullpath: 'jpe-composite.js',
+		requires:['jpe-abstract-collection', 'jpe-vector', 'jpe-math-util']
+	},
+	'jpe-group': {
+		fullpath: 'jpe-group.js'
+	}
+}}).use('jpe-composite', function(Y){
+
+});
+
+</script>
+</body>
+</html>
