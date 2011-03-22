@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>JPE Test - JPELoader</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+</head>
+<body>
+	<h1>JPE Test - JPELoader</h1>
+
+	<script charset='utf-8' src='../src/JPE.js'></script>
+	<script charset='utf-8' src='../src/JPELoader.js'></script>
+	<script charset='utf-8' src='../lib/yuitest-min.js'></script>
+<script>
+(function(){
+	var TestCase = YUITest.TestCase,
+		  TestSuite = YUITest.TestSuite,
+		  TestRunner = YUITest.TestRunner,
+		  Assert = YUITest.Assert;
+	
+	var loaderTestCase = new TestCase({
+		name: "JPE Loader TestCase",
+
+		setUp: function(){
+		},
+		tearDown: function(){
+		},
+		testVector: function(){
+			Assert.isUndefined(JPE.Vector);
+			this.startLoadVector();
+		},
+		startLoadVector: function(){
+			JPE.require("Vector");
+			JPE.addOnLoad(function(){
+				Assert.isNotUndefined(JPE.Vector);
+			});
+		},
+		testCircleParticle:function(){
+			Assert.isUndefined(JPE.CircleParticle);
+			this.startLoadCircleParticle();
+		},
+		startLoadCircleParticle: function(){
+			JPE.require("CircleParticle");
+			this.wait(function(){
+				Assert.isUndefined(JPE.CircleParticle);
+				Assert.isUndefined(JPE.AbstractParticle);
+				Assert.isUndefined(JPE.AbstractItem);
+			}, 1000);
+		}
+	});
+
+	TestRunner.add(loaderTestCase);
+	TestRunner.attach(TestRunner.TEST_FAIL_EVENT, function(e){
+		if(window.console){
+			window.console.log(e);
+		}
+	});
+	TestRunner.run();
+})();
+</script>
+</body>
+</html>

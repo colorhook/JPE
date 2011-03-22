@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>JPE Example - Balls</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<style>
+#myCanvas{
+	width:600px;
+	height:360px;
+	border:#ccc 1px dashed;
+	background:green;
+}
+</style>
+</head>
+<body>
+	<h1>JPE Example</h1>
+
+	<canvas id='myCanvas' width='600' height='360'></canvas>
+
+	<script charset='utf-8' src='http://k.kbcdn.com/k2/seed/seed-1-0-3.js'></script>
+	<script charset='utf-8' src='../src/JPE.js'></script>
+	<script charset='utf-8' src='../src/Engine.js'></script>
+	<script charset='utf-8' src='../src/Vector.js'></script>
+	<script charset='utf-8' src='../src/MathUtil.js'></script>
+	<script charset='utf-8' src='../src/Interval.js'></script>
+	<script charset='utf-8' src='../src/Sprite.js'></script>
+	<script charset='utf-8' src='../src/CanvasRenderer.js'></script>
+	<script charset='utf-8' src='../src/AbstractItem.js'></script>
+	<script charset='utf-8' src='../src/AbstractConstraint.js'></script>
+	<script charset='utf-8' src='../src/AbstractParticle.js'></script>
+	<script charset='utf-8' src='../src/AbstractCollection.js'></script>
+	<script charset='utf-8' src='../src/Group.js'></script>
+	<script charset='utf-8' src='../src/Composite.js'></script>
+	<script charset='utf-8' src='../src/RectangleParticle.js'></script>
+	<script charset='utf-8' src='../src/CircleParticle.js'></script>
+	<script charset='utf-8' src='../src/Collision.js'></script>
+	<script charset='utf-8' src='../src/CollisionResolver.js'></script>
+	<script charset='utf-8' src='../src/CollisionDetector.js'></script>
+	
+<script>
+
+(function(){
+	
+	var Engine = JPE.Engine,
+		 Vector = JPE.Vector,
+		 Group = JPE.Group,
+		 RectangleParticle = JPE.RectangleParticle,
+		 CircleParticle = JPE.CircleParticle,
+		 Sprite = JPE.Sprite,
+		 CanvasRenderer = JPE.CanvasRenderer,
+		 group1, group2, p1, p2, renderer;
+	
+	var canvasEl = document.getElementById('myCanvas');
+	renderer = new CanvasRenderer(canvasEl);
+		
+	Engine.initSelf(renderer);
+
+	group1 = new Group(true);
+	group2 = new Group(true);
+	
+
+	var b1 = new RectangleParticle(5, 0, 10, 720, 0, true),
+	b2 = new RectangleParticle(25, 0, 1140, 20, 0, true),
+	b3 = new RectangleParticle(595, 0, 10, 720, 0, true),
+	b4 = new RectangleParticle(25, 355, 1140, 10, 0, true);
+
+	group1.addParticle(b1);
+	group1.addParticle(b2);
+	group1.addParticle(b3);
+	group1.addParticle(b4);
+
+	p1 = new CircleParticle(100, 100, 20);
+	p1.setFill('#fff');
+	p1.setFriction(0.1);
+
+	group1.addParticle(p1);
+	
+	var createCar = function(x, y, r, g){
+		var group = g || new Y.Group(true),
+			 wp1 = new WheelParticle(x, y, r),
+			 wp2 = new WheelParticle(x+60, y, r),
+			 sc = new SpringConstraint(wp1, wp2);
+		group.addParticle(wp1);
+		group.addParticle(wp2);
+		group.addConstraint(sc);
+		return group;
+	}
+	
+	//createCar(200,200,20, group1);
+
+	for(var i = 0; i< 15; i++){
+		var pi = new CircleParticle(200+ i%4* 30, 100+i%3 * 30, 20);
+		pi.setFriction(0.1);
+		var colors = ['#0f0', '#f00', '#00f', '#036', '#069', '#960', '#f60'];
+		pi.setFill(colors[Math.floor(Math.random()*colors.length)]);
+		group1.addParticle(pi);
+	}
+	
+	
+	Engine.addGroup(group1);
+
+	setInterval(function(){
+		Engine.step();
+		Engine.paint();
+	}, 10);
+
+	YUI().use('event', 'node', function(Y){
+		var canvasNode = Y.one(canvasEl),
+			 canvasPos = canvasNode.getXY();
+		
+		canvasNode.on('click', function(event){
+			var px = event.clientX - canvasPos[0],
+				 py = event.clientY -  canvasPos[1];
+			
+			var v = new Vector((px - p1.getSprite().getX())*0.5, (py - p1.getSprite().getY())*0.5);
+			p1.addForce(v);
+
+		});
+	});
+
+})()
+
+</script>
+</body>
+</html>
