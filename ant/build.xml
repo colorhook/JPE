@@ -9,9 +9,7 @@
 	<target name="bundle_javascript">
 		<echo>${dir.src}</echo>
 		 <concat destfile="${dir.build}/${build.name}.js">
-			<filelist dir="${dir.src}" files="JPE.js, Engine.js, Sprite.js, Vector.js, CanvasRenderer.js, Interval.js, Collision.js, MathUtil.js, AbstractItem.js,
-			CollisionResolver.js, CollisionDetector.js, AbstractCollection.js, AbstractParticle.js, Group.js, Composite.js, 
-			CircleParticle.js, RectangleParticle.js, RimParticle.js, WheelParticle.js, AbstractConstraint.js, SpringConstraint.js, SpringConstraintParticle.js"/>
+			<filelist dir="${dir.src}" files="${build.files}"/>
       </concat>
       <echo>JavaScript Bundles Done!</echo>
    </target>

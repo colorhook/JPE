@@ -1,4 +1,10 @@
-/*
+/*!
+ * Copyright 2011 http://colorhook.com.
+ * @author: <a href="colorhook@gmail.com">colorhook</a>
+ * @version:1.0.0
+ */
+/**
+ * @preserve Copyright 2011 http://colorhook.com.
  * @author: <a href="colorhook@gmail.com">colorhook</a>
  * @version:1.0.0
  */
@@ -102,14 +108,6 @@
 					}
 				}
 				return o;
-			},
-			//implements in JPELoader
-			require: function(){
-				return this;
-			},
-			//implements in JPELoader
-			addOnLoad: function(func){
-				func();
 			},
 			extend: function(r, s, px, sx) {
 				if (!s||!r) {
