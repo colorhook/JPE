@@ -17,7 +17,7 @@ JPE.declare('SpringConstraintParticle', {
 		 */
 		constructor: function(p1, p2, p, rectHeight, rectScale, scaleToLength) {
 			
-			this.superclass.constructor.apply(this, 0, 0, 0, 0, 0, false);
+			JPE.RectangleParticle.superclass.constructor.apply(this, 0, 0, 0, 0, 0, false);
 			
 			this.p1 = p1;
 			this.p2 = p2;
@@ -78,7 +78,7 @@ JPE.declare('SpringConstraintParticle', {
 		 */	
 		getFixedEndLimit: function () {
 			return this._fixedEndLimit;
-		}
+		},
 	
 	
 		/**
