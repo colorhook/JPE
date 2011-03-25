@@ -11,15 +11,12 @@ JPE.declare('AbstractItem', {
 	},
 
 	initSelf: function(){
-
 	},
 	
 	paint: function(){
-
 	},
 	
 	cleanup: function(){
-
 	},
 
 	/**
@@ -68,9 +65,8 @@ JPE.declare('AbstractItem', {
 	
 	getSprite: function(){
 		if(this._sprite != null) return this._sprite;
-
-		this._sprite = new JPE.Sprite();
-		JPE.Engine.container.addChild(this._sprite);
+		this._sprite = JPE.Sprite.create();
+		JPE.Sprite.stage.addChild(this._sprite);
 		return this._sprite;
 	}
 

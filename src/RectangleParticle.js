@@ -84,13 +84,11 @@ JPE.declare('RectangleParticle',  {
 				  h = this.getExtents()[1] * 2,
 				  sprite = this.getSprite();
 
-				sprite.setX(this.curr.x);
-				sprite.setY(this.curr.y);
-				sprite.setRotation(this.getAngle());
-				sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
-				sprite.beginFill(this.fillColor, this.fillAlpha);
-				sprite.drawRect(-w/2, -h/2, w, h);
-				sprite.endFill();
+				//sprite.setRotation(this.getAngle());
+				//sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
+				//sprite.beginFill(this.fillColor, this.fillAlpha);
+				JPE.Sprite.drawRect(sprite, -w/2, -h/2, w, h);
+
 		},
 		
 		

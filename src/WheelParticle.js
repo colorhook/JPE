@@ -60,16 +60,8 @@ JPE.declare('WheelParticle',  {
 		 * method, then create a subclass of this class and override <code>paint()</code>.
 		 */	
 		paint: function () {
-
 			var sprite = this.getSprite();
-
-			sprite.setX(this.curr.x);
-			sprite.setY(this.curr.y);
-
-			sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
-			sprite.beginFill(this.fillColor, this.fillAlpha);
-			sprite.drawCircle(0, 0, this.getRadius());
-			sprite.endFill();
+			JPE.Sprite.drawCircle(sprite, this.curr.x, this.curr.y, this.getRadius())
 		},
 
 		update: function (dt) {

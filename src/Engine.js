@@ -9,12 +9,10 @@ JPE.declare("Engine", function(){
 			timeStep:0,
 
 			damping:1,
-			container:null,
 			constaintCycles:0,
 			constraintCollisionCycles:1,
 
-			initSelf: function(canvas, dt){
-				
+			initSelf: function(dt){
 				if(isNaN(dt)){
 					dt = 0.25;
 				}
@@ -22,8 +20,6 @@ JPE.declare("Engine", function(){
 				this.groups = [];
 				this.force = new JPE.Vector(0, 0);
 				this.masslessForce = new JPE.Vector(0, 0);
-				this.container = new JPE.Sprite(canvas);
-				
 			},
 
 			addForce:function(v){
@@ -60,7 +56,7 @@ JPE.declare("Engine", function(){
 				}
 			},
 			paint:function(){
-				this.container.renderer.clear();
+				JPE.Sprite.clear();
 				for(var j = 0; j< this.numGroups; j++){
 					var g = this.groups[j];
 					g.paint();
