@@ -18,8 +18,8 @@ JPE.declare('CircleParticle',  {
 			mass = mass || 1;
 			elasticity = elasticity || 0.3;
 			friction = friction || 0;
-			JPE.CircleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 			this._radius = radius;
+			JPE.CircleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 		},
 		
 		getRadius: function () {
@@ -33,16 +33,6 @@ JPE.declare('CircleParticle',  {
 			this._radius = t;
 		},
 		
-		/**
-		 * Sets up the visual representation of this RectangleParticle. This method is called 
-		 * automatically when an instance of this RectangleParticle's parent Group is added to 
-		 * the APEngine, when  this RectangleParticle's Composite is added to a Group, or the 
-		 * RectangleParticle is added to a Composite or Group.
-		 */				
-		initSelf: function () {
-			this.cleanup();
-			this.paint();
-		},
 		
 		/**
 		 * The default painting method for this particle. This method is called automatically
@@ -51,7 +41,26 @@ JPE.declare('CircleParticle',  {
 		 */	
 		paint: function () {
 			var sprite = this.getSprite();
-			JPE.Sprite.drawCircle(sprite, this.curr.x, this.curr.y, this.getRadius())
+			var x = this.curr.x,
+				y = this.curr.y;
+					
+			sprite.x = x;
+			sprite.y = y;
+			
+		},
+
+		drawShape: function(){
+			var r = this.getRadius(),
+				g = this.shape.graphics;
+
+			g.clear();
+			if(this.lineThickness){
+				g.setStrokeStyle(this.lineThickness)
+				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
+			g.drawCircle(0, 0, r);
+			g.endFill();
 		},
 
 		/**

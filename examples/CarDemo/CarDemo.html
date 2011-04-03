@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>JPE Example - Car Demo</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<style>
+#myCanvas{
+	width:650px;
+	height:350px;
+	background:#334433;
+}
+</style>
+</head>
+<body>
+	<h1>JPE Example - Car Demo</h1>
+
+	<canvas id='myCanvas' width='650' height='350'></canvas>
+
+	<script charset='utf-8' src='http://k.kbcdn.com/k2/seed/seed-1-3-1.js'></script>
+	<script charset='utf-8' src='../../lib/easel.js'></script>
+	<script charset='utf-8' src='../../build/JPE-1.0.0-yui.js'></script>
+	
+	
+<script>
+JPE.require("Bridge");
+JPE.require("Capsule");
+JPE.require("Car");
+JPE.require("RectComposite");
+JPE.require("Rotator");
+JPE.require("Surfaces");
+JPE.require("SwingDoor");
+JPE.require("CarDemo");
+JPE.addOnLoad(function(){
+	new JPE.CarDemo();
+});
+</script>
+</body>
+</html>

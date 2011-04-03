@@ -24,10 +24,12 @@ JPE.declare('RectangleParticle',  {
 			mass = mass || 1;
 			elasticity = elasticity || 0.3;
 			friction = friction || 0;
-			JPE.RectangleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 			this._extents = [width/2, height/2];
 			this._axes = [new JPE.Vector(0,0), new JPE.Vector(0,0)];
+			
+			
 			this.setRadian(rotation);
+			JPE.RectangleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 		},
 	
 		getRadian: function () {
@@ -59,39 +61,36 @@ JPE.declare('RectangleParticle',  {
 			this.setRadian (a * JPE.MathUtil.PI_OVER_ONE_EIGHTY);
 		},
 			
-		
-		/**
-		 * Sets up the visual representation of this RectangleParticle. This method is called 
-		 * automatically when an instance of this RectangleParticle's parent Group is added to 
-		 * the APEngine, when  this RectangleParticle's Composite is added to a Group, or the 
-		 * RectangleParticle is added to a Composite or Group.
-		 */				
-		initSelf: function () {
-			this.cleanup();
-			this.paint();
-		},
-		
-		
-		/**
-		 * The default painting method for this particle. This method is called automatically
-		 * by the <code>APEngine.paint()</code> method. If you want to define your own custom painting
-		 * method, then create a subclass of this class and override <code>paint()</code>.
-		 */	
 		paint: function () {
+			var sprite = this.getSprite(),
+				x = this.curr.x,
+				y = this.curr.y,
+				w = this.getExtents()[0] * 2,
+				h = this.getExtents()[1] * 2,
+				r = this.getAngle();
 			
-
-			var w = this.getExtents()[0] * 2,
-				  h = this.getExtents()[1] * 2,
-				  sprite = this.getSprite();
-
-				//sprite.setRotation(this.getAngle());
-				//sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
-				//sprite.beginFill(this.fillColor, this.fillAlpha);
-				JPE.Sprite.drawRect(sprite, -w/2, -h/2, w, h);
-
+			sprite.rotation = r;
+			sprite.x = x ;
+			sprite.y = y;
 		},
 		
 		
+		drawShape: function(){
+			var g = this.shape.graphics,
+				w = this.getExtents()[0] * 2,
+				h = this.getExtents()[1] * 2;
+			this.shape.x = - w/2;
+			this.shape.y =  - h/2;
+			g.clear();
+			if(this.lineThickness){
+				g.setStrokeStyle(this.lineThickness)
+				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
+			g.drawRect(0, 0, w, h);
+			g.endFill();
+			
+		},
 		setWidth: function (w) {
 			this._extents[0] = w/2;
 		},

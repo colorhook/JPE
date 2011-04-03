@@ -1,6 +1,9 @@
 JPE.declare('Composite', {
 	
+	superclass: JPE.AbstractCollection,
+
 	constructor: function(){
+		JPE.Composite.superclass.prototype.constructor.apply(this);
 		this.delta = new JPE.Vector();
 	},
 		
@@ -12,9 +15,9 @@ JPE.declare('Composite', {
 		for (var i = 0; i < len; i++) {
 			p = pa[i];
 			var radius = p.getCenter().distance(center);
-			var angle = this.getRelativeAngle(center, p.center) + angleRadians;
-			p.px = (Math.cos(angle) * radius) + center.x;
-			p.py = (Math.sin(angle) * radius) + center.y;
+			var angle = this.getRelativeAngle(center, p.getCenter()) + angleRadians;
+			p.setPx(Math.cos(angle) * radius + center.x);
+			p.setPy(Math.sin(angle) * radius + center.y);
 		}
 	},
 		
@@ -53,6 +56,6 @@ JPE.declare('Composite', {
 	
 	getRelativeAngle: function(center, p) {
 		this.delta.setTo(p.x - center.x, p.y - center.y);
-		return Math.atan2(delta.y, delta.x);
+		return Math.atan2(this.delta.y, this.delta.x);
 	}		
 });

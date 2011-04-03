@@ -25,6 +25,7 @@ JPE.declare('SpringConstraint', {
 			this.p2 = p2;
 			this.checkParticlesLocation();
 			this._restLength = this.getCurrLength();
+			
 			this.setCollidable(collidable, rectHeight, rectScale, scaleToLength);
 		},
 
@@ -169,7 +170,7 @@ JPE.declare('SpringConstraint', {
 			this.scp = null;
 
 			if (this._collidable) {
-				this.scp = new JPE.SpringConstraintParticle(this.p1, this.p2, this, this.getRectHeight(), this.getRectScale(), this.getScaleToLength());			
+				this.scp = new JPE.SpringConstraintParticle(this.p1, this.p2, this, rectHeight, rectScale, scaleToLength);
 			}
 		},
 		
@@ -196,11 +197,14 @@ JPE.declare('SpringConstraint', {
 		 * the APEngine, when  this SpringContraint's Composite is added to a Group, or this 
 		 * SpringContraint is added to a Composite or Group.
 		 */			
-		initSelf:function() {	
+		initSelf:function() {
 			this.cleanup();
+			JPE.Engine.container.addChild(this.getSprite());
 			if (this.getCollidable()) {
 				this.scp.initSelf();
-			} 
+			}else if(this.displayObject){
+				this.initDisplay();
+			}
 			this.paint();
 		},
 		
@@ -213,7 +217,25 @@ JPE.declare('SpringConstraint', {
 		paint: function() {
 			if (this.getCollidable()) {
 				this.scp.paint();
+			}else{
+				if(!this.shape){
+					this.shape = new Shape();
+					this.getSprite().addChild(this.shape);
+				}
+				var g = this.shape.graphics,
+					p1 = this.p1,
+					p2 = this.p2;
+
+				g.clear();
+				if(this.lineThickness){
+					g.setStrokeStyle(this.lineThickness);
+					g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+				}
+				g.moveTo(p1.getPx(), p1.getPy());
+				g.lineTo(p2.getPx(), p2.getPy());	
+				g.endFill();
 			}
+
 		},
 		
 		
@@ -228,16 +250,17 @@ JPE.declare('SpringConstraint', {
 		 * @private
 		 */			
 		resolve:function() {
+			
 			var p1 = this.p1, 
 				p2 = this.p2;
+
 			if (p1.getFixed() && p2.getFixed()) return;
 			
 			var deltaLength = this.getCurrLength();			
 			var diff = (deltaLength - this.getRestLength()) / (deltaLength * (p1.getInvMass() + p2.getInvMass()));
 			var dmds = this.getDelta().mult(diff * this.stiffness);
-		
-			this.p1.curr.minusEquals(dmds.mult(this.p1.getInvMass()));
-			this.p2.curr.plusEquals (dmds.mult(this.p2.getInvMass()));
+			this.p1.curr.minusEquals(dmds.mult(p1.getInvMass()));
+			this.p2.curr.plusEquals(dmds.mult(p2.getInvMass()));
 		},
 		
 		

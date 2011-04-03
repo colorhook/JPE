@@ -17,7 +17,7 @@ JPE.declare('SpringConstraintParticle', {
 		 */
 		constructor: function(p1, p2, p, rectHeight, rectScale, scaleToLength) {
 			
-			JPE.RectangleParticle.superclass.constructor.apply(this, 0, 0, 0, 0, 0, false);
+			
 			
 			this.p1 = p1;
 			this.p2 = p2;
@@ -26,6 +26,7 @@ JPE.declare('SpringConstraintParticle', {
 			this.avgVelocity = new JPE.Vector(0,0);
 			
 			this.parent = p;
+			JPE.SpringConstraintParticle.superclass.prototype.constructor.call(this, 0, 0, 0, 0, 0, false);
 			this._rectScale = rectScale;
 			this._rectHeight = rectHeight;
 			this.scaleToLength = scaleToLength;
@@ -33,6 +34,8 @@ JPE.declare('SpringConstraintParticle', {
 			this._fixedEndLimit = 0;
 			this.rca = new JPE.Vector();
 			this.rcb = new JPE.Vector();
+
+			
 		},
 		
 		
@@ -85,7 +88,7 @@ JPE.declare('SpringConstraintParticle', {
 		 * returns the average mass of the two connected particles
 		 */
 		getMass: function () {
-			return (this.p1.mass + this.p2.mass) / 2; 
+			return (this.p1.getMass() + this.p2.getMass()) / 2; 
 		},
 		
 		
@@ -120,31 +123,52 @@ JPE.declare('SpringConstraintParticle', {
 		initSelf: function () {
 			var inner = this.getSprite();
 			var parent = this.parent;
-			parent.sprite.addChild(inner);
+			parent.getSprite().addChild(inner);
+			if(this.displayObject!=null){
+				this.initDisplay();
+			}else{
+				this.drawShape();
+			}
 			this.paint();
 		},
 
 		
 		paint: function () {
-			var parent = this.parent;
-			var c = parent.getCenter();
-			var s = this.getSprite();
+
+			var parent = this.parent,
+				c = parent.getCenter(),
+				s = this.getSprite(),
+				shape = this.shape;
+
+			s.x = c.x ;
+			s.y =  c.y ;
 			if (this.scaleToLength) {
 				s.width = parent.getCurrLength() * this.getRectScale();
-			} 
-			var w = parent.getCurrLength() * this.getRectScale();
-			var h = this.getRectHeight();
-			s.x = c.x; 
-			s.y = c.y;
-			s.setRotation(parent.getAngle());
+			} else if (this.displayObject != null) {
+				s.width = parent.getRestLength() * this.getRectScale();
+			}
+			this.drawShape();
+			s.rotation = parent.getAngle();
 
-			s.lineStyle(parent.lineThickness, parent.lineColor, parent.lineAlpha);
-			s.beginFill(parent.fillColor, parent.fillAlpha);
-			s.drawRect(-w/2, -h/2, w, h);
-			s.endFill();
+			
 		},
 		
-		
+		drawShape: function(){
+			var g = this.shape.graphics,
+				parent = this.parent,
+				c = parent.getCenter(),
+				w = parent.getCurrLength() * this.getRectScale(),
+				h = this.getRectHeight();
+			g.clear();
+			if(parent.lineThickness){
+				g.setStrokeStyle(parent.lineThickness);
+				g.beginStroke(Graphics.getRGB(parent.lineColor, parent.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(parent.fillColor, parent.fillAlpha));
+			g.drawRect(-w/2, -h/2, w, h);
+			g.endFill();
+			
+		},
 				
 	   /**
 		 * @private
@@ -160,19 +184,19 @@ JPE.declare('SpringConstraintParticle', {
 		 * called only on collision
 		 */
 		updatePosition: function () {
-		/*
-			var c = parent.center;
-			curr.setTo(c.x, c.y);
+
+			var c = this.parent.getCenter();
+			this.curr.setTo(c.x, c.y);
 			
-			width = (scaleToLength) ? parent.currLength * rectScale : parent.restLength * rectScale;
-			height = rectHeight;
-			radian = parent.radian;
-			*/
+			this.setWidth((this.scaleToLength) ? this.parent.getCurrLength() * this._rectScale :this.parent.getRestLength() * this._rectScale);
+			this.setHeight(this.getRectHeight());
+			this.setRadian(this.parent.getRadian());
+			
 		},
 		
 			
 		resolveCollision: function (mtd, vel, n, d, o, p) {
-				
+			
 			var t = this.getContactPointParam(p);
 			var c1 = (1 - t);
 			var c2 = t;
@@ -180,6 +204,7 @@ JPE.declare('SpringConstraintParticle', {
 			var p2 = this.p2;
 			var fixedEndLimit = this.getFixedEndLimit();
 			var lambda = this.lambda;
+
 			// if one is fixed then move the other particle the entire way out of collision.
 			// also, dispose of collisions at the sides of the scp. The higher the fixedEndLimit
 			// value, the more of the scp not be effected by collision. 

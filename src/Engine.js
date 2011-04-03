@@ -7,12 +7,16 @@ JPE.declare("Engine", function(){
 			groups:null,
 			numGroups:0,
 			timeStep:0,
-
+			/**
+			 * dependence on Easel.js library
+			 * type: Stage
+			 */
+			container:null,
 			damping:1,
-			constaintCycles:0,
+			constraintCycles:0,
 			constraintCollisionCycles:1,
 
-			initSelf: function(dt){
+			init: function(dt){
 				if(isNaN(dt)){
 					dt = 0.25;
 				}
@@ -36,7 +40,7 @@ JPE.declare("Engine", function(){
 			},
 			removeGroup:function(g) {
 				
-				var gpos = Y.Array.indexOf(this.groups, g);
+				var gpos = this.groups.indexOf(g);
 				if (gpos == -1) {
 					return;
 				}
@@ -56,7 +60,6 @@ JPE.declare("Engine", function(){
 				}
 			},
 			paint:function(){
-				JPE.Sprite.clear();
 				for(var j = 0; j< this.numGroups; j++){
 					var g = this.groups[j];
 					g.paint();

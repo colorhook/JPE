@@ -1,22 +1,27 @@
 JPE.declare("AbstractCollection", {
 
 		isParented: false,
-		particles: [],
-		constraints: [],
+	
 		
+		constructor: function(){
+			this.particles = [];
+			this.constraints = [];
+			this.createShape();
+		},
 		initSelf: function(){
 			var ps = this.particles,
 				cs = this.constraints,
 				pl = ps.length,
 				cl = cs.length,
 				i;
-
+			
 			for(i = 0; i < pl; i++){
 				ps[i].initSelf();
 			}
 			for(i = 0; i < cl; i++){
 				cs[i].initSelf();
 			}
+			JPE.Engine.container.addChild(this.getSprite());
 		},
 		/**
 		 * @param p {AbstractParticle}
@@ -38,6 +43,7 @@ JPE.declare("AbstractCollection", {
 		 * @param c {Composite} The Composite to be added.
 		 */ 
 		addConstraint:function(c){
+			 
 			this.constraints.push(c);
 			c.isParented = true;
 			if(this.isParented){
@@ -61,7 +67,6 @@ JPE.declare("AbstractCollection", {
 		 * <code>paint()</code> method.
 		 */
 		paint:function(){
-
 			var ps = this.particles,
 				cs = this.constraints,
 				pl = ps.length,
@@ -69,7 +74,7 @@ JPE.declare("AbstractCollection", {
 				p,
 				c,
 				i;
-
+		
 			for(i = 0; i < pl; i++){
 				p = ps[i];
 				if( (!p.getFixed()) || p.getAlwaysRepaint()){
@@ -84,6 +89,22 @@ JPE.declare("AbstractCollection", {
 			}
 		},
 		
+		getSprite: function(){
+			if(this._sprite == null){
+				this._sprite = new Container();
+			}
+			return this._sprite;
+		},
+		createShape: function(){
+			if(this.shape != null){
+				this.getSprite().removeChild(this.shape);
+			}
+			this.shape = new Shape();
+			this.drawShape();
+			this.getSprite().addChild(this.shape);
+		},
+		drawShape: function(){
+		},
 		getAll:function(){
 			return this.particles.concat(this.constraints);
 		},
@@ -106,6 +127,7 @@ JPE.declare("AbstractCollection", {
 			for(i = 0; i < cl; i++){
 				cs[i].cleanup();
 			}
+			JPE.Engine.container.removeChild(this.getSprite());
 		},
 		integrate:function(dt2){
 
@@ -126,7 +148,6 @@ JPE.declare("AbstractCollection", {
 			}
 		},
 		checkInternalCollisions:function(){
-			
 			var CollisionDetector = JPE.CollisionDetector,
 				ps = this.particles,
 				cs = this.constraints,
@@ -153,7 +174,7 @@ JPE.declare("AbstractCollection", {
 
 				for(k = 0; k < cl; k++){
 					c = cs[k];
-					if(c.getCollidable() && c.isConnectedTo(p)){
+					if(c.getCollidable() && !c.isConnectedTo(p)){
 						c.scp.updatePosition();
 						CollisionDetector.test(p, c.scp);
 					}
@@ -180,7 +201,7 @@ JPE.declare("AbstractCollection", {
 
 			for(i = 0; i < pl; i++){
 				p = ps[i];
-				if(!p.collidable) continue;
+				if(!p.getCollidable()) continue;
 
 				for(j = 0; j < acpl; j++){
 					p2 = acps[j];
@@ -191,12 +212,31 @@ JPE.declare("AbstractCollection", {
 
 				for(k = 0; k < accl; k++){
 					c = accs[k];
-					if(c.getCollidable() && c.isConnectedTo(p)){
+					if(c.getCollidable() && !c.isConnectedTo(p)){
 						c.scp.updatePosition();
 						CollisionDetector.test(p, c.scp);
+						
 					}
 				}
 			}
+
+			//constraints start
+			// every constraint in this collection...
+			var _constraints = this.constraints,
+				clen = _constraints.length;
+			for (j = 0; j < clen; j++) {
+				var cga = _constraints[j];
+				if (!cga.getCollidable()) continue;
+				
+				for (var n = 0; n < acpl; n++) {
+					p = acps[n];
+					if (p.getCollidable() && !cga.isConnectedTo(p)) {
+						cga.scp.updatePosition();
+						CollisionDetector.test(p, cga.scp);
+					}
+				}
+			}
+			//constraints end
 		}
 	
 });

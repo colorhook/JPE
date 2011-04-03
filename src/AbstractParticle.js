@@ -24,11 +24,11 @@ JPE.declare('AbstractParticle',   {
 				this.setMass(mass);
 				this._elasticity = elasticity;
 				this._friction = friction;
-				
-				this.setStyle();
-				
 				this._center = new Vector();
 				this._multisample = 0;
+				this.createShape();
+				this.setStyle();
+				
 		},
 
 	
@@ -114,7 +114,7 @@ JPE.declare('AbstractParticle',   {
 			return this._center;
 		},
 		
-				
+		
 		/**
 		 * The surface friction of the particle. Values must be in the range of 0 to 1.
 		 * 
@@ -243,7 +243,18 @@ JPE.declare('AbstractParticle',   {
 		},
 		
 		
-		
+		initSelf: function () {
+			this.cleanup();
+			JPE.Engine.container.addChild(this.getSprite());
+			if (this.displayObject != null) {
+				this.initDisplay();
+			} else {
+				this.paint();
+			}
+		},
+		cleanup: function(){
+			JPE.Engine.container.removeChild(this.getSprite());
+		},
 		/**
 		 * Assigns a DisplayObject to be used when painting this particle.
 		 */ 
@@ -253,6 +264,12 @@ JPE.declare('AbstractParticle',   {
 			this.displayObjectOffset = new JEP.Vector(offsetX, offsetY);
 		},
 		
+		 initDisplay: function() {
+			this.displayObject.x = displayObjectOffset.x;
+			this.displayObject.y = displayObjectOffset.y;
+			this.displayObject.rotation = displayObjectRotation;
+			this.getSprite().addChild(this.displayObject);
+		},
 		
 		/**
 		 * Adds a force to the particle. The mass of the particle is taken into 
@@ -287,12 +304,12 @@ JPE.declare('AbstractParticle',   {
 		 * APEngine.step() cycle. This method integrates the particle.
 		 */
 		update: function(dt2) {
-			
+
 			if (this.getFixed()) return;
 
 			// global forces
 			this.addForce(JPE.Engine.force);
-
+			
 			this.addMasslessForce(JPE.Engine.masslessForce);
 	
 			// integrate
@@ -302,17 +319,11 @@ JPE.declare('AbstractParticle',   {
 	
 			this.curr.plusEquals(nv.multEquals(JPE.Engine.damping));
 			this.prev.copy(this.temp);
-
+			
 			// clear the forces
 			this.forces.setTo(0,0);
 		},
 		
-		initDisplay: function() {
-			this.displayObject.setX(displayObjectOffset.x);
-			this.displayObject.setY(displayObjectOffset.y);
-			this.displayObject.setRotation(this.displayObjectRotation);
-			this.getSprite().addChild(this.displayObject);
-		},
 		
 		getComponents: function(collisionNormal) {
 			var vel = this.getVelocity();

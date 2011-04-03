@@ -1,7 +1,7 @@
 JPE.declare("CollisionDetector", function(){
 
-	var POSITIVE_INFINITY = Number.NEGATIVE_INFINITY;
-		
+	var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+	var Vector = JPE.Vector;
 
 	JPE.CollisionDetector = {
 
@@ -13,7 +13,6 @@ JPE.declare("CollisionDetector", function(){
 			 */
 			test: function(objA, objB){
 				if(objA.getFixed() && objB.getFixed()) return;
-
 				if(objA.getMultisample() == 0 && objB.getMultisample() == 0){
 					this.normVsNorm(objA, objB);
 				}else if(objA.getMultisample() > 0 && objB.getMultisample() ==0 ){
@@ -41,10 +40,10 @@ JPE.declare("CollisionDetector", function(){
 			 */
 			sampVsNorm: function(objA, objB){
 			
-				var s = 1 / (objA.getMultisample() + 1),
+				var objAsamples = objA.getMultisample(),
+					s = 1 / (objAsamples + 1),
 					t = s,
-					i,
-					objAsamples = objA.getMultisample();
+					i;
 
 				objB.samp.copy(objB.curr);
 
@@ -60,17 +59,17 @@ JPE.declare("CollisionDetector", function(){
 			 * Tests two particles where both are of equal multisample rate
 			 */
 			sampVsSamp: function(objA, objB){
-				var s = 1 / (objA.getMultisample() + 1),
+				var objAsamples = objA.getMultisample(),
+					s = 1 / (objAsamples + 1),
 					t = s,
-					i,
-					objAsamples = objA.getMultisample();
+					i;
 
 
 				for(i = 0; i <= objAsamples; i++){
 					objA.samp.setTo(objA.prev.x + t * (objA.curr.x - objA.prev.x),
 							objA.prev.y + t * (objA.curr.y - objA.prev.y));
 					objB.samp.setTo(objB.prev.x + t * (objB.curr.x - objB.prev.x),
-							objB.prev.y + t * (objA.curr.y - objB.prev.y));
+							objB.prev.y + t * (objB.curr.y - objB.prev.y));
 					if(this.testTypes(objA, objB)) return;
 					t += s;
 				}
@@ -82,26 +81,15 @@ JPE.declare("CollisionDetector", function(){
 					CircleParticle = JPE.CircleParticle;
 
 				if((objA instanceof RectangleParticle) && (objB instanceof RectangleParticle)){
-					return this.testOBBvsOBB(objA, objB);
+					var r=  this.testOBBvsOBB(objA, objB);
+					return r;
 				}else if((objA instanceof CircleParticle) && (objB instanceof CircleParticle)){
 					return this.testCirclevsCircle(objA, objB);
 				}else if((objA instanceof RectangleParticle) && (objB instanceof CircleParticle)){
 					return this.testOBBvsCircle(objA, objB);
 				}else if((objA instanceof CircleParticle) && (objB instanceof RectangleParticle)){
-					return this.testOBBvsCircle(objA, objB);
-				}
-
-				return false;
-				if(cA == RectangleParticle && cB == RectangleParticle){
-					return this.testOBBvsOBB(objA, objB);
-				}else if(cA == CircleParticle && cB == CircleParticle){
-					return this.testCirclevsCircle(objA, objB);
-				}else if(cA == RectangleParticle && cB == CircleParticle){
-					return this.testOBBvsCircle(objA, objB);
-				}else if(cA == CircleParticle && cB == RectangleParticle){
 					return this.testOBBvsCircle(objB, objA);
 				}
-
 				return false;
 			},
 			/**
@@ -115,16 +103,18 @@ JPE.declare("CollisionDetector", function(){
 			testOBBvsOBB: function(ra, rb){
 				var collisionNormal,
 					collisionDepth = POSITIVE_INFINITY;
-
+			
 				for(var i = 0; i < 2; i++){
 					var axisA = ra.getAxes()[i],
-						depthA = this.testIntervals(ra.getProjection(axisA), rb.getProjection(axisA));
+						rai = ra.getProjection(axisA), 
+						rbi = rb.getProjection(axisA),
+						depthA = this.testIntervals(rai, rbi);
 
-					var rai = ra.getProjection(axisA), rbi = ra.getProjection(axisA);
 					if(depthA == 0) return false;
 
 					var axisB = rb.getAxes()[i],
 						depthB = this.testIntervals(ra.getProjection(axisB), rb.getProjection(axisB));
+
 					if(depthB == 0) return false;
 					
 					var absA = Math.abs(depthA),
@@ -134,12 +124,12 @@ JPE.declare("CollisionDetector", function(){
 						var altb = absA < absB;
 						collisionNormal = altb ? axisA : axisB;
 						collisionDepth = altb ? depthA : depthB;
-						
 					}
-					JPE.CollisionResolver.resolveParticleParticle(ra, rb, collisionNormal, collisionDepth);
-					return true;
 					
 				}
+
+				JPE.CollisionResolver.resolveParticleParticle(ra, rb, collisionNormal, collisionDepth);
+				return true;
 			},
 			/**
 			 * Tests the collision between a RectangleParticle (aka an OBB) and a
@@ -174,7 +164,7 @@ JPE.declare("CollisionDetector", function(){
 				if(Math.abs(depths[0]) < r && Math.abs(depths[1]) < r){
 					var vertex = this.closestVertexOnOBB(ca.samp, ra);
 			
-					collisionNormal = vertext.minus(ca.samp);
+					collisionNormal = vertex.minus(ca.samp);
 					var mag = collisionNormal.magnitude();
 					collisionDepth = r - mag;
 					if(collisionDepth > 0){

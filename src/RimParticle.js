@@ -18,7 +18,7 @@ JPE.declare('RimParticle', {
 		},
 	
 
-		getSpeed:function () {
+		getSpeed: function() {
 			return this.sp;
 		},
 		
@@ -41,7 +41,6 @@ JPE.declare('RimParticle', {
 			
 			//clamp torques to valid range
 			this.sp = Math.max(-this.maxTorque, Math.min(this.maxTorque, this.sp + this.av));
-	
 			//apply torque
 			//this is the tangent vector at the rim particle
 			var dx = -this.curr.y;
@@ -51,7 +50,7 @@ JPE.declare('RimParticle', {
 			var len = Math.sqrt(dx * dx + dy * dy);
 			dx /= len;
 			dy /= len;
-	
+			
 			this.curr.x += this.sp * dx;
 			this.curr.y += this.sp * dy;		
 	
@@ -60,8 +59,8 @@ JPE.declare('RimParticle', {
 			var px = this.prev.x = this.curr.x;		
 			var py = this.prev.y = this.curr.y;		
 			
-			this.curr.x += JPE.damping * (px - ox);
-			this.curr.y += JPE.damping * (py - oy);	
+			this.curr.x += JPE.Engine.damping * (px - ox);
+			this.curr.y += JPE.Engine.damping * (py - oy);	
 	
 			// hold the rim particle in place
 			var clen = Math.sqrt(this.curr.x * this.curr.x + this.curr.y * this.curr.y);

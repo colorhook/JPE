@@ -1,13 +1,34 @@
 /*!
- * Copyright 2011 http://colorhook.com.
+ * Copyright (c) 2011 http://colorhook.com
  * @author: <a href="colorhook@gmail.com">colorhook</a>
  * @version:1.0.0
+ *
+ * Transplant from Flash AS3 APE Engine
+ * http://www.cove.org/ape/
+ * Copyright (c) 2006, 2007 Alec Cove
+ * Released under the MIT Licenses.
+ *
+ * Dependency on EaselJS
+ * http://easeljs.com/
+ * Copyright (c) 2011 Grant Skinner
+ * Released under the MIT Licenses.
  */
 /**
- * @preserve Copyright 2011 http://colorhook.com.
+ * @preserve Copyright (c) 2011 http://colorhook.com
  * @author: <a href="colorhook@gmail.com">colorhook</a>
  * @version:1.0.0
+ *
+ * Transplant from Flash AS3 APE Engine
+ * http://www.cove.org/ape/
+ * Copyright (c) 2006, 2007 Alec Cove
+ * Released under the MIT Licenses.
+ *
+ * Dependency on EaselJS
+ * http://easeljs.com/
+ * Copyright (c) 2011 Grant Skinner
+ * Released under the MIT Licenses.
  */
+
 ;(function(host){
 
 	var core = {
@@ -171,7 +192,6 @@
 				if(!superclass){
 					this.mix(newclass.prototype, prop);
 				}else{
-					
 					newclass = this.extend(newclass, superclass, prop);
 				}
 				
@@ -189,6 +209,72 @@
 				}
 				return o;
 			}
+	});
+	
+	//ÑÓ³Ù¼ÓÔØ·½°¸
+	mix(core, {
+		_loadedClassMap:{},
+		_callbackList:[],
+		_loadingCount:0,
+		_loadScript: function(url){
+			var m = this._loadedClassMap,
+				 self = this,
+				 element;
+
+			if(m[url]){
+				return;
+			}
+			
+			m[url] = true;
+			this._loadingCount++;
+
+			element = document.createElement('script');
+			element.src = url;
+			element.charset = "utf-8";
+			document.getElementsByTagName("head")[0].appendChild(element);
+			element.onload = function(){
+				element.onload = null;
+				self._onScriptLoaded();
+			}
+		},
+		_onScriptLoaded: function(){
+			var count = --this._loadingCount,
+				 cl = this._callbackList,
+				 cb;
+
+			if(count > 0){
+				return;
+			}else{
+				while(cb = cl.shift()){
+					cb();
+				}
+			}
+		},
+		_loadClass: function(name){
+			if(!/\.js$/.test(name)){
+				name = name+".js";
+			}
+			this._loadScript(name);
+		},
+		require: function(name){
+			var loaderInfo;
+			if(JPE.isArray(name)){
+				loaderInfo = name;
+			}else{
+				loaderInfo = [name]
+			}
+			for(i = 0, l = loaderInfo.length; i < l; i++){
+				this._loadClass(loaderInfo[i]);
+			}
+			return this;
+		},
+		addOnLoad: function(callback){
+			if(this._loadingCount == 0){
+				callback();
+			}else{
+				this._callbackList.push(callback);
+			}
+		}
 	});
 
 	host[kernelName] = core;

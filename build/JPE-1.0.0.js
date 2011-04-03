@@ -1,13 +1,34 @@
 /*!
- * Copyright 2011 http://colorhook.com.
+ * Copyright (c) 2011 http://colorhook.com
  * @author: <a href="colorhook@gmail.com">colorhook</a>
  * @version:1.0.0
+ *
+ * Transplant from Flash AS3 APE Engine
+ * http://www.cove.org/ape/
+ * Copyright (c) 2006, 2007 Alec Cove
+ * Released under the MIT Licenses.
+ *
+ * Dependency on EaselJS
+ * http://easeljs.com/
+ * Copyright (c) 2011 Grant Skinner
+ * Released under the MIT Licenses.
  */
 /**
- * @preserve Copyright 2011 http://colorhook.com.
+ * @preserve Copyright (c) 2011 http://colorhook.com
  * @author: <a href="colorhook@gmail.com">colorhook</a>
  * @version:1.0.0
+ *
+ * Transplant from Flash AS3 APE Engine
+ * http://www.cove.org/ape/
+ * Copyright (c) 2006, 2007 Alec Cove
+ * Released under the MIT Licenses.
+ *
+ * Dependency on EaselJS
+ * http://easeljs.com/
+ * Copyright (c) 2011 Grant Skinner
+ * Released under the MIT Licenses.
  */
+
 ;(function(host){
 
 	var core = {
@@ -171,7 +192,6 @@
 				if(!superclass){
 					this.mix(newclass.prototype, prop);
 				}else{
-					
 					newclass = this.extend(newclass, superclass, prop);
 				}
 				
@@ -190,6 +210,72 @@
 				return o;
 			}
 	});
+	
+	//ÑÓ³Ù¼ÓÔØ·½°¸
+	mix(core, {
+		_loadedClassMap:{},
+		_callbackList:[],
+		_loadingCount:0,
+		_loadScript: function(url){
+			var m = this._loadedClassMap,
+				 self = this,
+				 element;
+
+			if(m[url]){
+				return;
+			}
+			
+			m[url] = true;
+			this._loadingCount++;
+
+			element = document.createElement('script');
+			element.src = url;
+			element.charset = "utf-8";
+			document.getElementsByTagName("head")[0].appendChild(element);
+			element.onload = function(){
+				element.onload = null;
+				self._onScriptLoaded();
+			}
+		},
+		_onScriptLoaded: function(){
+			var count = --this._loadingCount,
+				 cl = this._callbackList,
+				 cb;
+
+			if(count > 0){
+				return;
+			}else{
+				while(cb = cl.shift()){
+					cb();
+				}
+			}
+		},
+		_loadClass: function(name){
+			if(!/\.js$/.test(name)){
+				name = name+".js";
+			}
+			this._loadScript(name);
+		},
+		require: function(name){
+			var loaderInfo;
+			if(JPE.isArray(name)){
+				loaderInfo = name;
+			}else{
+				loaderInfo = [name]
+			}
+			for(i = 0, l = loaderInfo.length; i < l; i++){
+				this._loadClass(loaderInfo[i]);
+			}
+			return this;
+		},
+		addOnLoad: function(callback){
+			if(this._loadingCount == 0){
+				callback();
+			}else{
+				this._callbackList.push(callback);
+			}
+		}
+	});
 
 	host[kernelName] = core;
 	
@@ -202,14 +288,16 @@
 			groups:null,
 			numGroups:0,
 			timeStep:0,
-
-			damping:1,
+			/**
+			 * dependence on Easel.js library
+			 * type: Stage
+			 */
 			container:null,
-			constaintCycles:0,
+			damping:1,
+			constraintCycles:0,
 			constraintCollisionCycles:1,
 
-			initSelf: function(canvas, dt){
-				
+			init: function(dt){
 				if(isNaN(dt)){
 					dt = 0.25;
 				}
@@ -217,8 +305,6 @@
 				this.groups = [];
 				this.force = new JPE.Vector(0, 0);
 				this.masslessForce = new JPE.Vector(0, 0);
-				this.container = new JPE.Sprite(canvas);
-				
 			},
 
 			addForce:function(v){
@@ -235,7 +321,7 @@
 			},
 			removeGroup:function(g) {
 				
-				var gpos = Y.Array.indexOf(this.groups, g);
+				var gpos = this.groups.indexOf(g);
 				if (gpos == -1) {
 					return;
 				}
@@ -255,7 +341,6 @@
 				}
 			},
 			paint:function(){
-				this.container.renderer.clear();
 				for(var j = 0; j< this.numGroups; j++){
 					var g = this.groups[j];
 					g.paint();
@@ -280,93 +365,7 @@
 				}
 			}
 	};
-});JPE.declare("Sprite", {
-
-	constructor: function(renderer){
-		this.renderer = renderer;
-		this._x = this._y = 0;
-		this._children = [];
-		this._visible = true;
-	},
-
-	addChild: function(child){
-
-			var index = this._children.indexOf(child);
-		
-			child._parent = this;
-			child.renderer = this.renderer;
-			if(index != -1){
-				return;
-			}
-			this._children.push(child);
-	},
-	removeChild: function(child){
-		var index = this._children.indexOf(child);
-		if(index == -1){
-			return;
-		}
-		this._children.splice(index, 1);
-		child._parent = null;
-		child.renderer = null;
-	},
-
-	setX: function(value){
-		this._x = value;
-	},
-	getX: function(){
-		return this._x;
-	},
-	getGlobalX: function(){
-		var px = this._parent ? this._parent.getX() : 0;
-		return px + this._x ;
-	},
-	setY: function(value){
-		this._y = value;
-	},
-	getY: function(){
-		return this._y;
-	},
-	getGlobalY: function(){
-		var py = this._parent ? this._parent.getY() : 0;
-		return py + this._y;
-	},
-	setRotation: function(value){
-		this._rotation = value;
-	},
-	getRotation: function(){
-		return this._rotation;
-	},
-	getChildren: function(){
-		return this._children;
-	},
-	//------------draw canvas-------------
-	lineStyle: function(lineThickness, lineColor, lineAlpha){
-		if(this.renderer){
-			this.renderer.lineStyle(lineThickness, lineColor, lineAlpha);
-		}
-	},
-	beginFill: function(fillColor, fillAlpha){
-		if(this.renderer){
-			this.renderer.beginFill(fillColor, fillAlpha);
-		}
-	},
-	drawRect: function(x, y, width, height){
-		if(this.renderer){
-			this.renderer.drawRect(x + this.getGlobalX(), y + this.getGlobalY(), width, height);
-		}
-	},
-	drawCircle: function(x, y, radius){
-		if(this.renderer){
-			this.renderer.drawCircle(x + this.getGlobalX(), y + this.getGlobalY(), radius);
-		}
-	},
-	endFill: function(){
-		if(this.renderer){
-			this.renderer.endFill();
-		}
-	}
-});
-(function(){
+});(function(){
 	var Vector =  function(px, py){
 		this.x = px || 0;
 		this.y = py || 0;
@@ -442,41 +441,7 @@
 	});
 
 	JPE.Vector = Vector;
-})();JPE.declare('CanvasRenderer', function(){
-
-	return {
-	
-		constructor:  function(canvas) {
-			this.canvas = canvas;
-			this.context = canvas.getContext('2d');
-		},
-
-		clear: function(){
-			this.canvas.width = this.canvas.width;
-		},
-		lineStyle: function(lineThickness, lineColor, lineAlpha){
-
-			this.context.strokeStyle = lineColor;
-			this.context.lineWidth   = lineThickness || 0;
-		},
-		beginFill: function(fillColor, fillAlpha){
-			this.context.fillStyle   = fillColor;
-			this.context.beginPath();
-		},
-		drawRect: function(x, y, width, height){
-			this.context.fillRect(x, y, width, height);
-		},	
-		drawCircle: function(x, y, radius){
-			this.context.arc(x, y, radius, 0, Math.PI * 2, true); 
-		},
-		endFill: function(){
-			this.context.fill();
-			this.context.stroke();
-			this.context.closePath();
-		}
-	}
-});
-JPE.declare('Interval', {
+})();JPE.declare('Interval', {
 	constructor: function(min, max){
 		this.min = min;
 		this.max = max;
@@ -512,22 +477,22 @@ JPE.declare('AbstractItem', {
 		this._visible = true;
 		this._alwaysRepaint = true;
 		this.lineTickness = 0;
-		this.lineColor = '#000';
+		this.lineColor = 0x000000;
 		this.lineAlpha = 1;
-		this.fillColor = '#000';
+		this.fillColor = 0x333333;
 		this.fillAlpha = 1;
 	},
 
 	initSelf: function(){
-
+		JPE.Engine.container.addChild(this.getSprite());
 	},
 	
 	paint: function(){
-
+		
 	},
 	
 	cleanup: function(){
-
+		JPE.Engine.container.removeChild(this.getSprite());
 	},
 
 	/**
@@ -538,6 +503,7 @@ JPE.declare('AbstractItem', {
 	},
 	setVisible: function(value){
 		this._visible = value;
+		this.getSprite().visible = value;
 	},
 	/**
 	 * awaysRepaint setter & getter
@@ -550,12 +516,13 @@ JPE.declare('AbstractItem', {
 	},
 	setStyle: function(lineThickness, lineColor, lineAlpha, fillColor, fillAlpha) {
 		lineThickness = lineThickness || 0;
-		lineColor = lineColor || '#000';
+		lineColor = lineColor || 0x000;
 		lineAlpha = lineAlpha || 1;
-		fillColor = fillColor || '#000';
+		fillColor = fillColor || 0x000;
 		fillAlpha = fillAlpha || 1;
 		this.setLine(lineThickness, lineColor, lineAlpha);		
-		this.setFill(fillColor, fillAlpha);		
+		this.setFill(fillColor, fillAlpha);
+		this.drawShape();
 	},	
 	/**
 	 * Sets the style of the line for this Item. 
@@ -564,6 +531,7 @@ JPE.declare('AbstractItem', {
 		this.lineThickness = thickness;
 		this.lineColor = color;
 		this.lineAlpha = alpha;
+		this.drawShape();
 	},
 		
 	/**
@@ -572,15 +540,27 @@ JPE.declare('AbstractItem', {
 	setFill: function(color, alpha) {
 		this.fillColor = color;
 		this.fillAlpha = alpha;
+		this.drawShape();
 	},
-	
+	createShape: function(){
+		if(this.shape != null){
+			this.getSprite().removeChild(this.shape);
+		}
+		this.shape = new Shape();
+		this.drawShape();
+		this.getSprite().addChild(this.shape);
+	},
+	drawShape: function(){
+	},
+	/**
+	 * dependence on the Easel.js library.
+	 */
 	getSprite: function(){
-		if(this._sprite != null) return this._sprite;
-
-		this._sprite = new JPE.Sprite();
-		JPE.Engine.container.addChild(this._sprite);
+		if(this._sprite == null){
+			this._sprite = new Container();
+		}
 		return this._sprite;
-	}
+	},
 
 });
 
@@ -635,8 +615,8 @@ JPE.CollisionResolver = {
 };
 JPE.declare("CollisionDetector", function(){
 
-	var POSITIVE_INFINITY = Number.NEGATIVE_INFINITY;
-		
+	var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+	var Vector = JPE.Vector;
 
 	JPE.CollisionDetector = {
 
@@ -648,7 +628,6 @@ JPE.declare("CollisionDetector", function(){
 			 */
 			test: function(objA, objB){
 				if(objA.getFixed() && objB.getFixed()) return;
-
 				if(objA.getMultisample() == 0 && objB.getMultisample() == 0){
 					this.normVsNorm(objA, objB);
 				}else if(objA.getMultisample() > 0 && objB.getMultisample() ==0 ){
@@ -676,10 +655,10 @@ JPE.declare("CollisionDetector", function(){
 			 */
 			sampVsNorm: function(objA, objB){
 			
-				var s = 1 / (objA.getMultisample() + 1),
+				var objAsamples = objA.getMultisample(),
+					s = 1 / (objAsamples + 1),
 					t = s,
-					i,
-					objAsamples = objA.getMultisample();
+					i;
 
 				objB.samp.copy(objB.curr);
 
@@ -695,17 +674,17 @@ JPE.declare("CollisionDetector", function(){
 			 * Tests two particles where both are of equal multisample rate
 			 */
 			sampVsSamp: function(objA, objB){
-				var s = 1 / (objA.getMultisample() + 1),
+				var objAsamples = objA.getMultisample(),
+					s = 1 / (objAsamples + 1),
 					t = s,
-					i,
-					objAsamples = objA.getMultisample();
+					i;
 
 
 				for(i = 0; i <= objAsamples; i++){
 					objA.samp.setTo(objA.prev.x + t * (objA.curr.x - objA.prev.x),
 							objA.prev.y + t * (objA.curr.y - objA.prev.y));
 					objB.samp.setTo(objB.prev.x + t * (objB.curr.x - objB.prev.x),
-							objB.prev.y + t * (objA.curr.y - objB.prev.y));
+							objB.prev.y + t * (objB.curr.y - objB.prev.y));
 					if(this.testTypes(objA, objB)) return;
 					t += s;
 				}
@@ -717,26 +696,15 @@ JPE.declare("CollisionDetector", function(){
 					CircleParticle = JPE.CircleParticle;
 
 				if((objA instanceof RectangleParticle) && (objB instanceof RectangleParticle)){
-					return this.testOBBvsOBB(objA, objB);
+					var r=  this.testOBBvsOBB(objA, objB);
+					return r;
 				}else if((objA instanceof CircleParticle) && (objB instanceof CircleParticle)){
 					return this.testCirclevsCircle(objA, objB);
 				}else if((objA instanceof RectangleParticle) && (objB instanceof CircleParticle)){
 					return this.testOBBvsCircle(objA, objB);
 				}else if((objA instanceof CircleParticle) && (objB instanceof RectangleParticle)){
-					return this.testOBBvsCircle(objA, objB);
-				}
-
-				return false;
-				if(cA == RectangleParticle && cB == RectangleParticle){
-					return this.testOBBvsOBB(objA, objB);
-				}else if(cA == CircleParticle && cB == CircleParticle){
-					return this.testCirclevsCircle(objA, objB);
-				}else if(cA == RectangleParticle && cB == CircleParticle){
-					return this.testOBBvsCircle(objA, objB);
-				}else if(cA == CircleParticle && cB == RectangleParticle){
 					return this.testOBBvsCircle(objB, objA);
 				}
-
 				return false;
 			},
 			/**
@@ -750,16 +718,18 @@ JPE.declare("CollisionDetector", function(){
 			testOBBvsOBB: function(ra, rb){
 				var collisionNormal,
 					collisionDepth = POSITIVE_INFINITY;
-
+			
 				for(var i = 0; i < 2; i++){
 					var axisA = ra.getAxes()[i],
-						depthA = this.testIntervals(ra.getProjection(axisA), rb.getProjection(axisA));
+						rai = ra.getProjection(axisA), 
+						rbi = rb.getProjection(axisA),
+						depthA = this.testIntervals(rai, rbi);
 
-					var rai = ra.getProjection(axisA), rbi = ra.getProjection(axisA);
 					if(depthA == 0) return false;
 
 					var axisB = rb.getAxes()[i],
 						depthB = this.testIntervals(ra.getProjection(axisB), rb.getProjection(axisB));
+
 					if(depthB == 0) return false;
 					
 					var absA = Math.abs(depthA),
@@ -769,12 +739,12 @@ JPE.declare("CollisionDetector", function(){
 						var altb = absA < absB;
 						collisionNormal = altb ? axisA : axisB;
 						collisionDepth = altb ? depthA : depthB;
-						
 					}
-					JPE.CollisionResolver.resolveParticleParticle(ra, rb, collisionNormal, collisionDepth);
-					return true;
 					
 				}
+
+				JPE.CollisionResolver.resolveParticleParticle(ra, rb, collisionNormal, collisionDepth);
+				return true;
 			},
 			/**
 			 * Tests the collision between a RectangleParticle (aka an OBB) and a
@@ -809,7 +779,7 @@ JPE.declare("CollisionDetector", function(){
 				if(Math.abs(depths[0]) < r && Math.abs(depths[1]) < r){
 					var vertex = this.closestVertexOnOBB(ca.samp, ra);
 			
-					collisionNormal = vertext.minus(ca.samp);
+					collisionNormal = vertex.minus(ca.samp);
 					var mag = collisionNormal.magnitude();
 					collisionDepth = r - mag;
 					if(collisionDepth > 0){
@@ -885,22 +855,27 @@ JPE.declare("CollisionDetector", function(){
 });JPE.declare("AbstractCollection", {
 
 		isParented: false,
-		particles: [],
-		constraints: [],
+	
 		
+		constructor: function(){
+			this.particles = [];
+			this.constraints = [];
+			this.createShape();
+		},
 		initSelf: function(){
 			var ps = this.particles,
 				cs = this.constraints,
 				pl = ps.length,
 				cl = cs.length,
 				i;
-
+			
 			for(i = 0; i < pl; i++){
 				ps[i].initSelf();
 			}
 			for(i = 0; i < cl; i++){
 				cs[i].initSelf();
 			}
+			JPE.Engine.container.addChild(this.getSprite());
 		},
 		/**
 		 * @param p {AbstractParticle}
@@ -922,6 +897,7 @@ JPE.declare("CollisionDetector", function(){
 		 * @param c {Composite} The Composite to be added.
 		 */ 
 		addConstraint:function(c){
+			 
 			this.constraints.push(c);
 			c.isParented = true;
 			if(this.isParented){
@@ -945,7 +921,6 @@ JPE.declare("CollisionDetector", function(){
 		 * <code>paint()</code> method.
 		 */
 		paint:function(){
-
 			var ps = this.particles,
 				cs = this.constraints,
 				pl = ps.length,
@@ -953,7 +928,7 @@ JPE.declare("CollisionDetector", function(){
 				p,
 				c,
 				i;
-
+		
 			for(i = 0; i < pl; i++){
 				p = ps[i];
 				if( (!p.getFixed()) || p.getAlwaysRepaint()){
@@ -968,6 +943,22 @@ JPE.declare("CollisionDetector", function(){
 			}
 		},
 		
+		getSprite: function(){
+			if(this._sprite == null){
+				this._sprite = new Container();
+			}
+			return this._sprite;
+		},
+		createShape: function(){
+			if(this.shape != null){
+				this.getSprite().removeChild(this.shape);
+			}
+			this.shape = new Shape();
+			this.drawShape();
+			this.getSprite().addChild(this.shape);
+		},
+		drawShape: function(){
+		},
 		getAll:function(){
 			return this.particles.concat(this.constraints);
 		},
@@ -990,6 +981,7 @@ JPE.declare("CollisionDetector", function(){
 			for(i = 0; i < cl; i++){
 				cs[i].cleanup();
 			}
+			JPE.Engine.container.removeChild(this.getSprite());
 		},
 		integrate:function(dt2){
 
@@ -1010,7 +1002,6 @@ JPE.declare("CollisionDetector", function(){
 			}
 		},
 		checkInternalCollisions:function(){
-			
 			var CollisionDetector = JPE.CollisionDetector,
 				ps = this.particles,
 				cs = this.constraints,
@@ -1037,7 +1028,7 @@ JPE.declare("CollisionDetector", function(){
 
 				for(k = 0; k < cl; k++){
 					c = cs[k];
-					if(c.getCollidable() && c.isConnectedTo(p)){
+					if(c.getCollidable() && !c.isConnectedTo(p)){
 						c.scp.updatePosition();
 						CollisionDetector.test(p, c.scp);
 					}
@@ -1064,7 +1055,7 @@ JPE.declare("CollisionDetector", function(){
 
 			for(i = 0; i < pl; i++){
 				p = ps[i];
-				if(!p.collidable) continue;
+				if(!p.getCollidable()) continue;
 
 				for(j = 0; j < acpl; j++){
 					p2 = acps[j];
@@ -1075,12 +1066,31 @@ JPE.declare("CollisionDetector", function(){
 
 				for(k = 0; k < accl; k++){
 					c = accs[k];
-					if(c.getCollidable() && c.isConnectedTo(p)){
+					if(c.getCollidable() && !c.isConnectedTo(p)){
 						c.scp.updatePosition();
 						CollisionDetector.test(p, c.scp);
+						
 					}
 				}
 			}
+
+			//constraints start
+			// every constraint in this collection...
+			var _constraints = this.constraints,
+				clen = _constraints.length;
+			for (j = 0; j < clen; j++) {
+				var cga = _constraints[j];
+				if (!cga.getCollidable()) continue;
+				
+				for (var n = 0; n < acpl; n++) {
+					p = acps[n];
+					if (p.getCollidable() && !cga.isConnectedTo(p)) {
+						cga.scp.updatePosition();
+						CollisionDetector.test(p, cga.scp);
+					}
+				}
+			}
+			//constraints end
 		}
 	
 });
@@ -1112,11 +1122,11 @@ JPE.declare('AbstractParticle',   {
 				this.setMass(mass);
 				this._elasticity = elasticity;
 				this._friction = friction;
-				
-				this.setStyle();
-				
 				this._center = new Vector();
 				this._multisample = 0;
+				this.createShape();
+				this.setStyle();
+				
 		},
 
 	
@@ -1202,7 +1212,7 @@ JPE.declare('AbstractParticle',   {
 			return this._center;
 		},
 		
-				
+		
 		/**
 		 * The surface friction of the particle. Values must be in the range of 0 to 1.
 		 * 
@@ -1331,7 +1341,18 @@ JPE.declare('AbstractParticle',   {
 		},
 		
 		
-		
+		initSelf: function () {
+			this.cleanup();
+			JPE.Engine.container.addChild(this.getSprite());
+			if (this.displayObject != null) {
+				this.initDisplay();
+			} else {
+				this.paint();
+			}
+		},
+		cleanup: function(){
+			JPE.Engine.container.removeChild(this.getSprite());
+		},
 		/**
 		 * Assigns a DisplayObject to be used when painting this particle.
 		 */ 
@@ -1341,6 +1362,12 @@ JPE.declare('AbstractParticle',   {
 			this.displayObjectOffset = new JEP.Vector(offsetX, offsetY);
 		},
 		
+		 initDisplay: function() {
+			this.displayObject.x = displayObjectOffset.x;
+			this.displayObject.y = displayObjectOffset.y;
+			this.displayObject.rotation = displayObjectRotation;
+			this.getSprite().addChild(this.displayObject);
+		},
 		
 		/**
 		 * Adds a force to the particle. The mass of the particle is taken into 
@@ -1375,12 +1402,12 @@ JPE.declare('AbstractParticle',   {
 		 * APEngine.step() cycle. This method integrates the particle.
 		 */
 		update: function(dt2) {
-			
+
 			if (this.getFixed()) return;
 
 			// global forces
 			this.addForce(JPE.Engine.force);
-
+			
 			this.addMasslessForce(JPE.Engine.masslessForce);
 	
 			// integrate
@@ -1390,17 +1417,11 @@ JPE.declare('AbstractParticle',   {
 	
 			this.curr.plusEquals(nv.multEquals(JPE.Engine.damping));
 			this.prev.copy(this.temp);
-
+			
 			// clear the forces
 			this.forces.setTo(0,0);
 		},
 		
-		initDisplay: function() {
-			this.displayObject.setX(displayObjectOffset.x);
-			this.displayObject.setY(displayObjectOffset.y);
-			this.displayObject.setRotation(this.displayObjectRotation);
-			this.getSprite().addChild(this.displayObject);
-		},
 		
 		getComponents: function(collisionNormal) {
 			var vel = this.getVelocity();
@@ -1428,9 +1449,11 @@ JPE.declare('AbstractParticle',   {
 		 * if this Group are checked for collision with one another.
 		 */ 
 		constructor: function(collideInternal){
+			JPE.Group.superclass.prototype.constructor.call(this);
 			this.composites = [];
 			this.collisionList = [];
 			this.collideInternal = collideInternal;
+			
 		},
 		
 
@@ -1507,6 +1530,7 @@ JPE.declare('AbstractParticle',   {
 				cl.push(list[i]);
 			}
 		},
+
 		/**
 		 * Return an array of every particle, constraint, and 
 		 * composite added to the Group.
@@ -1540,7 +1564,7 @@ JPE.declare('AbstractParticle',   {
 
 		},
 		satisfyConstraints:function(){
-			JPE.Group.superclass.prototype.satisfyConstraints(this, arguments);
+			JPE.Group.superclass.prototype.satisfyConstraints.apply(this, null);
 			var cs = this.composites,
 				cl = cs.length,
 				i = 0;
@@ -1556,6 +1580,7 @@ JPE.declare('AbstractParticle',   {
 			var cl = this.collisionList,
 				cllen = cl.length,
 				i = 0;
+			
 			for(; i < cllen; i++){
 				this.checkCollisionVsGroup(cl[i]);
 			}
@@ -1574,7 +1599,7 @@ JPE.declare('AbstractParticle',   {
 				c = cs[i];
 				c.checkCollisionsVsCollection(this);
 
-				for(j = 0; j< clen; j++){
+				for(j = i+1; j< clen; j++){
 					c2 = cs[j];
 					c.checkCollisionsVsCollection(c2);
 				}
@@ -1611,7 +1636,10 @@ JPE.declare('AbstractParticle',   {
 });
 JPE.declare('Composite', {
 	
+	superclass: JPE.AbstractCollection,
+
 	constructor: function(){
+		JPE.Composite.superclass.prototype.constructor.apply(this);
 		this.delta = new JPE.Vector();
 	},
 		
@@ -1623,9 +1651,9 @@ JPE.declare('Composite', {
 		for (var i = 0; i < len; i++) {
 			p = pa[i];
 			var radius = p.getCenter().distance(center);
-			var angle = this.getRelativeAngle(center, p.center) + angleRadians;
-			p.px = (Math.cos(angle) * radius) + center.x;
-			p.py = (Math.sin(angle) * radius) + center.y;
+			var angle = this.getRelativeAngle(center, p.getCenter()) + angleRadians;
+			p.setPx(Math.cos(angle) * radius + center.x);
+			p.setPy(Math.sin(angle) * radius + center.y);
 		}
 	},
 		
@@ -1664,7 +1692,7 @@ JPE.declare('Composite', {
 	
 	getRelativeAngle: function(center, p) {
 		this.delta.setTo(p.x - center.x, p.y - center.y);
-		return Math.atan2(delta.y, delta.x);
+		return Math.atan2(this.delta.y, this.delta.x);
 	}		
 });JPE.declare('CircleParticle',  {
 		
@@ -1686,8 +1714,8 @@ JPE.declare('Composite', {
 			mass = mass || 1;
 			elasticity = elasticity || 0.3;
 			friction = friction || 0;
-			JPE.CircleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 			this._radius = radius;
+			JPE.CircleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 		},
 		
 		getRadius: function () {
@@ -1701,16 +1729,6 @@ JPE.declare('Composite', {
 			this._radius = t;
 		},
 		
-		/**
-		 * Sets up the visual representation of this RectangleParticle. This method is called 
-		 * automatically when an instance of this RectangleParticle's parent Group is added to 
-		 * the APEngine, when  this RectangleParticle's Composite is added to a Group, or the 
-		 * RectangleParticle is added to a Composite or Group.
-		 */				
-		initSelf: function () {
-			this.cleanup();
-			this.paint();
-		},
 		
 		/**
 		 * The default painting method for this particle. This method is called automatically
@@ -1719,14 +1737,26 @@ JPE.declare('Composite', {
 		 */	
 		paint: function () {
 			var sprite = this.getSprite();
+			var x = this.curr.x,
+				y = this.curr.y;
+					
+			sprite.x = x;
+			sprite.y = y;
+			
+		},
 
-			sprite.setX(this.curr.x);
-			sprite.setY(this.curr.y);
+		drawShape: function(){
+			var r = this.getRadius(),
+				g = this.shape.graphics;
 
-			sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
-			sprite.beginFill(this.fillColor, this.fillAlpha);
-			sprite.drawCircle(0, 0, this.getRadius());
-			sprite.endFill();
+			g.clear();
+			if(this.lineThickness){
+				g.setStrokeStyle(this.lineThickness)
+				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
+			g.drawCircle(0, 0, r);
+			g.endFill();
 		},
 
 		/**
@@ -1781,10 +1811,12 @@ JPE.declare('Composite', {
 			mass = mass || 1;
 			elasticity = elasticity || 0.3;
 			friction = friction || 0;
-			JPE.RectangleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 			this._extents = [width/2, height/2];
 			this._axes = [new JPE.Vector(0,0), new JPE.Vector(0,0)];
+			
+			
 			this.setRadian(rotation);
+			JPE.RectangleParticle.superclass.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
 		},
 	
 		getRadian: function () {
@@ -1816,41 +1848,36 @@ JPE.declare('Composite', {
 			this.setRadian (a * JPE.MathUtil.PI_OVER_ONE_EIGHTY);
 		},
 			
-		
-		/**
-		 * Sets up the visual representation of this RectangleParticle. This method is called 
-		 * automatically when an instance of this RectangleParticle's parent Group is added to 
-		 * the APEngine, when  this RectangleParticle's Composite is added to a Group, or the 
-		 * RectangleParticle is added to a Composite or Group.
-		 */				
-		initSelf: function () {
-			this.cleanup();
-			this.paint();
-		},
-		
-		
-		/**
-		 * The default painting method for this particle. This method is called automatically
-		 * by the <code>APEngine.paint()</code> method. If you want to define your own custom painting
-		 * method, then create a subclass of this class and override <code>paint()</code>.
-		 */	
 		paint: function () {
+			var sprite = this.getSprite(),
+				x = this.curr.x,
+				y = this.curr.y,
+				w = this.getExtents()[0] * 2,
+				h = this.getExtents()[1] * 2,
+				r = this.getAngle();
 			
-
-			var w = this.getExtents()[0] * 2,
-				  h = this.getExtents()[1] * 2,
-				  sprite = this.getSprite();
-
-				sprite.setX(this.curr.x);
-				sprite.setY(this.curr.y);
-				sprite.setRotation(this.getAngle());
-				sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
-				sprite.beginFill(this.fillColor, this.fillAlpha);
-				sprite.drawRect(-w/2, -h/2, w, h);
-				sprite.endFill();
+			sprite.rotation = r;
+			sprite.x = x ;
+			sprite.y = y;
 		},
 		
 		
+		drawShape: function(){
+			var g = this.shape.graphics,
+				w = this.getExtents()[0] * 2,
+				h = this.getExtents()[1] * 2;
+			this.shape.x = - w/2;
+			this.shape.y =  - h/2;
+			g.clear();
+			if(this.lineThickness){
+				g.setStrokeStyle(this.lineThickness)
+				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
+			g.drawRect(0, 0, w, h);
+			g.endFill();
+			
+		},
 		setWidth: function (w) {
 			this._extents[0] = w/2;
 		},
@@ -1932,7 +1959,7 @@ JPE.declare('Composite', {
 		},
 	
 
-		getSpeed:function () {
+		getSpeed: function() {
 			return this.sp;
 		},
 		
@@ -1955,7 +1982,6 @@ JPE.declare('Composite', {
 			
 			//clamp torques to valid range
 			this.sp = Math.max(-this.maxTorque, Math.min(this.maxTorque, this.sp + this.av));
-	
 			//apply torque
 			//this is the tangent vector at the rim particle
 			var dx = -this.curr.y;
@@ -1965,7 +1991,7 @@ JPE.declare('Composite', {
 			var len = Math.sqrt(dx * dx + dy * dy);
 			dx /= len;
 			dy /= len;
-	
+			
 			this.curr.x += this.sp * dx;
 			this.curr.y += this.sp * dy;		
 	
@@ -1974,8 +2000,8 @@ JPE.declare('Composite', {
 			var px = this.prev.x = this.curr.x;		
 			var py = this.prev.y = this.curr.y;		
 			
-			this.curr.x += JPE.damping * (px - ox);
-			this.curr.y += JPE.damping * (py - oy);	
+			this.curr.x += JPE.Engine.damping * (px - ox);
+			this.curr.y += JPE.Engine.damping * (py - oy);	
 	
 			// hold the rim particle in place
 			var clen = Math.sqrt(this.curr.x * this.curr.x + this.curr.y * this.curr.y);
@@ -2004,8 +2030,8 @@ JPE.declare('Composite', {
 			mass = mass || 1;
 			elasticity = elasticity || 0.3;
 			friction = friction || 0;
+			this.lineThickness = 1;
 			JPE.WheelParticle.superclass.prototype.constructor.apply(this, arguments);
-			
 			this.tan = new JPE.Vector(0, 0);
 			this.normSlip = new JPE.Vector(0, 0);
 			this.rp = new JPE.RimParticle(radius, 2);
@@ -2047,18 +2073,36 @@ JPE.declare('Composite', {
 		 * method, then create a subclass of this class and override <code>paint()</code>.
 		 */	
 		paint: function () {
-
 			var sprite = this.getSprite();
-
-			sprite.setX(this.curr.x);
-			sprite.setY(this.curr.y);
-
-			sprite.lineStyle(this.lineThickness, this.lineColor, this.lineAlpha);
-			sprite.beginFill(this.fillColor, this.fillAlpha);
-			sprite.drawCircle(0, 0, this.getRadius());
-			sprite.endFill();
+			var x = this.curr.x,
+				y = this.curr.y,
+				r = this.getAngle();
+			
+			sprite.rotation = r;
+			sprite.x = x;
+			sprite.y = y;
+			this.drawShape();
 		},
-
+		drawShape: function(){
+			var g = this.shape.graphics,
+				r = this.getRadius();
+			
+			g.clear();
+			if(this.lineThickness){
+				g.setStrokeStyle(this.lineThickness);
+				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
+			g.drawCircle(0, 0, r);
+			
+			g.setStrokeStyle(1);
+			g.beginStroke(Graphics.getRGB(0xffffff-this.lineColor));
+			g.moveTo(-r, 0);
+			g.lineTo(r, 0);
+			g.moveTo(0, -r);
+			g.lineTo(0, r);
+			g.endFill();
+		},
 		update: function (dt) {
 			JPE.WheelParticle.superclass.prototype.update.call(this, dt);
 			this.rp.update(dt);
@@ -2122,7 +2166,7 @@ JPE.declare('Composite', {
 			var slipSpeed = (1 - this._traction) * rp.getSpeed();
 			this.normSlip.setTo(slipSpeed * n.y, slipSpeed * n.x);
 			this.curr.plusEquals(this.normSlip);
-			rp.speed *= this._traction;	
+			rp.setSpeed( rp.getSpeed() * this._traction);	
 		}
 
 });JPE.declare('AbstractConstraint', {
@@ -2162,6 +2206,7 @@ JPE.declare('SpringConstraint', {
 			this.p2 = p2;
 			this.checkParticlesLocation();
 			this._restLength = this.getCurrLength();
+			
 			this.setCollidable(collidable, rectHeight, rectScale, scaleToLength);
 		},
 
@@ -2306,7 +2351,7 @@ JPE.declare('SpringConstraint', {
 			this.scp = null;
 
 			if (this._collidable) {
-				this.scp = new JPE.SpringConstraintParticle(this.p1, this.p2, this, this.getRectHeight(), this.getRectScale(), this.getScaleToLength());			
+				this.scp = new JPE.SpringConstraintParticle(this.p1, this.p2, this, rectHeight, rectScale, scaleToLength);
 			}
 		},
 		
@@ -2333,11 +2378,14 @@ JPE.declare('SpringConstraint', {
 		 * the APEngine, when  this SpringContraint's Composite is added to a Group, or this 
 		 * SpringContraint is added to a Composite or Group.
 		 */			
-		initSelf:function() {	
+		initSelf:function() {
 			this.cleanup();
+			JPE.Engine.container.addChild(this.getSprite());
 			if (this.getCollidable()) {
 				this.scp.initSelf();
-			} 
+			}else if(this.displayObject){
+				this.initDisplay();
+			}
 			this.paint();
 		},
 		
@@ -2350,7 +2398,25 @@ JPE.declare('SpringConstraint', {
 		paint: function() {
 			if (this.getCollidable()) {
 				this.scp.paint();
+			}else{
+				if(!this.shape){
+					this.shape = new Shape();
+					this.getSprite().addChild(this.shape);
+				}
+				var g = this.shape.graphics,
+					p1 = this.p1,
+					p2 = this.p2;
+
+				g.clear();
+				if(this.lineThickness){
+					g.setStrokeStyle(this.lineThickness);
+					g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+				}
+				g.moveTo(p1.getPx(), p1.getPy());
+				g.lineTo(p2.getPx(), p2.getPy());	
+				g.endFill();
 			}
+
 		},
 		
 		
@@ -2365,16 +2431,17 @@ JPE.declare('SpringConstraint', {
 		 * @private
 		 */			
 		resolve:function() {
+			
 			var p1 = this.p1, 
 				p2 = this.p2;
+
 			if (p1.getFixed() && p2.getFixed()) return;
 			
 			var deltaLength = this.getCurrLength();			
 			var diff = (deltaLength - this.getRestLength()) / (deltaLength * (p1.getInvMass() + p2.getInvMass()));
 			var dmds = this.getDelta().mult(diff * this.stiffness);
-		
-			this.p1.curr.minusEquals(dmds.mult(this.p1.getInvMass()));
-			this.p2.curr.plusEquals (dmds.mult(this.p2.getInvMass()));
+			this.p1.curr.minusEquals(dmds.mult(p1.getInvMass()));
+			this.p2.curr.plusEquals(dmds.mult(p2.getInvMass()));
 		},
 		
 		
@@ -2406,7 +2473,7 @@ JPE.declare('SpringConstraintParticle', {
 		 */
 		constructor: function(p1, p2, p, rectHeight, rectScale, scaleToLength) {
 			
-			JPE.RectangleParticle.superclass.constructor.apply(this, 0, 0, 0, 0, 0, false);
+			
 			
 			this.p1 = p1;
 			this.p2 = p2;
@@ -2415,6 +2482,7 @@ JPE.declare('SpringConstraintParticle', {
 			this.avgVelocity = new JPE.Vector(0,0);
 			
 			this.parent = p;
+			JPE.SpringConstraintParticle.superclass.prototype.constructor.call(this, 0, 0, 0, 0, 0, false);
 			this._rectScale = rectScale;
 			this._rectHeight = rectHeight;
 			this.scaleToLength = scaleToLength;
@@ -2422,6 +2490,8 @@ JPE.declare('SpringConstraintParticle', {
 			this._fixedEndLimit = 0;
 			this.rca = new JPE.Vector();
 			this.rcb = new JPE.Vector();
+
+			
 		},
 		
 		
@@ -2474,7 +2544,7 @@ JPE.declare('SpringConstraintParticle', {
 		 * returns the average mass of the two connected particles
 		 */
 		getMass: function () {
-			return (this.p1.mass + this.p2.mass) / 2; 
+			return (this.p1.getMass() + this.p2.getMass()) / 2; 
 		},
 		
 		
@@ -2509,31 +2579,52 @@ JPE.declare('SpringConstraintParticle', {
 		initSelf: function () {
 			var inner = this.getSprite();
 			var parent = this.parent;
-			parent.sprite.addChild(inner);
+			parent.getSprite().addChild(inner);
+			if(this.displayObject!=null){
+				this.initDisplay();
+			}else{
+				this.drawShape();
+			}
 			this.paint();
 		},
 
 		
 		paint: function () {
-			var parent = this.parent;
-			var c = parent.getCenter();
-			var s = this.getSprite();
+
+			var parent = this.parent,
+				c = parent.getCenter(),
+				s = this.getSprite(),
+				shape = this.shape;
+
+			s.x = c.x ;
+			s.y =  c.y ;
 			if (this.scaleToLength) {
 				s.width = parent.getCurrLength() * this.getRectScale();
-			} 
-			var w = parent.getCurrLength() * this.getRectScale();
-			var h = this.getRectHeight();
-			s.x = c.x; 
-			s.y = c.y;
-			s.setRotation(parent.getAngle());
+			} else if (this.displayObject != null) {
+				s.width = parent.getRestLength() * this.getRectScale();
+			}
+			this.drawShape();
+			s.rotation = parent.getAngle();
 
-			s.lineStyle(parent.lineThickness, parent.lineColor, parent.lineAlpha);
-			s.beginFill(parent.fillColor, parent.fillAlpha);
-			s.drawRect(-w/2, -h/2, w, h);
-			s.endFill();
+			
 		},
 		
-		
+		drawShape: function(){
+			var g = this.shape.graphics,
+				parent = this.parent,
+				c = parent.getCenter(),
+				w = parent.getCurrLength() * this.getRectScale(),
+				h = this.getRectHeight();
+			g.clear();
+			if(parent.lineThickness){
+				g.setStrokeStyle(parent.lineThickness);
+				g.beginStroke(Graphics.getRGB(parent.lineColor, parent.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(parent.fillColor, parent.fillAlpha));
+			g.drawRect(-w/2, -h/2, w, h);
+			g.endFill();
+			
+		},
 				
 	   /**
 		 * @private
@@ -2549,19 +2640,19 @@ JPE.declare('SpringConstraintParticle', {
 		 * called only on collision
 		 */
 		updatePosition: function () {
-		/*
-			var c = parent.center;
-			curr.setTo(c.x, c.y);
+
+			var c = this.parent.getCenter();
+			this.curr.setTo(c.x, c.y);
 			
-			width = (scaleToLength) ? parent.currLength * rectScale : parent.restLength * rectScale;
-			height = rectHeight;
-			radian = parent.radian;
-			*/
+			this.setWidth((this.scaleToLength) ? this.parent.getCurrLength() * this._rectScale :this.parent.getRestLength() * this._rectScale);
+			this.setHeight(this.getRectHeight());
+			this.setRadian(this.parent.getRadian());
+			
 		},
 		
 			
 		resolveCollision: function (mtd, vel, n, d, o, p) {
-				
+			
 			var t = this.getContactPointParam(p);
 			var c1 = (1 - t);
 			var c2 = t;
@@ -2569,6 +2660,7 @@ JPE.declare('SpringConstraintParticle', {
 			var p2 = this.p2;
 			var fixedEndLimit = this.getFixedEndLimit();
 			var lambda = this.lambda;
+
 			// if one is fixed then move the other particle the entire way out of collision.
 			// also, dispose of collisions at the sides of the scp. The higher the fixedEndLimit
 			// value, the more of the scp not be effected by collision. 

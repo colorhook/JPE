@@ -6,9 +6,11 @@ JPE.declare("Group", {
 		 * if this Group are checked for collision with one another.
 		 */ 
 		constructor: function(collideInternal){
+			JPE.Group.superclass.prototype.constructor.call(this);
 			this.composites = [];
 			this.collisionList = [];
 			this.collideInternal = collideInternal;
+			
 		},
 		
 
@@ -85,6 +87,7 @@ JPE.declare("Group", {
 				cl.push(list[i]);
 			}
 		},
+
 		/**
 		 * Return an array of every particle, constraint, and 
 		 * composite added to the Group.
@@ -118,7 +121,7 @@ JPE.declare("Group", {
 
 		},
 		satisfyConstraints:function(){
-			JPE.Group.superclass.prototype.satisfyConstraints(this, arguments);
+			JPE.Group.superclass.prototype.satisfyConstraints.apply(this, null);
 			var cs = this.composites,
 				cl = cs.length,
 				i = 0;
@@ -134,6 +137,7 @@ JPE.declare("Group", {
 			var cl = this.collisionList,
 				cllen = cl.length,
 				i = 0;
+			
 			for(; i < cllen; i++){
 				this.checkCollisionVsGroup(cl[i]);
 			}
@@ -152,7 +156,7 @@ JPE.declare("Group", {
 				c = cs[i];
 				c.checkCollisionsVsCollection(this);
 
-				for(j = 0; j< clen; j++){
+				for(j = i+1; j< clen; j++){
 					c2 = cs[j];
 					c.checkCollisionsVsCollection(c2);
 				}

@@ -23,7 +23,7 @@
 			<arg line="-jar"/>
 			<arg path="${compress.yui}" />  
 			<arg line="--type js --charset UTF-8 -o" />
-			<mapper type="glob" from="*.js" to="temp/${build.name}-yui.js" />
+			<mapper type="glob" from="*.js" to="temp/${build.yui-name}.js" />
 			<targetfile />
 		</apply>
 		<echo>YUI Compress Done!</echo>
@@ -40,7 +40,7 @@
 			<arg line="--js" />
 			<srcfile/>
 			 <arg line="--js_output_file"/>
-			 <mapper type="glob" from="*.js" to="temp/${build.name}-gcc.js" />
+			 <mapper type="glob" from="*.js" to="temp/${build.gcc-name}.js" />
 			<targetfile />
 		</apply>
 		<echo>Google Closure Compiler Compress Done!</echo>

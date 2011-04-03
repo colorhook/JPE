@@ -17,8 +17,8 @@ JPE.declare('WheelParticle',  {
 			mass = mass || 1;
 			elasticity = elasticity || 0.3;
 			friction = friction || 0;
+			this.lineThickness = 1;
 			JPE.WheelParticle.superclass.prototype.constructor.apply(this, arguments);
-			
 			this.tan = new JPE.Vector(0, 0);
 			this.normSlip = new JPE.Vector(0, 0);
 			this.rp = new JPE.RimParticle(radius, 2);
@@ -61,9 +61,35 @@ JPE.declare('WheelParticle',  {
 		 */	
 		paint: function () {
 			var sprite = this.getSprite();
-			JPE.Sprite.drawCircle(sprite, this.curr.x, this.curr.y, this.getRadius())
+			var x = this.curr.x,
+				y = this.curr.y,
+				r = this.getAngle();
+			
+			sprite.rotation = r;
+			sprite.x = x;
+			sprite.y = y;
+			this.drawShape();
 		},
-
+		drawShape: function(){
+			var g = this.shape.graphics,
+				r = this.getRadius();
+			
+			g.clear();
+			if(this.lineThickness){
+				g.setStrokeStyle(this.lineThickness);
+				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
+			}
+			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
+			g.drawCircle(0, 0, r);
+			
+			g.setStrokeStyle(1);
+			g.beginStroke(Graphics.getRGB(0xffffff-this.lineColor));
+			g.moveTo(-r, 0);
+			g.lineTo(r, 0);
+			g.moveTo(0, -r);
+			g.lineTo(0, r);
+			g.endFill();
+		},
 		update: function (dt) {
 			JPE.WheelParticle.superclass.prototype.update.call(this, dt);
 			this.rp.update(dt);
@@ -127,7 +153,7 @@ JPE.declare('WheelParticle',  {
 			var slipSpeed = (1 - this._traction) * rp.getSpeed();
 			this.normSlip.setTo(slipSpeed * n.y, slipSpeed * n.x);
 			this.curr.plusEquals(this.normSlip);
-			rp.speed *= this._traction;	
+			rp.setSpeed( rp.getSpeed() * this._traction);	
 		}
 
 });

@@ -63,7 +63,10 @@ JPE.mix(JPE, {
 	_loadClass: function(name){
 		var url = this.rootNode.root,
 			 lw = this._loadWaiter;
-		if(url == ''){
+		if(name.indexOf("~") == 0){
+			url = name.substr(1);
+			url = url.replace(/\./g, '/') + '.js';
+		}else if(url == ''){
 			url = name.replace(/\./g, '/') + '.js';
 		}else{
 			name = name.replace(/^JPE\./,'');
