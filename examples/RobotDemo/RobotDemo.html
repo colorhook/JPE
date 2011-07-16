@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>JPE Example - Robot Demo</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<style>
+#myCanvas{
+	width:650px;
+	height:350px;
+	background:#000000;
+}
+body{
+	margin:0 auto;
+	font-size:12px;
+	font-family:Verdana;
+	background:#f2f2f2;
+	width:950px;
+}
+
+</style>
+</head>
+<body>
+	<h1><a href="http://colorhook.com/">Color Hook</a></h1>
+	<h2>JPE Example - Robot Demo</h2>
+	
+	<canvas id='myCanvas' width='650' height='350'></canvas>
+	<div class='summary'>
+		<p>Click inside the demo, then use:</p>
+		<p>P key to toggle power</p>
+		<p>R key to reverse direction</p>
+		<p>H key to toggle hiding the back legs </p>
+		<P>APE version: <a href="http://www.cove.org/ape/demo2.htm" target="_blank">http://www.cove.org/ape/demo2.htm</a></p>
+	</div>
+	<script charset='utf-8' src='http://k.kbcdn.com/k2/seed/seed-1-3-1.js'></script>
+	<script charset='utf-8' src='../../lib/easel.js'></script>
+	<script charset='utf-8' src='../../build/JPE-1.0.1.js'></script>
+	
+	
+<script>
+JPE.require("Body");
+JPE.require("Leg");
+JPE.require("Motor");
+JPE.require("Robot");
+JPE.require("RobotDemo");
+JPE.addOnLoad(function(){
+	new JPE.RobotDemo();
+});
+</script>
+</body>
+</html>

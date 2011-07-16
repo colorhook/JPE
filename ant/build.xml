@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="JPE build project" basedir="../" default="build">
+
+	<property file="${basedir}/ant/build.properties" />
+
+
+	<target name="build" depends="bundle_javascript, create-temp, yui-compress, move-compressed-files" />
+	
+	<target name="bundle_javascript">
+		<echo>${dir.src}</echo>
+		 <concat destfile="${dir.build}/${build.name}.js">
+			<filelist dir="${dir.src}" files="${build.files}"/>
+      </concat>
+      <echo>JavaScript Bundles Done!</echo>
+   </target>
+
+    <!--compress js file by YUI compressor-->
+    <target name="yui-compress">
+       <apply executable="java" parallel="false" verbose="true" dest="${dir.build}" taskname="js.compile">
+			<fileset dir="${dir.build}">
+				<include name="*.js"/>
+			</fileset>
+			<arg line="-jar"/>
+			<arg path="${compress.yui}" />  
+			<arg line="--type js --charset UTF-8 -o" />
+			<mapper type="glob" from="*.js" to="temp/${build.yui-name}.js" />
+			<targetfile />
+		</apply>
+		<echo>YUI Compress Done!</echo>
+    </target>
+	
+	<!--compress js file by Google Closure Compiler-->
+    <target name="gcc-compress"> 
+       <apply executable="java" parallel="false" verbose="true" dest="${dir.build}" taskname="js.compile">
+			<fileset dir="${dir.build}">
+				<include name="*.js"/>
+			</fileset>
+			<arg line="-jar"/>
+			<arg path="${compress.gcc}" />  
+			<arg line="--js" />
+			<srcfile/>
+			 <arg line="--js_output_file"/>
+			 <mapper type="glob" from="*.js" to="temp/${build.gcc-name}.js" />
+			<targetfile />
+		</apply>
+		<echo>Google Closure Compiler Compress Done!</echo>
+    </target>
+	
+	<target name="move-compressed-files">
+		<copy todir="${dir.build}">
+			<fileset dir="${dir.build}/temp" >
+				<include name="*.js"/>
+			</fileset>
+		</copy>
+		<delete dir="${dir.build}/temp"/>
+   </target>
+
+
+	<target name="clean">
+      <echo>Delete Build Folder</echo>
+      <delete dir="${dir.build}"/>
+      <echo>Create Build Folder</echo>
+      <mkdir dir="${dir.build}"/>
+   </target>
+
+   <target name="create-temp">
+      <echo>Create Temp Folder</echo>
+      <mkdir dir="${dir.build}/temp"/>
+   </target>
+
+</project>
