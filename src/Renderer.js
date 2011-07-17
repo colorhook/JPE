@@ -31,7 +31,7 @@ JPE.declare('Renderer', {
 		var rd = item.get('renderDelegate');
 		if(rd == undefined){
 			rd = this.findDelegateByParticle(item)
-			item.set('delegateClass', rd);
+			item.set('renderDelegate', rd);
 		}
 		return rd;
 	},
