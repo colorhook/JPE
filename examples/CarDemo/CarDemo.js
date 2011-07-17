@@ -31,7 +31,7 @@ JPE.declare("CarDemo", {
 
 		Engine.init(1/4);
 			
-		// set up the default diplay container
+		// set the renderer to easel renderer
 		Engine.renderer = new EaselRenderer(stage);
 		
 		// gravity -- particles of varying masses are affected the same
