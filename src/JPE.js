@@ -253,11 +253,12 @@
 			var m = this._loadedClassMap,
 				 self = this,
 				 element;
-			
+
+			options = options || {};
+			url = options.path ? options.path + url : url;
 			if(m[url]){
 				return;
 			}
-			options = options || {};
 			m[url] = true;
 			this._loadingCount++;
 

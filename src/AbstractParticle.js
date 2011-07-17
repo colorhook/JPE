@@ -28,7 +28,6 @@ JPE.declare('AbstractParticle',   {
 				this._friction = friction;
 				this._center = new Vector();
 				this._multisample = 0;
-				this.createShape();
 				this.setStyle();
 				
 		},
@@ -244,28 +243,7 @@ JPE.declare('AbstractParticle',   {
 			this.prev = this.curr.minus(v);	
 		},
 		
-		
-		initSelf: function () {
-			JPE.Engine.container.addChild(this.getSprite());
-		},
-		cleanup: function(){
-			JPE.Engine.container.removeChild(this.getSprite());
-		},
-		/**
-		 * Assigns a DisplayObject to be used when painting this particle.
-		 */ 
-		setDisplay:function (d, offsetX, offsetY, rotation) {
-			this.displayObject = d;
-			this.displayObjectRotation = rotation || 0;
-			this.displayObjectOffset = new JEP.Vector(offsetX, offsetY);
-		},
-		
-		 initDisplay: function() {
-			this.displayObject.x = displayObjectOffset.x;
-			this.displayObject.y = displayObjectOffset.y;
-			this.displayObject.rotation = displayObjectRotation;
-			this.getSprite().addChild(this.displayObject);
-		},
+
 		
 		/**
 		 * Adds a force to the particle. The mass of the particle is taken into 

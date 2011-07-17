@@ -61,36 +61,7 @@ JPE.declare('RectangleParticle',  {
 			this.setRadian (a * JPE.MathUtil.PI_OVER_ONE_EIGHTY);
 		},
 			
-		paint: function () {
-			var sprite = this.getSprite(),
-				x = this.curr.x,
-				y = this.curr.y,
-				w = this.getExtents()[0] * 2,
-				h = this.getExtents()[1] * 2,
-				r = this.getAngle();
-			
-			sprite.rotation = r;
-			sprite.x = x ;
-			sprite.y = y;
-		},
 		
-		
-		drawShape: function(){
-			var g = this.shape.graphics,
-				w = this.getExtents()[0] * 2,
-				h = this.getExtents()[1] * 2;
-			this.shape.x = - w/2;
-			this.shape.y =  - h/2;
-			g.clear();
-			if(this.lineThickness){
-				g.setStrokeStyle(this.lineThickness)
-				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
-			}
-			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
-			g.drawRect(0, 0, w, h);
-			g.endFill();
-			
-		},
 		setWidth: function (w) {
 			this._extents[0] = w/2;
 		},

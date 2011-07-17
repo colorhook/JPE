@@ -118,57 +118,6 @@ JPE.declare('SpringConstraintParticle', {
 			this.avgVelocity.setTo(((p1v.x + p2v.x) / 2), ((p1v.y + p2v.y) / 2));
 			return this.avgVelocity;
 		},
-		
-		
-		initSelf: function () {
-			var inner = this.getSprite();
-			var parent = this.parent;
-			parent.getSprite().addChild(inner);
-			if(this.displayObject!=null){
-				this.initDisplay();
-			}else{
-				this.drawShape();
-			}
-			this.paint();
-		},
-
-		
-		paint: function () {
-
-			var parent = this.parent,
-				c = parent.getCenter(),
-				s = this.getSprite(),
-				shape = this.shape;
-
-			s.x = c.x ;
-			s.y =  c.y ;
-			if (this.scaleToLength) {
-				s.width = parent.getCurrLength() * this.getRectScale();
-			} else if (this.displayObject != null) {
-				s.width = parent.getRestLength() * this.getRectScale();
-			}
-			this.drawShape();
-			s.rotation = parent.getAngle();
-
-			
-		},
-		
-		drawShape: function(){
-			var g = this.shape.graphics,
-				parent = this.parent,
-				c = parent.getCenter(),
-				w = parent.getCurrLength() * this.getRectScale(),
-				h = this.getRectHeight();
-			g.clear();
-			if(parent.lineThickness){
-				g.setStrokeStyle(parent.lineThickness);
-				g.beginStroke(Graphics.getRGB(parent.lineColor, parent.lineAlpha));
-			}
-			g.beginFill(Graphics.getRGB(parent.fillColor, parent.fillAlpha));
-			g.drawRect(-w/2, -h/2, w, h);
-			g.endFill();
-			
-		},
 				
 	   /**
 		 * @private

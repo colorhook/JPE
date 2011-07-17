@@ -25,7 +25,7 @@ JPE.declare('SpringConstraint', {
 			this.p2 = p2;
 			this.checkParticlesLocation();
 			this._restLength = this.getCurrLength();
-			
+			this.inited = false;
 			this.setCollidable(collidable, rectHeight, rectScale, scaleToLength);
 		},
 
@@ -170,7 +170,13 @@ JPE.declare('SpringConstraint', {
 			this.scp = null;
 
 			if (this._collidable) {
+				if(this.scp){
+					this.scp.cleanup();
+				}
 				this.scp = new JPE.SpringConstraintParticle(this.p1, this.p2, this, rectHeight, rectScale, scaleToLength);
+				if(this.inited){
+					this.scp.initSelf();
+				}
 			}
 		},
 		
@@ -198,46 +204,17 @@ JPE.declare('SpringConstraint', {
 		 * SpringContraint is added to a Composite or Group.
 		 */			
 		initSelf:function() {
-			this.cleanup();
-			JPE.Engine.container.addChild(this.getSprite());
 			if (this.getCollidable()) {
 				this.scp.initSelf();
-			}else if(this.displayObject){
-				this.initDisplay();
 			}
-			this.paint();
+			this.inited = true;
 		},
-		
-				
-		/**
-		 * The default painting method for this constraint. This method is called automatically
-		 * by the <code>APEngine.paint()</code> method. If you want to define your own custom painting
-		 * method, then create a subclass of this class and override <code>paint()</code>.
-		 */			
-		paint: function() {
+		cleanup: function(){
 			if (this.getCollidable()) {
-				this.scp.paint();
-			}else{
-				if(!this.shape){
-					this.shape = new Shape();
-					this.getSprite().addChild(this.shape);
-				}
-				var g = this.shape.graphics,
-					p1 = this.p1,
-					p2 = this.p2;
-
-				g.clear();
-				if(this.lineThickness){
-					g.setStrokeStyle(this.lineThickness);
-					g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
-				}
-				g.moveTo(p1.getPx(), p1.getPy());
-				g.lineTo(p2.getPx(), p2.getPy());	
-				g.endFill();
+				this.scp.cleanup();
 			}
-
+			this.inited = false
 		},
-		
 		
 
 		getDelta: function () {

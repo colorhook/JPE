@@ -34,6 +34,7 @@ JPE.declare("Surfaces", {
 		rampCircle.setStyle(1, colD, 1, colB);
 		this.addParticle(rampCircle);
 		
+		
 		var floorBump = new CircleParticle(600,660,400,true);
 		floorBump.setStyle(1, colD, 1, colB);
 		this.addParticle(floorBump);

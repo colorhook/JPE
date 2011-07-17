@@ -9,6 +9,7 @@ JPE.declare("CarDemo", {
 
 		var Vector = JPE.Vector,
 			Engine = JPE.Engine,
+			EaselRenderer = JPE.EaselRenderer,
 			CircleParticle = JPE.CircleParticle,
 			WheelParticle = JPE.WheelParticle,
 			WheelParticle = JPE.WheelParticle,
@@ -31,7 +32,7 @@ JPE.declare("CarDemo", {
 		Engine.init(1/4);
 			
 		// set up the default diplay container
-		Engine.container = stage;
+		Engine.renderer = new EaselRenderer(stage);
 		
 		// gravity -- particles of varying masses are affected the same
 		Engine.addMasslessForce(new Vector(0, 3));

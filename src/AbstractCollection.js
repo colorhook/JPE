@@ -1,12 +1,11 @@
 JPE.declare("AbstractCollection", {
 
 		isParented: false,
-	
+		container: null,
 		
 		constructor: function(){
 			this.particles = [];
 			this.constraints = [];
-			this.createShape();
 		},
 		initSelf: function(){
 			var ps = this.particles,
@@ -21,7 +20,6 @@ JPE.declare("AbstractCollection", {
 			for(i = 0; i < cl; i++){
 				cs[i].initSelf();
 			}
-			JPE.Engine.container.addChild(this.getSprite());
 		},
 		/**
 		 * @param p {AbstractParticle}
@@ -43,7 +41,6 @@ JPE.declare("AbstractCollection", {
 		 * @param c {Composite} The Composite to be added.
 		 */ 
 		addConstraint:function(c){
-			 
 			this.constraints.push(c);
 			c.isParented = true;
 			if(this.isParented){
@@ -89,22 +86,6 @@ JPE.declare("AbstractCollection", {
 			}
 		},
 		
-		getSprite: function(){
-			if(this._sprite == null){
-				this._sprite = new Container();
-			}
-			return this._sprite;
-		},
-		createShape: function(){
-			if(this.shape != null){
-				this.getSprite().removeChild(this.shape);
-			}
-			this.shape = new Shape();
-			this.drawShape();
-			this.getSprite().addChild(this.shape);
-		},
-		drawShape: function(){
-		},
 		getAll:function(){
 			return this.particles.concat(this.constraints);
 		},
@@ -127,7 +108,6 @@ JPE.declare("AbstractCollection", {
 			for(i = 0; i < cl; i++){
 				cs[i].cleanup();
 			}
-			JPE.Engine.container.removeChild(this.getSprite());
 		},
 		integrate:function(dt2){
 

@@ -5,11 +5,7 @@ JPE.Engine = {
 		groups:null,
 		numGroups:0,
 		timeStep:0,
-		/**
-		 * dependence on Easel.js library
-		 * type: Stage
-		 */
-		container:null,
+		renderer:null,
 		damping:1,
 		constraintCycles:0,
 		constraintCollisionCycles:1,
@@ -23,7 +19,6 @@ JPE.Engine = {
 			this.force = new JPE.Vector(0, 0);
 			this.masslessForce = new JPE.Vector(0, 0);
 		},
-
 		addForce:function(v){
 			this.force.plusEquals(v);
 		},

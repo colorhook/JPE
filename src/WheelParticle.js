@@ -53,43 +53,6 @@ JPE.declare('WheelParticle',  {
 			this._traction = 1 - t;
 		},	
 
-		
-		/**
-		 * The default painting method for this particle. This method is called automatically
-		 * by the <code>APEngine.paint()</code> method. If you want to define your own custom painting
-		 * method, then create a subclass of this class and override <code>paint()</code>.
-		 */	
-		paint: function () {
-			var sprite = this.getSprite();
-			var x = this.curr.x,
-				y = this.curr.y,
-				r = this.getAngle();
-			
-			sprite.rotation = r;
-			sprite.x = x;
-			sprite.y = y;
-			this.drawShape();
-		},
-		drawShape: function(){
-			var g = this.shape.graphics,
-				r = this.getRadius();
-			
-			g.clear();
-			if(this.lineThickness){
-				g.setStrokeStyle(this.lineThickness);
-				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
-			}
-			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
-			g.drawCircle(0, 0, r);
-			
-			g.setStrokeStyle(1);
-			g.beginStroke(Graphics.getRGB(0xffffff-this.lineColor));
-			g.moveTo(-r, 0);
-			g.lineTo(r, 0);
-			g.moveTo(0, -r);
-			g.lineTo(0, r);
-			g.endFill();
-		},
 		update: function (dt) {
 			JPE.WheelParticle.superclass.prototype.update.call(this, dt);
 			this.rp.update(dt);

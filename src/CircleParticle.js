@@ -33,36 +33,6 @@ JPE.declare('CircleParticle',  {
 			this._radius = t;
 		},
 		
-		
-		/**
-		 * The default painting method for this particle. This method is called automatically
-		 * by the <code>APEngine.paint()</code> method. If you want to define your own custom painting
-		 * method, then create a subclass of this class and override <code>paint()</code>.
-		 */	
-		paint: function () {
-			var sprite = this.getSprite();
-			var x = this.curr.x,
-				y = this.curr.y;
-					
-			sprite.x = x;
-			sprite.y = y;
-			
-		},
-
-		drawShape: function(){
-			var r = this.getRadius(),
-				g = this.shape.graphics;
-
-			g.clear();
-			if(this.lineThickness){
-				g.setStrokeStyle(this.lineThickness)
-				g.beginStroke(Graphics.getRGB(this.lineColor, this.lineAlpha));
-			}
-			g.beginFill(Graphics.getRGB(this.fillColor, this.fillAlpha));
-			g.drawCircle(0, 0, r);
-			g.endFill();
-		},
-
 		/**
 		 * @private
 		 */	

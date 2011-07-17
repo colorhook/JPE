@@ -8,20 +8,47 @@ JPE.declare('AbstractItem', {
 		this.lineAlpha = 1;
 		this.fillColor = 0x333333;
 		this.fillAlpha = 1;
+		this._pool = {};
+		this.beforeDrawSignal = new JPE.Signal();
+		this.afterDrawSignal = new JPE.Signal();
 	},
-
+	get: function(name){
+		return this._pool[name];
+	},
+	set: function(name, value){
+		this._pool[name] = value;
+	},
 	initSelf: function(){
-		JPE.Engine.container.addChild(this.getSprite());
+		var initSelfFunction = this.initSelfFunction || this.constructor.initSelfFunction;
+		if(JPE.isFunction(initSelfFunction)){
+			initSelfFunction(this);
+		}else{
+			JPE.Engine.renderer.initSelf(this);
+		}
 	},
-	
-	paint: function(){
-		
-	},
-	
 	cleanup: function(){
-		JPE.Engine.container.removeChild(this.getSprite());
+		var cleanupFunction = this.cleanupFunction || this.constructor.cleanupFunction;
+		if(JPE.isFunction(cleanupFunction)){
+			cleanupFunction(this);
+		}else{
+			JPE.Engine.renderer.cleanup(this);
+		}
+	},
+	paint: function(){
+		this.render();
 	},
 
+	render: function(){
+		this.beforeDrawSignal.dispatch(this);
+		var renderFunction = this.renderFunction || this.constructor.renderFunction;
+		if(JPE.isFunction(renderFunction)){
+			renderFunction(this);
+		}else{
+			JPE.Engine.renderer.render(this);
+		}
+		this.afterDrawSignal.dispatch(this);
+	},
+	
 	/**
 	 * visible setter & getter
 	 */
@@ -29,9 +56,12 @@ JPE.declare('AbstractItem', {
 		return this._visible;
 	},
 	setVisible: function(value){
+		if(value == this._visible){
+			return;
+		}
 		this._visible = value;
-		this.getSprite().visible = value;
-	},
+		JPE.Engine.renderer.setVisible(this);
+	},	
 	/**
 	 * awaysRepaint setter & getter
 	 */
@@ -49,8 +79,7 @@ JPE.declare('AbstractItem', {
 		fillAlpha = fillAlpha || 1;
 		this.setLine(lineThickness, lineColor, lineAlpha);		
 		this.setFill(fillColor, fillAlpha);
-		this.drawShape();
-	},	
+	},
 	/**
 	 * Sets the style of the line for this Item. 
 	 */ 
@@ -58,7 +87,6 @@ JPE.declare('AbstractItem', {
 		this.lineThickness = thickness;
 		this.lineColor = color;
 		this.lineAlpha = alpha;
-		this.drawShape();
 	},
 		
 	/**
@@ -67,26 +95,6 @@ JPE.declare('AbstractItem', {
 	setFill: function(color, alpha) {
 		this.fillColor = color;
 		this.fillAlpha = alpha;
-		this.drawShape();
-	},
-	createShape: function(){
-		if(this.shape != null){
-			this.getSprite().removeChild(this.shape);
-		}
-		this.shape = new Shape();
-		this.drawShape();
-		this.getSprite().addChild(this.shape);
-	},
-	drawShape: function(){
-	},
-	/**
-	 * dependence on the Easel.js library.
-	 */
-	getSprite: function(){
-		if(this._sprite == null){
-			this._sprite = new Container();
-		}
-		return this._sprite;
-	},
+	}
 
 });
