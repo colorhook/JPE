@@ -292,7 +292,7 @@
 		},
 		require: function(name, options){
 			var loaderInfo;
-			if(JPE.isArray(name)){
+			if(this.isArray(name)){
 				loaderInfo = name;
 			}else{
 				loaderInfo = [name]
