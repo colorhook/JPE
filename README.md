@@ -16,3 +16,14 @@ Licence
 	Copyright (c) 2006, 2007 Alec Cove
 	Released under the MIT Licenses.
 
+
+Bugs & Feedback
+----------------
+
+Please feel free to report bugs or feature requests.
+You can send me private message on `github`, or send me an email to: [colorhook@gmail.com]
+
+License
+-------
+
+JPE is free to use under MIT license. 

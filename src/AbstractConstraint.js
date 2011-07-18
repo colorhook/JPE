@@ -5,8 +5,8 @@ JPE.declare('AbstractConstraint', {
 		this.stiffness = stiffness;
 		this.setStyle();
 		this._pool = {};
-		this.beforeDrawSignal = new JPE.Signal();
-		this.afterDrawSignal = new JPE.Signal();
+		this.beforeRenderSignal = new JPE.Signal();
+		this.afterRenderSignal = new JPE.Signal();
 	},
 	resolve: function(){
 	}

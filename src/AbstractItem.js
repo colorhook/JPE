@@ -9,8 +9,8 @@ JPE.declare('AbstractItem', {
 		this.fillColor = 0x333333;
 		this.fillAlpha = 1;
 		this._pool = {};
-		this.beforeDrawSignal = new JPE.Signal();
-		this.afterDrawSignal = new JPE.Signal();
+		this.beforeRenderSignal = new JPE.Signal();
+		this.afterRenderSignal = new JPE.Signal();
 	},
 	get: function(name){
 		return this._pool[name];
@@ -39,14 +39,14 @@ JPE.declare('AbstractItem', {
 	},
 
 	render: function(){
-		this.beforeDrawSignal.dispatch(this);
+		this.beforeRenderSignal.dispatch(this);
 		var renderFunction = this.renderFunction || this.constructor.renderFunction;
 		if(JPE.isFunction(renderFunction)){
 			renderFunction(this);
 		}else{
 			JPE.Engine.renderer.render(this);
 		}
-		this.afterDrawSignal.dispatch(this);
+		this.afterRenderSignal.dispatch(this);
 	},
 	
 	/**

@@ -5,11 +5,11 @@ JPE.declare('EaselRenderer', {
 	constructor: function(stage){
 		JPE.EaselRenderer.superclass.prototype.constructor.apply(this, arguments);
 		this.stage = stage;
-		this.registerMap('RectangleParticle', JPE.RectangleParticle, new JPE.EaselRenderer.RectangleParticleDelegate(this));
-		this.registerMap('CircleParticle', JPE.CircleParticle, new JPE.EaselRenderer.CircleParticleDelegate(this));
-		this.registerMap('WheelParticle', JPE.WheelParticle, new JPE.EaselRenderer.WheelParticleDelegate(this));
-		this.registerMap('SpringConstraintParticle', JPE.SpringConstraintParticle, new JPE.EaselRenderer.SpringConstraintParticleDelegate(this));
-		this.registerMap('SpringConstraint', JPE.SpringConstraint, new JPE.EaselRenderer.SpringConstraintDelegate(this));
+		this.registerDelegate('RectangleParticle', JPE.RectangleParticle, new JPE.EaselRenderer.RectangleParticleDelegate(this));
+		this.registerDelegate('CircleParticle', JPE.CircleParticle, new JPE.EaselRenderer.CircleParticleDelegate(this));
+		this.registerDelegate('WheelParticle', JPE.WheelParticle, new JPE.EaselRenderer.WheelParticleDelegate(this));
+		this.registerDelegate('SpringConstraintParticle', JPE.SpringConstraintParticle, new JPE.EaselRenderer.SpringConstraintParticleDelegate(this));
+		this.registerDelegate('SpringConstraint', JPE.SpringConstraint, new JPE.EaselRenderer.SpringConstraintDelegate(this));
 	}
 });
 JPE.declare('EaselRenderer.AbstractDelegate', {
