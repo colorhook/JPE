@@ -24,8 +24,6 @@ JPE.declare("Leg", {
 			var CircleParticle = JPE.CircleParticle,
 				WheelParticle = JPE.WheelParticle,
 			SpringConstraint = JPE.SpringConstraint;
-
-			var sg = this.sg = this.shape.graphics;
 		
 			this.lineColor = lineColor;
 			this.lineAlpha = lineAlpha;
@@ -107,9 +105,18 @@ JPE.declare("Leg", {
 			return this.pa;
 		},
 
-		
-		paint:function() {
-			var sg = this.sg,
+		initSelf: function(){
+			var sprite = new Container(),
+				shape = new Shape();
+			
+			sprite.addChild(shape);
+			JPE.Engine.renderer.stage.addChild(sprite);
+			this.sprite = sprite;
+			this.shape = shape;
+		},
+		paint: function() {
+			var shape = this.shape,
+				sg = shape.graphics,
 				pa = this.pa,
 				pb = this.pb,
 				pc = this.pc,

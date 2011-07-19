@@ -15,8 +15,6 @@
 			var CircleParticle = JPE.CircleParticle,
 				WheelParticle = JPE.WheelParticle,
 			SpringConstraint = JPE.SpringConstraint;
-
-			var sg = this.sg = this.shape.graphics;
 		
 			var wheel = this.wheel = new WheelParticle(attach.getPx(), attach.getPy() - .01, radius);
 			wheel.setStyle(0,0xFFF00,0, 0xFFF00,0.5);
@@ -93,13 +91,16 @@
 		},
 
 		initSelf: function (){
-			JPE.Motor.superclass.prototype.initSelf.apply(this);
-
-			var sg = this.sg,
+			var sprite = new Container(),
+				shape = new Shape(),
+				sg = shape.graphics,
 				radius = this.radius,
 				color = this.color;
-
-			sg.clear();
+			
+			sprite.addChild(shape);
+			JPE.Engine.renderer.stage.addChild(sprite);
+			this.sprite = sprite;
+			this.shape = shape;
 			
 			sg.beginStroke(Graphics.getRGB(0xff000, 1));
 			sg.beginFill(Graphics.getRGB(color, 1));
@@ -133,7 +134,7 @@
 		},
 	
 		paint: function () {
-			var sprite = this.getSprite(),
+			var sprite = this.sprite,
 				wheel = this.wheel;
 
 			sprite.x = wheel.getPx();

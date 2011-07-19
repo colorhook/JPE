@@ -10,15 +10,15 @@ JPE.declare("RobotDemo", {
 		var Vector = JPE.Vector,
 			Engine = JPE.Engine,
 			RectangleParticle = JPE.RectangleParticle,
-			Group = JPE.Group;
+			Group = JPE.Group,
+			EaselRenderer = JPE.EaselRenderer;
 
 		var Robot = JPE.Robot;
-
 
 		Engine.init(1/4);
 			
 		// set up the default diplay container
-		Engine.container = stage;
+		Engine.renderer = new EaselRenderer(stage);
 		
 		Engine.addMasslessForce(new Vector(0,4));
 		Engine.damping = .99;
@@ -115,7 +115,7 @@ JPE.declare("RobotDemo", {
 		robot.run();
 		JPE.Engine.paint();
 		this.stage.update();
-		JPE.Engine.container.x = -robot.getPx() + this.halfStageWidth;
+		JPE.Engine.renderer.stage.x = -robot.getPx() + this.halfStageWidth;
 
 	},
 
