@@ -17,6 +17,14 @@ JPE is free to use under MIT license.
 	Copyright (c) 2006, 2007 Alec Cove
 	Released under the MIT Licenses.
 
+Wiki
+-----------------
+* [JPE Core API](https://github.com/colorhook/JPE/wiki/Core)
+* [EaselRenderer](https://github.com/colorhook/JPE/wiki/EaselRenderer)
+* [Group & Composite](https://github.com/colorhook/JPE/wiki/Group-&-Composite)
+* [Particle](https://github.com/colorhook/JPE/wiki/Particle)
+* [Signal](https://github.com/colorhook/JPE/wiki/Signal)
+
 Demo
 --------------------
 * [CarDemo](http://colorhook.github.com/JPE/examples/CarDemo/CarDemo.html)
