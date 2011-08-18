@@ -25,6 +25,7 @@ JPE.declare('AbstractItem', {
 		}else{
 			JPE.Engine.renderer.initSelf(this);
 		}
+		this.paint();
 	},
 	cleanup: function(){
 		var cleanupFunction = this.cleanupFunction || this.constructor.cleanupFunction;

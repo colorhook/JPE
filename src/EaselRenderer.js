@@ -32,7 +32,10 @@ JPE.declare('EaselRenderer.AbstractDelegate', {
 		this.drawShape(item);
 	},
 	cleanup: function(item){
-		this.stage.removeChild(sprite);
+		var s  = item.get('sprite');
+		if(s){
+			this.stage.removeChild(s);
+		}
 	},
 	drawShape: function(item){
 	},
@@ -72,8 +75,9 @@ JPE.declare('EaselRenderer.RectangleParticleDelegate', {
 			w = item.getExtents()[0] * 2,
 			h = item.getExtents()[1] * 2,
 			r = item.getAngle();
-
+		
 		if(sprite){
+			this.drawShape(item);
 			sprite.rotation = r;
 			sprite.x = x ;
 			sprite.y = y;
@@ -104,8 +108,12 @@ JPE.declare('EaselRenderer.CircleParticleDelegate', {
 		var x = item.curr.x,
 			y = item.curr.y,
 			sprite = item.get('sprite');
-		sprite.x = x;
-		sprite.y = y;
+
+		if(sprite){
+			this.drawShape(item);
+			sprite.x = x;
+			sprite.y = y;
+		}
 	}
 });
 
@@ -139,9 +147,13 @@ JPE.declare('EaselRenderer.WheelParticleDelegate', {
 			y = item.curr.y,
 			r = item.getAngle(),
 			sprite = item.get('sprite');	
-		sprite.rotation = r;
-		sprite.x = x;
-		sprite.y = y;
+		
+		if(sprite){
+			this.drawShape(item);
+			sprite.rotation = r;
+			sprite.x = x;
+			sprite.y = y;
+		}
 
 	}
 });
