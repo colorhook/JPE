@@ -1,18 +1,30 @@
+/**
+ * Copyright (c) 2011 http://colorhook.com
+ * @author: <a href="colorhook@gmail.com">colorhook</a>
+ */
+
+/**
+ * Provides requestAnimationFrame in a cross browser way.
+ * @see https://gist.github.com/838785
+ */
 if ( !window.requestAnimationFrame ) {
 	window.requestAnimationFrame = ( function() {
 		return window.webkitRequestAnimationFrame ||
 		window.mozRequestAnimationFrame ||
 		window.oRequestAnimationFrame ||
 		window.msRequestAnimationFrame ||
-		function( /* function FrameRequestCallback */ callback,  duration ) {
-			window.setTimeout( callback, duration || (1000/60) );
+		function(callback,  element ) {
+			window.setTimeout( callback, 1000/60);
 		};
 	} )();
 }
 
-//Game Model
+/**
+ * Game Model
+ * 配置游戏的记录游戏
+ */
 JPE.GameModel = {
-	levelData:[[1, 5],[2, 10],[4,15],[6,20],[10,25],[15,30],[18,35],[22,40],[30,45],[37,50],[54,60]],
+	levelData:[[1, 5],[2, 10],[4,15],[6,20],[10,25],[15,30],[18,35],[22,40],[30,45],[37,50],[48,55],[54,60]],
 	level: 0,
 	levelScore: 0,
 	totalScore: 0,
@@ -32,13 +44,18 @@ JPE.GameModel = {
 	},
 	BEST_SCORE_KEY: 'domino:best_score',
 	init: function(){
-		gameModel.bestScore = localStorage.getItem(this.BEST_SCORE_KEY) || 0;
+		this.levelScore = 0;
+		this.totalScore = 0;
+		this.mouseEnabled = false;
+		this.bestScore = localStorage.getItem(this.BEST_SCORE_KEY) || 0;
 	},
 	saveScore: function(score){
 		 localStorage.setItem(this.BEST_SCORE_KEY, score)
 	}
 }
-//Define Ball
+/**
+ * 游戏中的小球
+ */
 JPE.declare("Ball", {
 	superclass: JPE.CircleParticle,
 
@@ -58,6 +75,9 @@ JPE.declare("Ball", {
 		this.setVelocity(vel);
 	}
 });
+/**
+ * 碰到小球后能变大的球
+ */
 JPE.declare("GrowBall", {
 	superclass: JPE.CircleParticle,
 	minRadius: null,
@@ -75,14 +95,15 @@ JPE.declare("GrowBall", {
 		var self = this;
 			r = this.getRadius();
 		if(this.growed && !this.inHolding){
-			if(r > this.minRadius){
-				this.setRadius(r-1);
+			if(r > (this.minRadius)){
+				this.setRadius(r -1);
 			}else{
+				this.setVisible(false);
 				this.destroySignal.dispatch();
 			}
 		}else if(!this.growed){
-			if(r < this.maxRadius){
-				this.setRadius(r+1);
+			if(r < (this.maxRadius-0.1)){
+				this.setRadius(r+ (this.maxRadius-r)*0.15);
 			}else{
 				this.growed = true;
 				this.inHolding = true;
@@ -95,13 +116,14 @@ JPE.declare("GrowBall", {
 	}
 });
 
-//Ball Group
+/**
+ * 小球的Group
+ */
 JPE.declare("BallGroup", {
 	superclass: JPE.Group,
 	maxSpeed: 1.6,
 	constructor: function(){
 		JPE.BallGroup.superclass.prototype.constructor.apply(this, arguments);
-		this.colors = [0x5500ff, 0x99ccaa, 0xff6600, 0x224499, 0x4499cc];
 	},
 	initializeBalls: function(count, radius){
 		this.clearBalls();
@@ -109,18 +131,21 @@ JPE.declare("BallGroup", {
 			this.addBall(radius);
 		}
 	},
+	getRandomColor: function(){
+		return Math.random() * 0xffffff;
+	},
 	addBall: function(radius){
 		var frame = JPE.GameModel.frame,
 			width = frame.width,
 			height = frame.height,
 			speed = this.maxSpeed,
 			r = radius || JPE.GameModel.ballRadius,
-			randomColor = this.colors[Math.floor(Math.random()*this.colors.length)],
+			randomColor = this.getRandomColor(),
 			px = 2*r + Math.random()*(width-4*r),
 			py = 2*r + Math.random()*(height-4*r),
 			sx = Math.random()*speed*2 - speed,
 			sy =  Math.sqrt(speed* speed - sx * sx) * (Math.random()>0.5?1:-1),
-			vel = new JPE.Vector(sx, sy);
+			vel = new JPE.Vector(sx, sy),
 			ball = new JPE.Ball(px, py, r);
 		
 		ball.setFill(randomColor);
@@ -134,7 +159,10 @@ JPE.declare("BallGroup", {
 		}
 	}
 });
-//EffectGroup
+
+/**
+ * 大球的Group
+ */
 JPE.declare("EffectGroup", {
 	superclass: JPE.Group,
 	minRadius: 1,
@@ -149,7 +177,7 @@ JPE.declare("EffectGroup", {
 			ball = new JPE.GrowBall(this.minRadius, this.maxRadius);
 		
 		ball.setPosition(new JPE.Vector(options.x, options.y));
-		ball.setFill(options.color || 0xa11111, 0.8);
+		ball.setFill(options.color, 0.8);
 		ball.setCollidable(false);
 		ball.destroySignal.add(function(){
 			setTimeout(function(){
@@ -158,8 +186,7 @@ JPE.declare("EffectGroup", {
 					JPE.GameModel.growing = false;
 					JPE.GameModel.growOverSignal.dispatch();
 				}
-			},0);
-			
+			}, 0);
 		});
 		this.addParticle(ball);
 	},
@@ -170,7 +197,9 @@ JPE.declare("EffectGroup", {
 	}
 });
 
-//Domino
+/**
+ * Domino Game
+ */
 JPE.declare("Domino", {
 
 	constructor: function(){
@@ -304,11 +333,12 @@ JPE.declare("Domino", {
 });
 JPE.declare("GameView", {
 	constructor: function(){
-		
+		this.canvas = document.getElementById("myCanvas");
 		this.levelWin = this.query(".level-win");
 		this.enterPage = this.query(".welcome-page");
 		this.levelEndWin = this.query(".level-end-win");
 		this.gameOverWin = this.query(".game-over-win");
+		this.aboutWin = this.query(".about-win");
 		this.levelStartSignal = new JPE.Signal();
 		this.levelEndSignal = new JPE.Signal();
 		this.enterGameSignal = new JPE.Signal();
@@ -318,7 +348,8 @@ JPE.declare("GameView", {
 	initView: function(){
 		var self = this,
 			enterButton = this.query(".welcome-page .pay-button"),
-			playButton = this.query(".level-win .play-button");
+			playButton = this.query(".level-win .play-button"),
+			aboutButton = this.query(".welcome-page .about-button");
 
 		this.addTap(enterButton, function(){
 			self.addClass(self.enterPage, 'hidden');
@@ -329,6 +360,10 @@ JPE.declare("GameView", {
 			self.onLevelStart();
 			self.levelStartSignal.dispatch();
 		});
+		this.addTap(aboutButton, function(){
+			self.addClass(self.enterPage, 'hidden');
+			self.removeClass(self.aboutWin, 'hidden');
+		});
 		this.addTap(this.levelEndWin, function(){
 			self.addClass(self.levelEndWin, 'hidden');
 			self.levelEndSignal.dispatch();
@@ -337,39 +372,53 @@ JPE.declare("GameView", {
 			self.addClass(self.gameOverWin, 'hidden');
 			self.gameOverSignal.dispatch();
 		});
+		this.addTap(this.aboutWin, function(){
+			self.removeClass(self.enterPage, 'hidden');
+			self.addClass(self.aboutWin, 'hidden');
+		});
 	},
 	showGameStartPage: function(options){
 		this.query(".best-score .score").innerHTML = options.bestScore;
 		this.removeClass(this.enterPage, 'hidden');
+		this.removeClass(this.canvas, 'hidden');
 	},
 	showLevelStartPage: function(options){
-		this.query(".level-win .level").innerHTML = "第"+(options.level+1)+"关";
+		this.query(".level-win .title").innerHTML = "Level "+(options.level+1);
+		this.query(".level-win .content").innerHTML ="Need explode " + options.required + " Of " + options.amount;
 		this.removeClass(this.levelWin, 'hidden');
 	},
 	showLevelEndPage: function(options){
-		var html;
+		var html, title;
 		if(options.passed){
-			html = "总得分："+ options.totalScore;
+			title = "Mission Accomplished";
+			html = "Total score: "+ options.totalScore;
 		}else{
-			html = "还差"+ (options.requiredCount - options.chainCount)+"个";
+			title = "Mission Not Accomplished";
+			if(options.requiredCount - options.chainCount == 1){
+				html = "Last one ball required.";
+			}else{
+				html = (options.requiredCount - options.chainCount)+" more balls required.";
+			}
 		}
+		this.query(".level-end-win .title").innerHTML = title;
 		this.query(".level-end-win .content").innerHTML = html;
 		this.removeClass(this.levelEndWin, 'hidden');
 		this.onLevelEnd();
 	},
 	showGameEndPage: function(options){
 		var totalScore = options.totalScore;
-		this.query(".game-over-win .content").innerHTML = "你的总得分是："+totalScore;
+		this.query(".game-over-win .content").innerHTML = "Your total score is: "+totalScore;
 		this.removeClass(this.gameOverWin, 'hidden');
+		this.onLevelEnd();
 	},
 	updateTip: function(chain, required){
 		var html;
-		if(chain < required){
-			html = "还差"+(required-chain)+"个";
-		}else if(chain == required){
-			html = "到达个数";
+		if((required - chain) == 1){
+			html = "last one ball";
+		}else if(chain < required){
+			html = (required-chain)+" more balls...";
 		}else{
-			html = "超出" + (chain-required)+"个";
+			html = "Extra bouns";
 		}
 		this.query(".tip").innerHTML = html;
 	},
@@ -379,10 +428,12 @@ JPE.declare("GameView", {
 	onLevelStart: function(){
 		this.removeClass(this.query(".my-score"), 'hidden');
 		this.removeClass(this.query(".tip"), 'hidden');
+		this.removeClass(this.canvas, "hidden");
 	},
 	onLevelEnd: function(){
 		this.addClass(this.query(".my-score"), 'hidden');
 		this.addClass(this.query(".tip"), 'hidden');
+		this.addClass(this.canvas, "hidden");
 	},
 	add: function(el, type, callback){
 		el.addEventListener(type, callback, false);
@@ -419,8 +470,8 @@ var domino = new JPE.Domino(),
 		var data = gameModel.levelData[level];
 		gameView.showLevelStartPage({
 			level: gameModel.level,
-			totalBall: data[0],
-			requireBall: data[1]
+			required: data[0],
+			amount: data[1]
 		});
 	},
 	updateViewState = function(){
@@ -432,6 +483,7 @@ var domino = new JPE.Domino(),
 
 //model signal
 gameModel.mouseSignal.add(function(signal, options){
+	options.color = Math.random() * 0xffffff;
 	domino.addGrow(options);
 });
 gameModel.growOverSignal.add(function(signal){
@@ -462,7 +514,6 @@ gameModel.growOverSignal.add(function(signal){
 		requiredCount: requiredCount,
 		totalScore: gameModel.totalScore
 	});
-	
 });
 gameModel.collisionSignal.add(updateViewState);
 //view signal

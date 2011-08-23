@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Donimo Game</title>
+<style>
+body{
+	text-shadow:0px 1px 1px #ffffff;
+	font-family:cursive;
+	color:#6666cc;
+	font-size:20px;
+	font-weight:700;
+	font-size: 24px;
+	padding:0;
+	margin:0;
+	background:#fff;
+	-webkit-text-size-adjust:none;
+	background:url(assets/bg.jpg)  no-repeat;
+}
+#myCanvas{
+	width:800px;
+	height:480px;
+}
+.xy{
+	position:absolute;
+}
+.page{
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	text-align:center;
+	margin:0 auto;
+	display:table;
+}
+.hidden{
+	display:none;
+}
+.container{
+	position:relative;
+	width:800px;
+	height:480px;
+	overflow:hidden;
+}
+a{
+	cursor:pointer;
+}
+.button{
+	display:inline-block;
+	background:#fff;
+	padding:12px 56px;
+	border-radius: 54px;
+	color:#fff;
+	background:-webkit-gradient(linear, left bottom, left top, from(#74b9ff), to(#3e9bf7));
+	-webkit-box-shadow:0px 2px 10px #999;
+}
+.large{
+	padding:16px 76px;
+}
+a.yellow-theme{
+	background:-webkit-gradient(linear, left bottom, left top, from(#f2d268), to(#ff9900));
+}
+.welcome-page .banner{
+	margin-top:20px;
+}
+.welcome-page .best-score{
+	margin-top:100px;
+}
+.page .title,
+.page .content{
+	font-size:48px;
+	height:54px;
+	margin:10px 0;
+}
+.page .content{
+	font-size: 24px;
+}
+.about-win{
+	padding:0 100px;
+	text-align:left;
+}
+.about-win .content{
+	font-size:24px;
+}
+.my-score{
+	left:-10px;
+	bottom:-10px;
+	padding:2px 22px 15px 30px;
+}
+.tip{
+	right:-10px;
+	top:-10px;
+	padding:8px 20px 5px 10px;
+}
+.my-score, .tip{
+	background:#333;
+	color:#fff;
+	opacity:0.6;
+	border-radius:12px;
+	font-size:16px;
+	font-weight:normal;
+}
+.win-frame{
+	width: 80%;
+	height:200px;
+	display:table-cell;
+	vertical-align:middle;
+	border-radidus: 8px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+	<canvas id="myCanvas" width="800" height="480"></canvas>
+	<span class="xy tip hidden"></span>
+	<span class="xy my-score hidden"></span>
+	<div class="xy welcome-page page hidden">
+		<img class="banner" src="assets/banner.png"/>
+		<p><a class="pay-button button large">Play</a></p>
+		<p><a class="about-button button">About</a></span>
+		<p class="best-score">Highest Score: <span class="score"></span></p>
+	</div>
+	<div class="xy level-win page hidden">
+		<div class="win-frame">
+			<p class="title"></p>
+			<p class="content"></p>
+			<p><a class="play-button button">Start</a></p>
+		</div>
+	</div>
+	<div class="xy level-end-win page hidden">
+		<div class="win-frame">
+			<p class="title">Mission Accomplished</p>
+			<p class="content">Total Score: <span class="score"></span></p>
+		</div>
+	</div>
+	<div class="xy game-over-win page hidden">
+		<div class="win-frame">
+			<p class="title">Congratulation!</p>
+			<p class="content">Total Score: <span class="score"></span></p>
+		</div>
+	</div>
+	<div class="xy about-win page hidden">
+		<div class="win-frame">
+			<p class="title">About Domino</p>
+			<p class="content">Domino is a web game, which imitates the iOS game iChainLife, developed by <a href="http://colorhook.com">colorhook</a>.</p><br/>
+			<p>Developing your own web game by framework <a href="http://www.github.com/colorhook/JPE" target="_blank">JPE</a>.</p>
+		</div>
+	</div>
+</div>
+<script charset='utf-8' src='../../lib/easel.js'></script>
+<script charset='utf-8' src='../../build/JPE-1.0.4-min.js'></script>
+<script>
+JPE.require("Domino");
+</script>
+</body>
+</html>
