@@ -44,6 +44,8 @@ JPE.GameModel = {
 	},
 	BEST_SCORE_KEY: 'domino:best_score',
 	init: function(){
+		this.level = 0;
+		this.chainCount = 0;
 		this.levelScore = 0;
 		this.totalScore = 0;
 		this.mouseEnabled = false;
