@@ -24,7 +24,7 @@
 ;(function(host){
 
 	var core = {
-			VERSION: '1.0.1'
+			VERSION: '1.0.5'
 	},
 	kernelName = "JPE",
 	_guid = 0,
@@ -37,51 +37,79 @@
 		'valueOf'
 	],
 	_hasEnumBug = !{valueOf: 0}.propertyIsEnumerable('valueOf'),
+	hasOwn   = Object.prototype.hasOwnProperty,
 	TO_STRING = Object.prototype.toString,
-	mix = function(r, s, ov, wl, mode, merge) {
-		if (!s||!r) {
-			return r;
+	isFunction = function(o) {
+		return TO_STRING.call(o) === '[object Function]';
+	},
+	isObject = function(o, failfn) {
+		var t = typeof o;
+		return (o && (t === 'object' ||
+			(!failfn && (t === 'function' || isFunction(o))))) || false;
+	},
+	
+	mix = function(receiver, supplier, overwrite, whitelist, mode, merge) {
+		var alwaysOverwrite, exists, from, i, key, len, to;
+
+		if (!receiver || !supplier) {
+			return receiver;
 		}
 
 		if (mode) {
-			switch (mode) {
-				case 1: 
-					return mix(r.prototype, s.prototype, ov, wl, 0);
-				case 2: 
-					mix(r.prototype, s.prototype, ov, wl, 0);
-					break; 
-				case 3: 
-					return mix(r, s.prototype, ov, wl, 0);
-				case 4: 
-					return mix(r.prototype, s, ov, wl, 0);
-				default:  
+			if (mode === 2) {
+				mix(receiver.prototype, supplier.prototype, overwrite,
+						whitelist, 0, merge);
 			}
+
+			from = mode === 1 || mode === 3 ? supplier.prototype : supplier;
+			to   = mode === 1 || mode === 4 ? receiver.prototype : receiver;
+
+			if (!from || !to) {
+				return receiver;
+			}
+		} else {
+			from = supplier;
+			to   = receiver;
 		}
 
-		if (!s || !r) return r;
-		if (ov === undefined) ov = true;
-		var i, p, l;
+		alwaysOverwrite = overwrite && !merge;
 
-		if (wl && (l = wl.length)) {
-			for (i = 0; i < l; i++) {
-				p = wl[i];
-				if (p in s) {
-					if (ov || !(p in r)) {
-						r[p] = s[p];
-					}
+		if (whitelist) {
+			for (i = 0, len = whitelist.length; i < len; ++i) {
+				key = whitelist[i];
+
+				if (!hasOwn.call(from, key)) {
+					continue;
+				}
+				exists = alwaysOverwrite ? false : key in to;
+
+				if (merge && exists && isObject(to[key], true)
+						&& isObject(from[key], true)) {
+					mix(to[key], from[key], overwrite, null, 0, merge);
+				} else if (overwrite || !exists) {
+					to[key] = from[key];
 				}
 			}
 		} else {
-			for (p in s) {
-				if (ov || !(p in r)) {
-					r[p] = s[p];
+			for (key in from) {
+				if (!hasOwn.call(from, key)) {
+					continue;
+				}
+				exists = alwaysOverwrite ? false : key in to;
+
+				if (merge && exists && isObject(to[key], true)
+						&& isObject(from[key], true)) {
+					mix(to[key], from[key], overwrite, null, 0, merge);
+				} else if (overwrite || !exists) {
+					to[key] = from[key];
 				}
 			}
+			if (_hasEnumBug) {
+				mix(to, from, overwrite, _forceEnum, mode, merge);
+			}
 		}
-		if(_hasEnumBug){
-			mix(to, from, ov, _forceEnum, mode, merge);
-		}
-		return r;
+
+		return receiver;
 	};
 	
 	mix(core, {
@@ -90,7 +118,8 @@
 				var id = (_guid++) + "";
 				return pre ? pre + id : id;
 			},
-
+			isFunction: isFunction,
+			isObject: isObject,
 			isUndefined: function(o) {
 				return o === undefined;
 			},
@@ -105,10 +134,6 @@
 
 			isNumber: function(o) {
 				return TO_STRING.call(o) === '[object Number]' && isFinite(o);
-			},
-
-			isFunction: function(o) {
-				return TO_STRING.call(o) === '[object Function]';
 			},
 
 			isArray: function(o) {
