@@ -148,9 +148,23 @@ a.yellow-theme{
 	</div>
 </div>
 <script charset='utf-8' src='../../lib/easel.js'></script>
-<script charset='utf-8' src='../../build/JPE-1.0.4-min.js'></script>
+<script charset='utf-8' src='../../lib/yepnope.1.0.2-min.js'></script>
 <script>
-JPE.require("Domino");
+(function(){
+	var queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
+'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
+'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
+'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'],
+		base = "../../src/";
+
+	for(var i = 0, l = queue.length; i < l; i++){
+		queue[i] = base + queue[i] + ".js";
+	}
+	queue.push("Domino.js");
+	yepnope({
+		load: queue
+	});
+})();
 </script>
 </body>
 </html>

@@ -484,11 +484,11 @@ var domino = new JPE.Domino(),
 	};
 
 //model signal
-gameModel.mouseSignal.add(function(signal, options){
+gameModel.mouseSignal.add(function(options){
 	options.color = Math.random() * 0xffffff;
 	domino.addGrow(options);
 });
-gameModel.growOverSignal.add(function(signal){
+gameModel.growOverSignal.add(function(){
 	domino.stop();
 	var chainCount = gameModel.chainCount,
 		requiredCount = gameModel.levelData[gameModel.level][0],

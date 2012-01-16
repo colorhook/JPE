@@ -34,7 +34,6 @@ JPE.declare('Signal', {
 			copyList = list.concat(),
 			listener;
 
-		args.unshift(this);
 		for(var i = 0, l = copyList.length; i < l; i++){
 			listener = copyList[i];
 			listener.apply(null, args);

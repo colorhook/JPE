@@ -25,9 +25,7 @@ body{
 
 	<canvas id='myCanvas' width='650' height='350'></canvas>
 
-	<script charset='utf-8' src='http://k.kbcdn.com/k2/seed/seed-1-3-1.js'></script>
-	<script charset='utf-8' src='../../lib/easel.js'></script>
-	<script charset='utf-8' src='../../src/JPE.js'></script>
+
 	<div class='summary'>
 		<p>Click inside the demo, then use:</p>
 		<p>A key to move the car left</p>
@@ -35,23 +33,35 @@ body{
 		<P>APE version: <a href="http://www.cove.org/ape/demo1.htm" target="_blank">http://www.cove.org/ape/demo1.htm</a></p>
 	</div>
 
- 
+<script charset='utf-8' src='http://k.kbcdn.com/k2/seed/seed-1-3-1.js'></script>
+<script charset='utf-8' src='../../lib/easel.js'></script>
+<script charset='utf-8' src='../../lib/yepnope.1.0.2-min.js'></script> 
 <script>
-JPE.require(['Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
+(function(){
+	var queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
 'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
 'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
-'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'],  {path: '../../src/'});
-JPE.require("Bridge");
-JPE.require("Capsule");
-JPE.require("Car");
-JPE.require("RectComposite");
-JPE.require("Rotator");
-JPE.require("Surfaces");
-JPE.require("SwingDoor");
-JPE.require("CarDemo");
-JPE.addOnLoad(function(){
-	new JPE.CarDemo();
-});
+'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'],
+		base = "../../src/";
+
+	for(var i = 0, l = queue.length; i < l; i++){
+		queue[i] = base + queue[i] + ".js";
+	}
+	queue.push("Bridge.js");
+	queue.push("Capsule.js");
+	queue.push("Car.js");
+	queue.push("RectComposite.js");
+	queue.push("Rotator.js");
+	queue.push("Surfaces.js");
+	queue.push("SwingDoor.js");
+	queue.push("CarDemo.js");
+	yepnope({
+		load: queue,
+		complete: function(){
+			new JPE.CarDemo();
+		}
+	});
+})();
 </script>
 </body>
 </html>
