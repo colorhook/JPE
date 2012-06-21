@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <title>Donimo Game</title>
 <style>
+html, body{
+	height:100%;
+}
 body{
 	text-shadow:0px 1px 1px #ffffff;
 	font-family:cursive;
@@ -15,11 +18,16 @@ body{
 	margin:0;
 	background:#fff;
 	-webkit-text-size-adjust:none;
-	background:url(assets/bg.jpg)  no-repeat;
+	background:#f2f2f2;
+	display:-webkit-box;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+	-webkit-box-orient:vertical;
 }
 #myCanvas{
 	width:800px;
 	height:480px;
+	background:url(assets/bg.jpg)  no-repeat;
 }
 .xy{
 	position:absolute;
@@ -107,9 +115,23 @@ a.yellow-theme{
 	vertical-align:middle;
 	border-radidus: 8px;
 }
+.header{
+	position:absolute;
+	font-size:18px;
+	padding-left:100px;
+	top:-10px;
+}
+.footer{
+margin-top:20px;
+font-size:14px;
+}
 </style>
 </head>
 <body>
+<div class="header">
+	<h1>Domino - JPE Game</h1>
+</div>
+<a href="https://github.com/colorhook/JPE"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
 <div class="container">
 	<canvas id="myCanvas" width="800" height="480"></canvas>
 	<span class="xy tip hidden"></span>
@@ -147,18 +169,26 @@ a.yellow-theme{
 		</div>
 	</div>
 </div>
+<div class="footer">
+	<p>Copytight &copy; colorhook.com</p>
+</div>
 <script charset='utf-8' src='../../lib/easel.js'></script>
 <script charset='utf-8' src='../../lib/yepnope.1.0.2-min.js'></script>
 <script>
 (function(){
-	var queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
-'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
-'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
-'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'],
-		base = "../../src/";
-
-	for(var i = 0, l = queue.length; i < l; i++){
-		queue[i] = base + queue[i] + ".js";
+	var debug = false,
+		queue;
+	
+	if(debug == false){
+		queue = ["../../build/JPE-1.0.5-min.js"]
+	}else{
+		queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
+			'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
+			'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
+			'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'];
+		for(var i = 0, l = queue.length; i < l; i++){
+			queue[i] = "../../src/" + queue[i] + ".js";
+		}
 	}
 	queue.push("Domino.js");
 	yepnope({

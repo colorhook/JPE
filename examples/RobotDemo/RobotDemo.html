@@ -4,6 +4,7 @@
 	<meta charset="utf-8"/>
 	<title>JPE Example - Robot Demo</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+	
 <style>
 #myCanvas{
 	width:650px;
@@ -21,8 +22,8 @@ body{
 </style>
 </head>
 <body>
-	<h1><a href="http://colorhook.com/">Color Hook</a></h1>
-	<h2>JPE Example - Robot Demo</h2>
+<a href="https://github.com/colorhook/JPE"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+	<h1>Robot - JPE demo</h1>
 	
 	<canvas id='myCanvas' width='650' height='350'></canvas>
 	<div class='summary'>
@@ -39,14 +40,19 @@ body{
 
 <script>
 (function(){
-	var queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
-'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
-'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
-'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'],
-		base = "../../src/";
-
-	for(var i = 0, l = queue.length; i < l; i++){
-		queue[i] = base + queue[i] + ".js";
+	var debug = false,
+		queue;
+	
+	if(debug == false){
+		queue = ["../../build/JPE-1.0.5-min.js"]
+	}else{
+		queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
+			'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
+			'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
+			'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'];
+		for(var i = 0, l = queue.length; i < l; i++){
+			queue[i] = "../../src/" + queue[i] + ".js";
+		}
 	}
 	queue.push("Body.js");
 	queue.push("Leg.js");

@@ -247,6 +247,10 @@ JPE.declare("Domino", {
 		this.addEvents();
 	},
 	addEvents: function(){
+		var globalXY = {
+			x:this.canvas.offsetParent.offsetLeft,
+			y:this.canvas.offsetParent.offsetTop
+		};
 		var onClicked = function(e){
 			if(!JPE.GameModel.mouseEnabled){
 				return;
@@ -254,8 +258,8 @@ JPE.declare("Domino", {
 			JPE.GameModel.growing = true;
 			JPE.GameModel.mouseEnabled = false;
 			JPE.GameModel.mouseSignal.dispatch({
-				x: e.clientX,
-				y: e.clientY
+				x: e.clientX - globalXY.x,
+				y: e.clientY - globalXY.y
 			});
 			
 			JPE.GameModel.growStartSignal.dispatch();
