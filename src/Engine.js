@@ -1,6 +1,7 @@
-JPE.Engine = {
+define(function(require, exports, module){
 
-		force:null,
+	module.exports = {
+		forces:null,
 		masslessForce:null,
 		groups:null,
 		numGroups:0,
@@ -16,14 +17,16 @@ JPE.Engine = {
 			}
 			this.timeStep = dt * dt;
 			this.groups = [];
-			this.force = new JPE.Vector(0, 0);
-			this.masslessForce = new JPE.Vector(0, 0);
+			this.forces = [];
 		},
 		addForce:function(v){
-			this.force.plusEquals(v);
+			this.forces.push(v);
 		},
-		addMasslessForce:function(v){
-			this.masslessForce.plusEquals(v);
+		removeForce:function(v){
+			JPE.Array.remove(this.forces, v);
+		},
+		removeAllForce:function(){
+			this.forces = [];
 		},
 		addGroup:function(g){
 			this.groups.push(g);
@@ -75,4 +78,5 @@ JPE.Engine = {
 				g.checkCollisions();
 			}
 		}
-};
+	}
+});

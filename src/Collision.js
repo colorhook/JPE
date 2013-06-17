@@ -1,6 +1,6 @@
-JPE.declare('Collision', {
+define(function(require, exports, module){
 	
-	constructor: function(vn, vt){
+	module.exports = function(vn, vt){
 		this.vn = vn;
 		this.vt = vt;
 	}

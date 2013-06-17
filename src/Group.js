@@ -1,21 +1,22 @@
-JPE.declare("Group", {
+define(function(require, exports, module){
+	
+	var AbstractCollection = require("./AbstractCollection");
+	var JPE = require("./JPE");
+	/**
+	 * @param collideInternal {Boolean} Determines if the members 
+	 * if this Group are checked for collision with one another.
+	 */ 
+	var Group =  function(collideInternal){
+		AbstractCollection.prototype.constructor.call(this);
+		this.composites = [];
+		this.collisionList = [];
+		this.collideInternal = collideInternal;
+	};
 
-		superclass: JPE.AbstractCollection,
-		/**
-		 * @param collideInternal {Boolean} Determines if the members 
-		 * if this Group are checked for collision with one another.
-		 */ 
-		constructor: function(collideInternal){
-			JPE.Group.superclass.prototype.constructor.call(this);
-			this.composites = [];
-			this.collisionList = [];
-			this.collideInternal = collideInternal;
-			
-		},
+	JPE.extend(Group, AbstractCollection, {
 		
-
 		initSelf: function(){
-			JPE.Group.superclass.prototype.initSelf.apply(this, arguments);
+			AbstractCollection.prototype.initSelf.apply(this, arguments);
 			for(var i = 0, l = this.composites.length; i < l; i++){
 				this.composites[i].initSelf();
 			}
@@ -49,7 +50,7 @@ JPE.declare("Group", {
 		 * automatically by JPE.
 		 */
 		paint:function(){
-			JPE.Group.superclass.prototype.paint.apply(this, arguments);
+			AbstractCollection.prototype.paint.apply(this, arguments);
 			var cs = this.composites,
 				i = 0,
 				c,
@@ -102,7 +103,7 @@ JPE.declare("Group", {
 		 * removed form the JPE.
 		 */
 		cleanup:function(){
-			JPE.Group.superclass.prototype.cleanup.apply(this, arguments);
+			AbstractCollection.prototype.cleanup.apply(this, arguments);
 			var cs = this.composites,
 				cl = cs.length,
 				i = 0;
@@ -111,7 +112,7 @@ JPE.declare("Group", {
 			}
 		},
 		integrate:function(dt2){
-			JPE.Group.superclass.prototype.integrate.apply(this, arguments);
+			AbstractCollection.prototype.integrate.apply(this, arguments);
 			var cs = this.composites,
 				cl = cs.length,
 				i = 0;
@@ -121,7 +122,7 @@ JPE.declare("Group", {
 
 		},
 		satisfyConstraints:function(){
-			JPE.Group.superclass.prototype.satisfyConstraints.apply(this, null);
+			AbstractCollection.prototype.satisfyConstraints.apply(this, null);
 			var cs = this.composites,
 				cl = cs.length,
 				i = 0;
@@ -190,4 +191,7 @@ JPE.declare("Group", {
 				this.checkCollisionsVsCollection(gc);
 			}
 		}
+	});
+
+	module.exports = Group;
 });

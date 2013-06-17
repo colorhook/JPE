@@ -1,12 +1,17 @@
-JPE.declare("AbstractCollection", {
+define(function(require, exports, module){
 
-		isParented: false,
-		container: null,
-		
-		constructor: function(){
-			this.particles = [];
-			this.constraints = [];
-		},
+	var JPE = require("./JPE");
+	var CollisionDetector = require("./CollisionDetector");
+	
+	var AbstractCollection = function(){
+		this.isParented = false;
+		this.container = null;
+		this.particles = [];
+		this.constraints = [];
+	};
+
+	JPE.mix(AbstractCollection.prototype, {
+
 		initSelf: function(){
 			var ps = this.particles,
 				cs = this.constraints,
@@ -128,8 +133,7 @@ JPE.declare("AbstractCollection", {
 			}
 		},
 		checkInternalCollisions:function(){
-			var CollisionDetector = JPE.CollisionDetector,
-				ps = this.particles,
+			var ps = this.particles,
 				cs = this.constraints,
 				pl = ps.length,
 				cl = cs.length,
@@ -165,8 +169,7 @@ JPE.declare("AbstractCollection", {
 		 * @param ac {AbstractCollection}
 		 */
 		checkCollisionsVsCollection:function(ac){
-			var CollisionDetector = JPE.CollisionDetector,
-				ps = this.particles,
+			var ps = this.particles,
 				acps = ac.particles,
 				accs = ac.constraints,
 				pl = ps.length,
@@ -221,7 +224,9 @@ JPE.declare("AbstractCollection", {
 			}
 			//constraints end
 		}
+	}, true);
 	
+	module.exports = AbstractCollection;
 });
 
 

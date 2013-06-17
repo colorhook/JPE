@@ -1,49 +1,50 @@
-;(function(){
+define("Motor", function(require, exports, module){
+
 	var ONE_THIRD = (Math.PI * 2) / 3;
 
-	JPE.declare("Motor", {
+	var JPE = require("JPE/JPE");
+	var Engine = require("JPE/Engine");
+	var Composite = require("JPE/Composite");
+	var WheelParticle = require("JPE/WheelParticle");
+	var CircleParticle = require("JPE/CircleParticle");
+	var SpringConstraint = require("JPE/SpringConstraint");
+
+	var Motor = function (attach, radius, color){
+
+		Composite.prototype.constructor.apply(this);
+	
+		var wheel = this.wheel = new WheelParticle(attach.getPx(), attach.getPy() - .01, radius);
+		wheel.setStyle(0,0xFFF00,0, 0xFFF00,0.5);
+		wheel.setVisible(false);
+		var axle = new SpringConstraint(wheel, attach);
+
+		var _rimA = this._rimA = new CircleParticle(0,0,20, true);
+		var _rimB = this._rimB = new CircleParticle(0,0,2, true);
+		var _rimC = this._rimC = new CircleParticle(0,0,2, true);
 		
-		superclass: JPE.Composite,
+		wheel.setCollidable(false);
+		_rimA.setCollidable(false);
+		_rimB.setCollidable(false);
+		_rimC.setCollidable(false);
 		
+		this.addParticle(_rimA);
+		this.addParticle(_rimB);
+		this.addParticle(_rimC);
+		this.addParticle(wheel);
+		this.addConstraint(axle);
+		
+		this.color = color;	
+		this.radius = radius;
+		
+		// run it once to make sure the rim particles are in the right place
+		this.run();
+		
+	};
+
+	JPE.extend(Motor, Composite, {
 		radius:null,
 		color:null,
 
-		constructor: function (attach, radius, color){
-
-			JPE.Motor.superclass.prototype.constructor.apply(this);
-
-			var CircleParticle = JPE.CircleParticle,
-				WheelParticle = JPE.WheelParticle,
-			SpringConstraint = JPE.SpringConstraint;
-		
-			var wheel = this.wheel = new WheelParticle(attach.getPx(), attach.getPy() - .01, radius);
-			wheel.setStyle(0,0xFFF00,0, 0xFFF00,0.5);
-			wheel.setVisible(false);
-			var axle = new SpringConstraint(wheel, attach);
-
-			var _rimA = this._rimA = new CircleParticle(0,0,20, true);
-			var _rimB = this._rimB = new CircleParticle(0,0,2, true);
-			var _rimC = this._rimC = new CircleParticle(0,0,2, true);
-			
-			wheel.setCollidable(false);
-			_rimA.setCollidable(false);
-			_rimB.setCollidable(false);
-			_rimC.setCollidable(false);
-			
-			this.addParticle(_rimA);
-			this.addParticle(_rimB);
-			this.addParticle(_rimC);
-			this.addParticle(wheel);
-			this.addConstraint(axle);
-			
-			this.color = color;	
-			this.radius = radius;
-			
-			// run it once to make sure the rim particles are in the right place
-			this.run();
-			
-		},
-			
 		setPower: function (p) {
 			this.wheel.setSpeed (p);
 		},
@@ -98,7 +99,7 @@
 				color = this.color;
 			
 			sprite.addChild(shape);
-			JPE.Engine.renderer.stage.addChild(sprite);
+			Engine.renderer.stage.addChild(sprite);
 			this.sprite = sprite;
 			this.shape = shape;
 			
@@ -144,4 +145,7 @@
 
 	});
 
-})();
+
+	module.exports = Motor;
+
+});

@@ -33,40 +33,21 @@ body{
 		<P>APE version: <a href="http://www.cove.org/ape/demo1.htm" target="_blank">http://www.cove.org/ape/demo1.htm</a></p>
 	</div>
 
-<script charset='utf-8' src='http://k.kbcdn.com/k2/seed/seed-1-3-1.js'></script>
+<script charset='utf-8' src='../../lib/sea.js'></script>
 <script charset='utf-8' src='../../lib/easel.js'></script>
-<script charset='utf-8' src='../../lib/yepnope.1.0.2-min.js'></script> 
 <script>
-(function(){
-	var debug = false,
-		queue;
-	
-	if(debug == false){
-		queue = ["../../build/JPE-1.0.5-min.js"]
-	}else{
-		queue = ['JPE', 'Signal', 'Engine', 'Vector', 'Interval', 'Collision', 'SmashSignal',
-			'MathUtil', 'AbstractItem', 'CollisionResolver', 'CollisionDetector', 'AbstractCollection', 'AbstractParticle', 'Group',
-			'Composite', 'CircleParticle', 'RectangleParticle', 'RimParticle', 'WheelParticle', 'AbstractConstraint',
-			'SpringConstraint', 'SpringConstraintParticle', 'Renderer', 'EaselRenderer'];
-		for(var i = 0, l = queue.length; i < l; i++){
-			queue[i] = "../../src/" + queue[i] + ".js";
-		}
+seajs.config({
+	base: './',
+
+	paths: {
+	  'JPE': '../../src'
 	}
-	queue.push("Bridge.js");
-	queue.push("Capsule.js");
-	queue.push("Car.js");
-	queue.push("RectComposite.js");
-	queue.push("Rotator.js");
-	queue.push("Surfaces.js");
-	queue.push("SwingDoor.js");
-	queue.push("CarDemo.js");
-	yepnope({
-		load: queue,
-		complete: function(){
-			new JPE.CarDemo();
-		}
-	});
-})();
+});
+
+
+seajs.use("./CarDemo", function(CarDemo){
+	CarDemo.init();
+});
 </script>
 </body>
 </html>

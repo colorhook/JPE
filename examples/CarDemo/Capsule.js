@@ -1,13 +1,13 @@
-JPE.declare("Capsule", {
+define("Capsule", function(require, exports, module){
+    
+    var JPE = require("JPE/JPE");
+    var Group = require("JPE/Group");
+    var CircleParticle = require("JPE/CircleParticle");
+    var SpringConstraint = require("JPE/SpringConstraint");
 
-	superclass: JPE.Group,
+    var Capsule = function(colC){
 
-	constructor: function(colC){
-
-		JPE.Capsule.superclass.prototype.constructor.apply(this);
-
-		var CircleParticle = JPE.CircleParticle,
-			SpringConstraint = JPE.SpringConstraint;
+        Group.prototype.constructor.apply(this);
 
 		var capsuleP1 = new CircleParticle(300, 10, 14, false, 1.3, 0.4);
 		capsuleP1.setStyle(0, colC, 1, colC);
@@ -20,7 +20,9 @@ JPE.declare("Capsule", {
 		var capsule = new SpringConstraint(capsuleP1, capsuleP2, 1, true, 24);
 		capsule.setStyle(5, colC, 1, colC, 1);
 		this.addConstraint(capsule);
+    }
 
-	}
+    JPE.extend(Capsule, Group);
 
+    module.exports = Capsule;
 });

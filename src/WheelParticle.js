@@ -1,31 +1,37 @@
-JPE.declare('WheelParticle',  {
-	
-		superclass: JPE.CircleParticle,
-		/**
-		 * @param x The initial x position of this particle.
-		 * @param y The initial y position of this particle.
-		 * @param radius The radius of this particle.
-		 * @param fixed Determines if the particle is fixed or not. Fixed particles
-		 * are not affected by forces or collisions and are good to use as surfaces.
-		 * Non-fixed particles move freely in response to collision and forces.
-		 * @param mass The mass of the particle.
-		 * @param elasticity The elasticity of the particle. Higher values mean more elasticity or 'bounciness'.
-		 * @param friction The surface friction of the particle.
-		 */
-		constructor: function(x, y, radius, fixed, mass, elasticity, friction, traction) {
-			traction = traction || 1;
-			mass = mass || 1;
-			elasticity = elasticity || 0.3;
-			friction = friction || 0;
-			this.lineThickness = 1;
-			JPE.WheelParticle.superclass.prototype.constructor.apply(this, arguments);
-			this.tan = new JPE.Vector(0, 0);
-			this.normSlip = new JPE.Vector(0, 0);
-			this.rp = new JPE.RimParticle(radius, 2);
-			this.orientation = new JPE.Vector();
-			this.setTraction(traction);
-		},
+define(function(require, exports, module){
 
+	var JPE = require("./JPE");
+	var RimParticle = require("./RimParticle");
+	var CircleParticle = require("./CircleParticle");
+	var MathUtil = require("./MathUtil");
+	var Vector = require("./Vector");
+
+	/**
+	 * @param x The initial x position of this particle.
+	 * @param y The initial y position of this particle.
+	 * @param radius The radius of this particle.
+	 * @param fixed Determines if the particle is fixed or not. Fixed particles
+	 * are not affected by forces or collisions and are good to use as surfaces.
+	 * Non-fixed particles move freely in response to collision and forces.
+	 * @param mass The mass of the particle.
+	 * @param elasticity The elasticity of the particle. Higher values mean more elasticity or 'bounciness'.
+	 * @param friction The surface friction of the particle.
+	 */
+	var WheelParticle = function(x, y, radius, fixed, mass, elasticity, friction, traction) {
+		traction = traction || 1;
+		mass = mass || 1;
+		elasticity = elasticity || 0.3;
+		friction = friction || 0;
+		this.lineThickness = 1;
+		CircleParticle.prototype.constructor.apply(this, arguments);
+		this.tan = new Vector(0, 0);
+		this.normSlip = new Vector(0, 0);
+		this.rp = new RimParticle(radius, 2);
+		this.orientation = new Vector();
+		this.setTraction(traction);
+	};
+	
+	JPE.extend(WheelParticle, CircleParticle, {
 		
 		getSpeed: function () {
 			return this.rp.getSpeed();
@@ -54,7 +60,7 @@ JPE.declare('WheelParticle',  {
 		},	
 
 		update: function (dt) {
-			JPE.WheelParticle.superclass.prototype.update.call(this, dt);
+			CircleParticle.prototype.update.call(this, dt);
 			this.rp.update(dt);
 		},
 
@@ -71,7 +77,7 @@ JPE.declare('WheelParticle',  {
 		 * The rotation of the wheel in degrees.
 		 */
 		getAngle: function () {
-			return this.getRadian() * JPE.MathUtil.ONE_EIGHTY_OVER_PI;
+			return this.getRadian() * MathUtil.ONE_EIGHTY_OVER_PI;
 		},
 	
 	
@@ -79,9 +85,9 @@ JPE.declare('WheelParticle',  {
 		 * @private
 		 */		
 		resolveCollision: function (mtd, vel, n, d, o, p) {
-			JPE.WheelParticle.superclass.prototype.resolveCollision.apply(this, arguments);
+			CircleParticle.prototype.resolveCollision.apply(this, arguments);
 			// review the o (order) need here - its a hack fix
-			this.resolve(n.mult(JPE.MathUtil.sign(d * o)));
+			this.resolve(n.mult(MathUtil.sign(d * o)));
 		},
 		
 	
@@ -119,4 +125,7 @@ JPE.declare('WheelParticle',  {
 			rp.setSpeed( rp.getSpeed() * this._traction);	
 		}
 
+	});
+	
+	module.exports = WheelParticle;
 });

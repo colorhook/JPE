@@ -1,6 +1,9 @@
-JPE.declare('SpringConstraint', {
+define(function(require, exports, module){
 	
-		superclass: JPE.AbstractConstraint,
+	var JPE = require("./JPE");
+	var AbstractConstraint = require("./AbstractConstraint");
+	var MathUtil = require("./MathUtil");
+	var SpringConstraintParticle = require("./SpringConstraintParticle");
 
 		/**
 		 * @param p1 The first particle this constraint is connected to.
@@ -16,22 +19,21 @@ JPE.declare('SpringConstraint', {
 		 * @param scaleToLength If the constraint is collidable and this value is true, the 
 		 * collidable area will scale based on changes in the distance of the two particles. 
 		 */
-		constructor: function(p1, p2, stiffness, collidable, rectHeight, rectScale, scaleToLength){
-			stiffness = stiffness || 0.5;
-			rectHeight = rectHeight || 1;
-			rectScale = rectScale || 1;
-			JPE.SpringConstraint.superclass.prototype.constructor.call(this, stiffness);
-			this.p1 = p1;
-			this.p2 = p2;
-			this.checkParticlesLocation();
-			this._restLength = this.getCurrLength();
-			this.inited = false;
-			this.setCollidable(collidable, rectHeight, rectScale, scaleToLength);
-		},
-
-
+	var SpringConstraint = function(p1, p2, stiffness, collidable, rectHeight, rectScale, scaleToLength){
+		stiffness = stiffness || 0.5;
+		rectHeight = rectHeight || 1;
+		rectScale = rectScale || 1;
+		AbstractConstraint.prototype.constructor.call(this, stiffness);
+		this.p1 = p1;
+		this.p2 = p2;
+		this.checkParticlesLocation();
+		this._restLength = this.getCurrLength();
+		this.inited = false;
+		this.setCollidable(collidable, rectHeight, rectScale, scaleToLength);
+	};
 		
-		
+	JPE.extend(SpringConstraint, AbstractConstraint, {
+
 		getRadian: function () {
 			var d = this.getDelta();
 			return Math.atan2(d.y, d.x);
@@ -46,7 +48,7 @@ JPE.declare('SpringConstraint', {
 		 * @returns A Number representing the rotation of this SpringConstraint in degrees
 		 */					
 		getAngle: function () {
-			return this.getRadian() * JPE.MathUtil.ONE_EIGHTY_OVER_PI;
+			return this.getRadian() * MathUtil.ONE_EIGHTY_OVER_PI;
 		},
 		
 				
@@ -173,7 +175,7 @@ JPE.declare('SpringConstraint', {
 				if(this.scp){
 					this.scp.cleanup();
 				}
-				this.scp = new JPE.SpringConstraintParticle(this.p1, this.p2, this, rectHeight, rectScale, scaleToLength);
+				this.scp = new SpringConstraintParticle(this.p1, this.p2, this, rectHeight, rectScale, scaleToLength);
 				if(this.inited){
 					this.scp.initSelf();
 				}
@@ -249,4 +251,8 @@ JPE.declare('SpringConstraint', {
 				this.p2.curr.x += 0.0001;
 			}
 		}
+	});
+
+
+	module.exports = SpringConstraint;
 });

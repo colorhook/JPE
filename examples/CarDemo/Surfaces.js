@@ -1,14 +1,13 @@
-JPE.declare("Surfaces", {
+define("Surfaces", function(require, exports, module){
+    
+    var JPE = require("JPE/JPE");
+    var Group = require("JPE/Group");
+    var CircleParticle = require("JPE/CircleParticle");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    
+    var Surfaces = function(colA, colB, colC, colD, colE){
 
-	superclass: JPE.Group,
-
-	constructor: function(colA, colB, colC, colD, colE){
-
-		JPE.Surfaces.superclass.prototype.constructor.apply(this);
-
-
-		var CircleParticle = JPE.CircleParticle,
-			RectangleParticle = JPE.RectangleParticle;
+		Group.prototype.constructor.apply(this);
 
 		var floor = new RectangleParticle(340,327,550,50,0,true);
 		floor.setStyle(0, colD, 1, colD);
@@ -76,4 +75,8 @@ JPE.declare("Surfaces", {
 		bridgeEnd.setStyle(0, colD, 1, colD);
 		this.addParticle(bridgeEnd);
 	}
+
+    JPE.extend(Surfaces, Group);
+
+    module.exports = Surfaces;
 });

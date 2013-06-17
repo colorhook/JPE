@@ -1,19 +1,18 @@
-JPE.declare("Rotator", {
+define("Rotator", function(require, exports, module){
+    
+    var JPE = require("JPE/JPE");
+    var Group = require("JPE/Group");
+    var Vector = require("JPE/Vector");
+    var CircleParticle = require("JPE/CircleParticle");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    var SpringConstraint = require("JPE/SpringConstraint");
+    
 
-	superclass: JPE.Group,
-	
-	ctr: null,
-	rectComposite: null,
+    var RectComposite = require("./RectComposite");
 
-	constructor: function(colA, colB){
+    var Rotator = function(colA, colB){
 
-		JPE.Rotator.superclass.prototype.constructor.apply(this, [true]);
-
-		var Vector = JPE.Vector,
-			CircleParticle = JPE.CircleParticle,
-			RectangleParticle = JPE.RectangleParticle,
-			RectComposite = JPE.RectComposite,
-			SpringConstraint = JPE.SpringConstraint;
+		Group.prototype.constructor.apply(this, [true]);
 
 		this.collideInternal = true;
 	
@@ -41,10 +40,16 @@ JPE.declare("Rotator", {
 		connectorB.setStyle(2, colB);
 		this.addConstraint(connectorB);
 		
-	},
-	
-	rotateByRadian: function(a){
-
-		this.rectComposite.rotateByRadian(a, this.ctr);
 	}
+
+    JPE.extend(Rotator, Group, {
+        ctr: null,
+        rectComposite: null,
+        rotateByRadian: function(a){
+          this.rectComposite.rotateByRadian(a, this.ctr);
+        }
+    });
+
+    module.exports = Rotator;
+
 });

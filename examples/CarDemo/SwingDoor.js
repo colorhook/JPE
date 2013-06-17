@@ -1,15 +1,14 @@
-JPE.declare("SwingDoor", {
+define("SwingDoor", function(require, exports, module){
+    
+    var JPE = require("JPE/JPE");
+    var Group = require("JPE/Group");
+    var CircleParticle = require("JPE/CircleParticle");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    var SpringConstraint = require("JPE/SpringConstraint");
 
-	superclass: JPE.Group,
+    var SwingDoor = function(colE){
 
-	constructor: function(colE){
-
-		JPE.SwingDoor.superclass.prototype.constructor.apply(this);
-
-		var CircleParticle = JPE.CircleParticle,
-			SpringConstraint = JPE.SpringConstraint,
-			RectangleParticle = JPE.RectangleParticle;
-
+		Group.prototype.constructor.apply(this);
 		// setting collideInternal allows the arm to hit the hidden stoppers. 
 		// you could also make the stoppers its own group and tell it to collide 
 		// with the SwingDoor
@@ -47,4 +46,9 @@ JPE.declare("SwingDoor", {
 		stopperB.setVisible(false);
 		this.addParticle(stopperB);
 	}
+
+    JPE.extend(SwingDoor, Group);
+
+    module.exports = SwingDoor;
+
 });

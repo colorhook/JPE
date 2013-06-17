@@ -1,33 +1,17 @@
+define("Robot", function(require, exports, module){
 
+	var JPE = require("JPE/JPE");
+	var Engine = require("JPE/Engine");
+	var Group = require("JPE/Group");
+	var SpringConstraint = require("JPE/SpringConstraint");
 
-JPE.declare("Robot", {
-	
-	superclass: JPE.Group,
-	
-	 body:null,
-	 motor:null,
-	
-	 direction:null,
-	 powerLevel:null,
-	
-	 powered:null,
-	 legsVisible:null,
-	
-	 legLA:null,
-	 legRA:null,
-	 legLB:null,
-	 legRB:null,
-	 legLC:null,
-	 legRC:null,
+	var Body = require("./Body");
+	var Motor = require("./Motor");
+	var Leg = require("./Leg");
 
-	constructor: function (px, py, scale, power) {
+	var Robot = function(px, py, scale, power){
 
-		JPE.Robot.superclass.prototype.constructor.apply(this);
-
-		var Body = JPE.Body,
-			Motor = JPE.Motor,
-			Leg = JPE.Leg,
-		SpringConstraint = JPE.SpringConstraint;
+		Group.prototype.constructor.apply(this);
 
 	// legs
 		var legLA = this.legLA = new Leg(px, py, -1, scale, 2, 0x444444, 1, 0x222222, 1);
@@ -105,77 +89,97 @@ JPE.declare("Robot", {
 		
 		this.powered = true;
 		this.legsVisible=true;
-	},
-		
-	getPx: function () {
-		return this.body.center.getPx();
-	},
-	
-	
-	getPy: function () {
-		return this.body.center.getPy();
-	},
-	
-	
-	run: function () {
-		this.motor.run();
-	},
-	
-	
-	togglePower: function () {
-		
-		this.powered = !this.powered
-		
-		if (this.powered) {
-			this.motor.setPower(this.powerLevel * this.direction);
-			this.setStiffness(1);
-			JPE.Engine.damping = 0.99;
-		} else {
-			this.motor.setPower(0);
-			this.setStiffness (0.2);				
-			JPE.Engine.damping = 0.35;
-		}
-	},
-	
-	
-	toggleDirection: function () {
-		this.direction *= -1;
-		this.motor.setPower(this.powerLevel * this.direction);
-	},
-	
-	
-	toggleLegs: function (){
-		this.legsVisible = ! this.legsVisible;
+	};
 
-		if (!this.legsVisible) {
-			this.legLA.setVisible(false);
-			this.legRA.setVisible(false);
-			this.legLB.setVisible(false);
-			this.legRB.setVisible(false);
-		} else {
-			this.legLA.setVisible(true);
-			this.legRA.setVisible(true);		
-			this.legLB.setVisible(true);
-			this.legRB.setVisible(true);
-		}
-	},
+	JPE.extend(Robot, Group, {
+	  body:null,
+	  motor:null,
 	
+	  direction:null,
+	  powerLevel:null,
 	
-	setStiffness: function (s) {
+	  powered:null,
+	  legsVisible:null,
+	
+	  legLA:null,
+	  legRA:null,
+	  legLB:null,
+	  legRB:null,
+	  legLC:null,
+	  legRC:null,
+
+		getPx: function () {
+			return this.body.center.getPx();
+		},
 		
-		// top level constraints in the group
-		for (var i = 0, l = this.constraints.length;i < l; i++) {
-			var sp = this.constraints[i]; 
-			sp.stiffness = s;
-		}
 		
-		// constraints within this groups composites
-		for (var j = 0, m= this.composites.length; j < m; j++) {
-			for (i = 0; i < this.composites[j].constraints.length; i++) {
-				sp = this.composites[j].constraints[i]; 
+		getPy: function () {
+			return this.body.center.getPy();
+		},
+		
+		
+		run: function () {
+			this.motor.run();
+		},
+		
+		
+		togglePower: function () {
+			
+			this.powered = !this.powered
+			
+			if (this.powered) {
+				this.motor.setPower(this.powerLevel * this.direction);
+				this.setStiffness(1);
+				Engine.damping = 0.99;
+			} else {
+				this.motor.setPower(0);
+				this.setStiffness (0.2);				
+				Engine.damping = 0.35;
+			}
+		},
+		
+		
+		toggleDirection: function () {
+			this.direction *= -1;
+			this.motor.setPower(this.powerLevel * this.direction);
+		},
+		
+		toggleLegs: function (){
+			this.legsVisible = ! this.legsVisible;
+
+			if (!this.legsVisible) {
+				this.legLA.setVisible(false);
+				this.legRA.setVisible(false);
+				this.legLB.setVisible(false);
+				this.legRB.setVisible(false);
+			} else {
+				this.legLA.setVisible(true);
+				this.legRA.setVisible(true);		
+				this.legLB.setVisible(true);
+				this.legRB.setVisible(true);
+			}
+		},
+		
+		
+		setStiffness: function (s) {
+			
+			// top level constraints in the group
+			for (var i = 0, l = this.constraints.length;i < l; i++) {
+				var sp = this.constraints[i]; 
 				sp.stiffness = s;
 			}
+			
+			// constraints within this groups composites
+			for (var j = 0, m= this.composites.length; j < m; j++) {
+				for (i = 0; i < this.composites[j].constraints.length; i++) {
+					sp = this.composites[j].constraints[i]; 
+					sp.stiffness = s;
+				}
+			}
 		}
-	}
+	});
+
+	module.exports = Robot;
 
 });
+

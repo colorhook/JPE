@@ -1,43 +1,49 @@
-JPE.declare('AbstractParticle',   {
+define(function(require, exports, module){
 
-		superclass: JPE.AbstractItem,
+	var JPE = require("./JPE");
+	var Engine = require("./Engine");
+	var Collision = require("./Collision");
+	var AbstractItem = require("./AbstractItem");
+	var Interval = require("./Interval");
+	var Vector = require("./Vector");
+    var Signal = require("./Signal");
 
-		constructor: function(x, y, isFixed, mass, elasticity, friction){
+	var AbstractParticle = function(x, y, isFixed, mass, elasticity, friction){
+
+		AbstractItem.prototype.constructor.apply(this, null);
+
+		this.interval = new Interval(0,0);
+		
+		this.curr = new Vector(x, y);
+		this.prev = new Vector(x, y);
+		this.samp = new Vector();
+		this.temp = new Vector();
+		this.smashable = false;
+		this.maxExitVelocity = 0;
+		this.smashSignal = new Signal();
+		
+		this.forces = new Vector();
+		this.forceList = [];
+		this.collision = new Collision(new Vector(), new Vector());
+		this.firstCollision = false;
+		this._fixed = isFixed;
+		this._collidable = true;
+		this.setMass(mass);
+		this._elasticity = elasticity;
+		this._friction = friction;
+		this._center = new Vector();
+		this._multisample = 0;
+		this.setStyle();
+		
+	}
 	
-				JPE.AbstractParticle.superclass.prototype.constructor.apply(this, null);
-	
-				this.interval = new JPE.Interval(0,0);
-				
-				var Vector = JPE.Vector;
+	JPE.extend(AbstractParticle, AbstractItem, {
 
-				this.curr = new Vector(x, y);
-				this.prev = new Vector(x, y);
-				this.samp = new Vector();
-				this.temp = new Vector();
-				this.smashable = false;
-				this.maxExitVelocity = 0;
-				this.smashSignal = new JPE.SmashSignal();
-				
-				this.forces = new Vector();
-				this.collision = new JPE.Collision(new Vector(), new Vector());
-
-				this._fixed = isFixed;
-				this._collidable = true;
-				this.setMass(mass);
-				this._elasticity = elasticity;
-				this._friction = friction;
-				this._center = new Vector();
-				this._multisample = 0;
-				this.setStyle();
-				
-		},
-
-	
 		getElasticity: function(){
 			return this._elasticity;
 		},
 		setElasticity: function(value){
-			return this._elasticity =  value;
+			this._elasticity =  value;
 		},
 		/**
 		 * multisample getter & setter
@@ -177,7 +183,7 @@ JPE.declare('AbstractParticle',   {
 		 * </p>
 		 */
 		getPosition: function () {
-			return new JPE.Vector(this.curr.x, this.curr.y);
+			return new Vector(this.curr.x, this.curr.y);
 		},
 		
 		
@@ -242,9 +248,6 @@ JPE.declare('AbstractParticle',   {
 		setVelocity: function (v) {
 			this.prev = this.curr.minus(v);	
 		},
-		
-
-		
 		/**
 		 * Adds a force to the particle. The mass of the particle is taken into 
 		 * account when using this method, so it is useful for adding forces 
@@ -256,22 +259,30 @@ JPE.declare('AbstractParticle',   {
 		 * @param f A Vector represeting the force added.
 		 */ 
 		addForce: function(f) {
-			this.forces.plusEquals(f.mult(this.getInvMass()));
+			this.forceList.push(f);
 		},
 		
-		
-		/**
-		 * Adds a 'massless' force to the particle. The mass of the particle is 
-		 * not taken into account when using this method, so it is useful for
-		 * adding forces that simulate effects like gravity. Particles with 
-		 * larger masses will be affected the same as those with smaller masses.
-		 *
-		 * @param f A Vector represeting the force added.
-		 */ 	
-		addMasslessForce: function(f) {
-			this.forces.plusEquals(f);
+
+		accumulateForces: function(){
+			var f;
+			var len = this.forceList.length;
+			for(var i = 0; i < len; i++){
+				f = this.forceList[i];
+				this.forces.plusEquals(f.getValue(this._invMass));
+			}
+
+			var globalForces = Engine.forces;
+			len = globalForces.length;
+			for( i = 0; i < len; i++){
+				f = globalForces[i];
+				this.forces.plusEquals(f.getValue(this._invMass));
+			}
 		},
-		
+
+		clearForces: function(){
+			this.forceList.length = 0;
+			this.forces.setTo(0, 0);
+		},
 			
 		/**
 		 * The <code>update()</code> method is called automatically during the
@@ -281,23 +292,23 @@ JPE.declare('AbstractParticle',   {
 
 			if (this.getFixed()) return;
 
-			// global forces
-			this.addForce(JPE.Engine.force);
-			
-			this.addMasslessForce(JPE.Engine.masslessForce);
+			this.accumulateForces();
 	
 			// integrate
 			this.temp.copy(this.curr);
 			
 			var nv = this.getVelocity().plus(this.forces.multEquals(dt2));
 	
-			this.curr.plusEquals(nv.multEquals(JPE.Engine.damping));
+			this.curr.plusEquals(nv.multEquals(Engine.damping));
 			this.prev.copy(this.temp);
 			
 			// clear the forces
-			this.forces.setTo(0,0);
+			this.clearForces();
 		},
 		
+		resetFirstCollision: function(){
+			this.firstCollision = false;
+		},
 		
 		getComponents: function(collisionNormal) {
 			var vel = this.getVelocity();
@@ -308,19 +319,27 @@ JPE.declare('AbstractParticle',   {
 		},
 	
 	
-		resolveCollision: function(mtd, vel) {
-			this.curr.plusEquals(mtd);
-			this.setVelocity (vel);
+		resolveCollision: function(mtd, vel, n, d, o, p) {
 			if(this.smashable){
 				var ev = vel.magnitude();
 				if(ev > this.maxExitVelocity){
-					this.smashSignal.dispatch(JPE.SmashSignal.COLLISION);
+					this.smashSignal.dispatch("collision");
 				}
 			}
+			if (this.getFixed() || !this.solid || !p.solid) {
+				return;
+			}
+			this.curr.copy(this.samp);
+			this.curr.plusEquals(mtd);
+			this.setVelocity(vel);
+			
 		},
 		
 		getInvMass:function() {
 			return (this.getFixed()) ? 0 : this._invMass; 
 		}
+	});
+
+	module.exports = AbstractParticle;
 
 });

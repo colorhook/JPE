@@ -1,7 +1,7 @@
 /*!
- * Copyright (c) 2011 http://colorhook.com
+ * Copyright (c) 2012 http://colorhook.com
  * @author: <a href="colorhook@gmail.com">colorhook</a>
- * @version: 1.0.1
+ * @version: 2.0.0
  * @license: Released under the MIT License.
  *
  * Transplant from Flash AS3 APE Engine
@@ -9,25 +9,9 @@
  * Copyright (c) 2006, 2007 Alec Cove
  * Released under the MIT License.
  */
-/**
- * @preserve Copyright (c) 2011 http://colorhook.com
- * @author: <a href="colorhook@gmail.com">colorhook</a>
- * @version: 1.0.1
- * @license: Released under the MIT License.
- *
- * Transplant from Flash AS3 APE Engine
- * http://www.cove.org/ape/
- * Copyright (c) 2006, 2007 Alec Cove
- * Released under the MIT Licenses.
- */
-
-;(function(host){
-
-	var core = {
-			VERSION: '1.0.5'
-	},
-	kernelName = "JPE",
-	_guid = 0,
+define(function(require, exports, module){
+	
+	var _guid = 0,
 	_forceEnum = [
 		'hasOwnProperty',
 		'isPrototypeOf',
@@ -112,7 +96,8 @@
 		return receiver;
 	};
 	
-	mix(core, {
+	mix(exports, {
+			VERSION: '2.0.0',
 			mix: mix,
 			guid: function(pre) {
 				var id = (_guid++) + "";
@@ -170,19 +155,6 @@
 				}
 				return o;
 			},
-			namespace: function(name){
-				var a=arguments, o=null, i, j, d, l;
-				for (i=0; i<a.length; i=i+1) {
-					d = ("" + a[i]).split(".");
-					o = this;
-					l = d.length;
-					for (j=(d[0] == kernelName) ? 1 : 0; j < l; j = j+1) {
-						o[d[j]] = o[d[j]] || {} ;
-						o = o[d[j]];
-					}
-				}
-				return o;
-			},
 			extend: function(r, s, px, sx) {
 				if (!s||!r) {
 					return r;
@@ -217,58 +189,28 @@
 				r.superclass = s;
 				return r;
 			},
-			declare: function(className, prop, statics){
-				var self = this;
-					
-				if(this.isFunction(prop)){
-					var p = prop();
-					if(!self.isUndefined(p)){
-						self.declare(className, p, statics);
-					}else{
-						mix(this.namespace(className), statics);
-					}
-					return;
-				};
-			
-				prop = prop || {};
-				var superclass = prop.superclass,
-					 newclass,
-					 d, l, i, o;
 
-				if(prop.hasOwnProperty("constructor") && this.isFunction(prop.constructor)){
-					newclass = prop.constructor;
-				}else if(!superclass){
-					newclass = function(){}
-				}else{
-					newclass = function(){
-						superclass.prototype.constructor.apply(this, arguments);
-					};
-				}
-				delete prop.constructor;
-				
-				if(!superclass){
-					this.mix(newclass.prototype, prop);
-					this.mix(newclass, statics);
-				}else{
-					newclass = this.extend(newclass, superclass, prop, statics);
-				}
-				
-				d = ("" + className).split(".");
-				i = (d[0]==kernelName) ? 1 : 0;
-				l = d.length;
-				o = this;
-				for(; i < l; i++){
-					if(i == l-1){
-						o[d[i]] = newclass;
-					}else{
-						o[d[i]] = o[d[i]] || {} ;
+			newClass: function(classDef, superclass, prop, statics){
+				var f = classDef;
+				if(!f){
+					f = function(){
+						if(superclass){
+							superclass.prototype.constructor.apply(this, arguments);
+						}
 					}
-					o = o[d[i]];
 				}
-				return o;
+				if(superclass){
+					this.extend(f, superclass, prop, statics);
+				}else{
+					this.mix(f.prototype, prop);
+					this.mix(f, statics);
+				}
+				return f;
 			}
+
 	});
 
-	host[kernelName] = core;
 	
-})(window);
+});
+
+	

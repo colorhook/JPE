@@ -1,11 +1,10 @@
-JPE.CollisionResolver = {
+define(function(require, exports, module){
 
-	resolveParticleParticle: function( pa,  pb, normal,  depth) {
+	exports.resolve = function( pa,  pb, normal,  depth) {
 
 		// a collision has occured. set the current positions to sample locations
-		pa.curr.copy(pa.samp);
-		pb.curr.copy(pb.samp);
-		
+		//pa.curr.copy(pa.samp);
+		//pb.curr.copy(pb.samp);
 		var mtd = normal.mult(depth);           
 		var te = pa.getElasticity() + pb.getElasticity();
 	
@@ -37,13 +36,14 @@ JPE.CollisionResolver = {
 		vnB.plusEquals(cb.vt);
 		
 		
-		if (!pa.getFixed()) pa.resolveCollision(mtdA, vnA, normal, depth, -1, pb);
-		if (!pb.getFixed()) pb.resolveCollision(mtdB, vnB, normal, depth,  1, pa);
-	},
+		pa.resolveCollision(mtdA, vnA, normal, depth, -1, pb);
+		pb.resolveCollision(mtdB, vnB, normal, depth,  1, pa);
+	};
 
-	clamp: function(input, min, max) {
+	exports.clamp = function(input, min, max) {
 		if (input > max) return max;
 		if (input < min) return min;
 		return input;
-	}
-};
+	};
+
+});

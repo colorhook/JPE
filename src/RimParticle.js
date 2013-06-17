@@ -1,22 +1,28 @@
-JPE.declare('RimParticle', {
-		
-		/**
-		 * The RimParticle is really just a second component of the wheel model.
-		 * The rim particle is simulated in a coordsystem relative to the wheel's 
-		 * center, not in worldspace.
-		 * 
-		 * Origins of this code are from Raigan Burns, Metanet Software
-		 */
-		constructor:  function (r, mt) {
-
-			this.sp = 0;
-			this.av = 0;
-			this.wr = r;
-			this.maxTorque = mt;
-			this.curr = new JPE.Vector(r, 0);
-			this.prev = new JPE.Vector(0, 0);	
-		},
+define(function(require, exports, module){
 	
+	
+	var JPE = require("./JPE");
+	var Engine = require("./Engine");
+	var Vector = require("./Vector");
+
+	/**
+	 * The RimParticle is really just a second component of the wheel model.
+	 * The rim particle is simulated in a coordsystem relative to the wheel's 
+	 * center, not in worldspace.
+	 * 
+	 * Origins of this code are from Raigan Burns, Metanet Software
+	 */
+	var RimParticle =  function (r, mt) {
+
+		this.sp = 0;
+		this.av = 0;
+		this.wr = r;
+		this.maxTorque = mt;
+		this.curr = new Vector(r, 0);
+		this.prev = new Vector(0, 0);	
+	};
+	
+	JPE.mix(RimParticle.prototype, {
 
 		getSpeed: function() {
 			return this.sp;
@@ -59,8 +65,8 @@ JPE.declare('RimParticle', {
 			var px = this.prev.x = this.curr.x;		
 			var py = this.prev.y = this.curr.y;		
 			
-			this.curr.x += JPE.Engine.damping * (px - ox);
-			this.curr.y += JPE.Engine.damping * (py - oy);	
+			this.curr.x += Engine.damping * (px - ox);
+			this.curr.y += Engine.damping * (py - oy);	
 	
 			// hold the rim particle in place
 			var clen = Math.sqrt(this.curr.x * this.curr.x + this.curr.y * this.curr.y);
@@ -69,5 +75,8 @@ JPE.declare('RimParticle', {
 			this.curr.x -= this.curr.x * diff;
 			this.curr.y -= this.curr.y * diff;
 		}
+	});
+
+	module.exports = RimParticle;
 
 });

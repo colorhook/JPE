@@ -1,43 +1,48 @@
-JPE.declare('SpringConstraintParticle', {
+define(function(require, exports, module){
 	
-		superclass: JPE.RectangleParticle,
-		/**
-		 * @param p1 The first particle this constraint is connected to.
-		 * @param p2 The second particle this constraint is connected to.
-		 * @param stiffness The strength of the spring. Valid values are between 0 and 1. Lower values
-		 * result in softer springs. Higher values result in stiffer, stronger springs.
-		 * @param collidable Determines if the constraint will be checked for collision
-		 * @param rectHeight If the constraint is collidable, the height of the collidable area
-		 * can be set in pixels. The height is perpendicular to the two attached particles.
-		 * @param rectScale If the constraint is collidable, the scale of the collidable area
-		 * can be set in value from 0 to 1. The scale is percentage of the distance between 
-		 * the the two attached particles.
-		 * @param scaleToLength If the constraint is collidable and this value is true, the 
-		 * collidable area will scale based on changes in the distance of the two particles. 
-		 */
-		constructor: function(p1, p2, p, rectHeight, rectScale, scaleToLength) {
-			
-			
-			
-			this.p1 = p1;
-			this.p2 = p2;
-			
-			this.lambda = new JPE.Vector(0,0);
-			this.avgVelocity = new JPE.Vector(0,0);
-			
-			this.parent = p;
-			JPE.SpringConstraintParticle.superclass.prototype.constructor.call(this, 0, 0, 0, 0, 0, false);
-			this._rectScale = rectScale;
-			this._rectHeight = rectHeight;
-			this.scaleToLength = scaleToLength;
-			
-			this._fixedEndLimit = 0;
-			this.rca = new JPE.Vector();
-			this.rcb = new JPE.Vector();
+	var JPE = require("./JPE");
+	var RectangleParticle = require("./RectangleParticle");
+	var Vector = require("./Vector");
+	var MathUtil = require("./MathUtil");
+	var RectangleParticle = require("./RectangleParticle");
+	var CircleParticle = require("./CircleParticle");
 
+	/**
+	 * @param p1 The first particle this constraint is connected to.
+	 * @param p2 The second particle this constraint is connected to.
+	 * @param stiffness The strength of the spring. Valid values are between 0 and 1. Lower values
+	 * result in softer springs. Higher values result in stiffer, stronger springs.
+	 * @param collidable Determines if the constraint will be checked for collision
+	 * @param rectHeight If the constraint is collidable, the height of the collidable area
+	 * can be set in pixels. The height is perpendicular to the two attached particles.
+	 * @param rectScale If the constraint is collidable, the scale of the collidable area
+	 * can be set in value from 0 to 1. The scale is percentage of the distance between 
+	 * the the two attached particles.
+	 * @param scaleToLength If the constraint is collidable and this value is true, the 
+	 * collidable area will scale based on changes in the distance of the two particles. 
+	 */
+	var SpringConstraintParticle = function(p1, p2, p, rectHeight, rectScale, scaleToLength) {
 			
-		},
+		this.p1 = p1;
+		this.p2 = p2;
 		
+		this.lambda = new Vector(0,0);
+		this.avgVelocity = new Vector(0,0);
+		
+		this.parent = p;
+		RectangleParticle.prototype.constructor.call(this, 0, 0, 0, 0, 0, false);
+		this._rectScale = rectScale;
+		this._rectHeight = rectHeight;
+		this.scaleToLength = scaleToLength;
+		
+		this._fixedEndLimit = 0;
+		this.rca = new Vector();
+		this.rcb = new Vector();
+
+		
+	};
+	
+	JPE.extend(SpringConstraintParticle, RectangleParticle, {
 		
 		setRectScale: function (s) {
 			this._rectScale = s;
@@ -199,7 +204,7 @@ JPE.declare('SpringConstraintParticle', {
 		closestParamPoint: function (c) {
 			var ab = this.p2.curr.minus(this.p1.curr);
 			var t = (ab.dot(c.minus(this.p1.curr))) / (ab.dot(ab));
-			return JPE.MathUtil.clamp(t, 0, 1);
+			return MathUtil.clamp(t, 0, 1);
 		},
 	
 	
@@ -210,9 +215,9 @@ JPE.declare('SpringConstraintParticle', {
 			
 			var t;
 			
-			if (p instanceof JPE.CircleParticle)  {
+			if (p instanceof CircleParticle)  {
 				t = this.closestParamPoint(p.curr);
-			} else if (p instanceof JPE.RectangleParticle) {
+			} else if (p instanceof RectangleParticle) {
 					
 				// go through the sides of the colliding rectangle as line segments
 				var shortestIndex;
@@ -315,7 +320,7 @@ JPE.declare('SpringConstraintParticle', {
 				 denom = a * e - b * b;
 			
 			if (denom != 0.0) {
-				s = JPE.MathUtil.clamp((b * f - c * e) / denom, 0, 1);
+				s = MathUtil.clamp((b * f - c * e) / denom, 0, 1);
 			} else {
 				s = 0.5 // give the midpoint for parallel lines
 			}
@@ -323,10 +328,10 @@ JPE.declare('SpringConstraintParticle', {
 			 
 			if (t < 0) {
 				t = 0;
-			 	s = JPE.MathUtil.clamp(-c / a, 0, 1);
+			 	s = MathUtil.clamp(-c / a, 0, 1);
 			} else if (t > 0) {
 			 	t = 1;
-			 	s = JPE.MathUtil.clamp((b - c) / a, 0, 1);
+			 	s = MathUtil.clamp((b - c) / a, 0, 1);
 			}
 			 
 			var c1 = pp1.plus(d1.mult(s));
@@ -334,4 +339,8 @@ JPE.declare('SpringConstraintParticle', {
 			var c1mc2 = c1.minus(c2);
 			return c1mc2.dot(c1mc2);
 		}
+
+	});
+
+	module.exports = SpringConstraintParticle;
 });

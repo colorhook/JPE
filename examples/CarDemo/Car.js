@@ -1,22 +1,19 @@
-JPE.declare("Car", {
+define("Car", function(require, exports, module){
 
-	superclass: JPE.Group,
-	
-	wheelParticleA: null,
-	wheelParticleB: null,
+    var JPE = require("JPE/JPE");
+    var Group = require("JPE/Group");
+    var Vector = require("JPE/Vector");
+    var CircleParticle = require("JPE/CircleParticle");
+    var WheelParticle = require("JPE/WheelParticle");
+    var SpringConstraint = require("JPE/SpringConstraint");
 
-	constructor: function(colC, colE){
+    var Car = function(colC, colE){
 
-		JPE.Car.superclass.prototype.constructor.apply(this);
-
-		var CircleParticle = JPE.CircleParticle,
-			WheelParticle = JPE.WheelParticle,
-			SpringConstraint = JPE.SpringConstraint;
+		Group.prototype.constructor.apply(this);
 
 		var wheelParticleA = new WheelParticle(140,10,14,false,2);
 		wheelParticleA.setStyle(0, colC, 1, colE);
 		this.addParticle(wheelParticleA);
-
 		
 		var wheelParticleB = new WheelParticle(200,10,14,false,2);
 		wheelParticleB.setStyle(1, colC, 1, colE);
@@ -28,10 +25,17 @@ JPE.declare("Car", {
 
 		this.wheelParticleA = wheelParticleA;
 		this.wheelParticleB = wheelParticleB;
-	},
-	
-	setSpeed: function(s){
-		this.wheelParticleA.setAngularVelocity(s);
-		this.wheelParticleB.setAngularVelocity(s);
 	}
+
+
+    JPE.extend(Car, Group, {
+        wheelParticleA: null,
+        wheelParticleB: null,
+        setSpeed: function(s){
+          this.wheelParticleA.setAngularVelocity(s);
+		  this.wheelParticleB.setAngularVelocity(s);
+        }
+    });
+
+    module.exports = Car;
 });

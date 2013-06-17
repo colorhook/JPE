@@ -1,10 +1,13 @@
-JPE.declare("Bridge", {
+define(function(require, exports, module){
 
-	superclass: JPE.Group,
+	var JPE = require("JPE/JPE");
+	var Group = require("JPE/Group");
+	var CircleParticle = require("JPE/CircleParticle");
+	var SpringConstraint = require("JPE/SpringConstraint");
 
-	constructor: function(colB, colC, colD){
+	var Bridge = function(colB, colC, colD){
 
-		JPE.Bridge.superclass.prototype.constructor.apply(this);
+		Group.prototype.constructor.apply(this);
 
 		var bx = 170;
 		var by = 40;
@@ -12,12 +15,9 @@ JPE.declare("Bridge", {
 		var yslope = 2.4;
 		var particleSize = 4;
 		
-		var CircleParticle = JPE.CircleParticle,
-			SpringConstraint = JPE.SpringConstraint;
 		
 		var bridgePAA = new CircleParticle(bx,by,particleSize,true);
 	
-		
 		bridgePAA.setStyle(1, colC, 1, colB);
 		
 		this.addParticle(bridgePAA);
@@ -56,9 +56,6 @@ JPE.declare("Bridge", {
 		var bridgeConnA = new SpringConstraint(bridgePAA, bridgePA, 
 				0.9, true, 10, 0.8);
 		
-		// collision response on the bridgeConnA will be ignored on 
-		// on the first 1/4 of the constraint. this avoids blow ups
-		// particular to springcontraints that have 1 fixed particle.
 		bridgeConnA.setFixedEndLimit(0.25);
 		bridgeConnA.setStyle(1, colC, 1, colB);
 		this.addConstraint(bridgeConnA);
@@ -83,8 +80,10 @@ JPE.declare("Bridge", {
 		bridgeConnE.setFixedEndLimit(0.25);
 		bridgeConnE.setStyle(1, colC, 1, colB);
 		this.addConstraint(bridgeConnE);
-
-
 	}
+	
+    JPE.extend(Bridge, Group);
+
+	module.exports = Bridge;
 
 });

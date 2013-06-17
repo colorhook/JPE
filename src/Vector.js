@@ -1,8 +1,12 @@
-(function(){
+define(function(require, exports, module){
+	
+	var JPE = require("./JPE");
+
 	var Vector =  function(px, py){
 		this.x = px || 0;
 		this.y = py || 0;
 	};
+
 	JPE.mix(Vector.prototype, {
 			
 		setTo:function(px, py){
@@ -68,10 +72,17 @@
 			}
 			return this.mult(1/m);
 		},
-		toString:function(){
-			return (this.x + " : " + this.y);
+		normalizeEquals: function(){
+			var m = this.magnitude();
+			if(m == 0){
+				m = 0.0001;
+			}
+			return this.multEquals(1/m);
+		},
+		toString: function(){
+			return Math.floor(this.x*100)/100 + " : " + Math.floor(this.y*100)/100;
 		}
 	});
 
-	JPE.Vector = Vector;
-})();
+	module.exports = Vector;
+});
