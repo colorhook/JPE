@@ -1,8 +1,8 @@
-define(function(require, exports, module){
-	
-	module.exports = function(vn, vt){
-		this.vn = vn;
-		this.vt = vt;
-	}
+define(function(require, exports, module) {
+
+    module.exports = function(vn, vt) {
+        this.vn = vn;
+        this.vt = vt;
+    }
 
 });
