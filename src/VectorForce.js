@@ -1,8 +1,8 @@
-define(function(require, exports, module) {
+define("JPE/VectorForce", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var IForce = require("./IForce");
-    var Vector = require("./Vector");
+    var JPE = require("JPE/JPE");
+    var IForce = require("JPE/IForce");
+    var Vector = require("JPE/Vector");
 
     var VectorForce = function(useMass, vx, vy) {
         this.fvx = vx;

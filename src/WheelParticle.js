@@ -1,10 +1,10 @@
-define(function(require, exports, module) {
+define("JPE/WheelParticle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var RimParticle = require("./RimParticle");
-    var CircleParticle = require("./CircleParticle");
-    var MathUtil = require("./MathUtil");
-    var Vector = require("./Vector");
+    var JPE = require("JPE/JPE");
+    var RimParticle = require("JPE/RimParticle");
+    var CircleParticle = require("JPE/CircleParticle");
+    var MathUtil = require("JPE/MathUtil");
+    var Vector = require("JPE/Vector");
 
     /**
      * @param x The initial x position of this particle.

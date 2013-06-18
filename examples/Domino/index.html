@@ -173,19 +173,11 @@ font-size:14px;
 	<p>Copytight &copy; colorhook.com</p>
 </div>
 <script charset='utf-8' src='../../lib/easel.js'></script>
-<script charset='utf-8' src='../../lib/sea.js'></script>
+<script charset='utf-8' src='../../build/JPE-2.0.0.js'></script>
+<script charset='utf-8' src='Domino.js'></script>
 <script>
-seajs.config({
-	base: './',
-
-	paths: {
-	  'JPE': '../../src'
-	}
-});
-
-seajs.use("./Domino", function(Domino){
-	Domino.start();
-});
+var Domino = require("Domino");
+Domino.start();
 </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
-define(function(require, exports, module) {
+define("JPE/Vector", function(require, exports, module) {
 
-    var JPE = require("./JPE");
+    var JPE = require("JPE/JPE");
 
     var Vector = function(px, py) {
         this.x = px || 0;

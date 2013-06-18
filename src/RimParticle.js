@@ -1,9 +1,9 @@
-define(function(require, exports, module) {
+define("JPE/RimParticle", function(require, exports, module) {
 
 
-    var JPE = require("./JPE");
-    var Engine = require("./Engine");
-    var Vector = require("./Vector");
+    var JPE = require("JPE/JPE");
+    var Engine = require("JPE/Engine");
+    var Vector = require("JPE/Vector");
 
     /**
      * The RimParticle is really just a second component of the wheel model.

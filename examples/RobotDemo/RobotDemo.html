@@ -39,13 +39,8 @@ body{
 <script>
 seajs.config({
 	base: './',
-
-	paths: {
-	  'JPE': '../../src'
-	}
+	preload: '../../build/JPE-2.0.0'
 });
-
-
 seajs.use("./RobotDemo", function(RobotDemo){
 	RobotDemo.init();
 });

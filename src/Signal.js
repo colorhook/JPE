@@ -1,6 +1,6 @@
-define(function(require, exports, module) {
+define("JPE/Signal", function(require, exports, module) {
 
-    var JPE = require("./JPE");
+    var JPE = require("JPE/JPE");
 
     var Signal = function() {
         this.__bindings = [];

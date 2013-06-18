@@ -1,6 +1,6 @@
-define(function(require, exports, module) {
+define("JPE/Renderer", function(require, exports, module) {
 
-    var JPE = require("./JPE");
+    var JPE = require("JPE/JPE");
 
     var Renderer = function() {
         this._items = {};

@@ -1,7 +1,7 @@
-define(function(require, exports, module) {
+define("JPE/CircleParticle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var AbstractParticle = require("./AbstractParticle");
+    var JPE = require("JPE/JPE");
+    var AbstractParticle = require("JPE/AbstractParticle");
 
     var CircleParticle = function(x, y, radius, fixed, mass, elasticity, friction) {
         mass = mass || 1;

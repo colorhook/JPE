@@ -1,12 +1,12 @@
-define(function(require, exports, module) {
+define("JPE/AbstractParticle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var Engine = require("./Engine");
-    var Collision = require("./Collision");
-    var AbstractItem = require("./AbstractItem");
-    var Interval = require("./Interval");
-    var Vector = require("./Vector");
-    var Signal = require("./Signal");
+    var JPE = require("JPE/JPE");
+    var Engine = require("JPE/Engine");
+    var Collision = require("JPE/Collision");
+    var AbstractItem = require("JPE/AbstractItem");
+    var Interval = require("JPE/Interval");
+    var Vector = require("JPE/Vector");
+    var Signal = require("JPE/Signal");
 
     var AbstractParticle = function(x, y, isFixed, mass, elasticity, friction) {
 

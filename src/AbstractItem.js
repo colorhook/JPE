@@ -1,8 +1,8 @@
-define(function(require, exports, module) {
+define("JPE/AbstractItem", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var Signal = require("./Signal");
-    var Engine = require("./Engine");
+    var JPE = require("JPE/JPE");
+    var Signal = require("JPE/Signal");
+    var Engine = require("JPE/Engine");
 
     var AbstractItem = function() {
         this._visible = true;

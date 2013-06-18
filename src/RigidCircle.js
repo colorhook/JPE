@@ -1,7 +1,7 @@
-define(function(require, exports, module) {
+define("JPE/RigidCircle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var RigidItem = require("./RigidItem");
+    var JPE = require("JPE/JPE");
+    var RigidItem = require("JPE/RigidItem");
 
 
     var RigidCircle = function(x, y, radius, isFixed, mass, elasticity, elasticity, friction, radian, angularVelocity) {

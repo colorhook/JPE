@@ -1,9 +1,9 @@
-define(function(require, exports, module) {
+define("JPE/Composite", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var Vector = require("./Vector");
-    var MathUtil = require("./MathUtil");
-    var AbstractCollection = require("./AbstractCollection");
+    var JPE = require("JPE/JPE");
+    var Vector = require("JPE/Vector");
+    var MathUtil = require("JPE/MathUtil");
+    var AbstractCollection = require("JPE/AbstractCollection");
 
     var Composite = function() {
         AbstractCollection.prototype.constructor.apply(this);

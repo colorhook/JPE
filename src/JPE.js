@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2012 http://colorhook.com
+ * Copyright (c) 2013 http://colorhook.com
  * @author: <a href="colorhook@gmail.com">colorhook</a>
  * @version: 2.0.0
  * @license: Released under the MIT License.
@@ -9,7 +9,53 @@
  * Copyright (c) 2006, 2007 Alec Cove
  * Released under the MIT License.
  */
-define(function(require, exports, module) {
+
+//if no CMD or AMD used, use builtin define and require function.
+;(function (scope) {
+
+    if(scope.define || scope.require){
+        return;
+    }
+
+    var modules = {};
+
+    function build(module) {
+        var factory = module.factory;
+        module.exports = {};
+        delete module.factory;
+        factory(require, module.exports, module);
+        return module.exports;
+    }
+
+    //引入模块
+    var require = function (id) {
+        if (!modules[id]) {
+            throw 'module ' + id + ' not found';
+        }
+        return modules[id].factory ? build(modules[id]) : modules[id].exports;
+    };
+
+    //定义模块
+    var define = function (id, factory) {
+        if (modules[id]) {
+            throw 'module ' + id + ' already defined';
+        }
+        modules[id] = {
+            id: id,
+            factory: factory
+        };
+    };
+
+    define.remove = function (id) {
+        delete modules[id];
+    };
+
+    scope.require = require;
+    scope.define = define;
+
+})(this);
+
+define("JPE/JPE", function(require, exports, module) {
 
     var _guid = 0,
         _forceEnum = [

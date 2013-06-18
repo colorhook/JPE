@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define("JPE/Engine", function(require, exports, module) {
 
     module.exports = {
         forces: null,

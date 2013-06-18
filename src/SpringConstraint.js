@@ -1,9 +1,9 @@
-define(function(require, exports, module) {
+define("JPE/SpringConstraint", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var AbstractConstraint = require("./AbstractConstraint");
-    var MathUtil = require("./MathUtil");
-    var SpringConstraintParticle = require("./SpringConstraintParticle");
+    var JPE = require("JPE/JPE");
+    var AbstractConstraint = require("JPE/AbstractConstraint");
+    var MathUtil = require("JPE/MathUtil");
+    var SpringConstraintParticle = require("JPE/SpringConstraintParticle");
 
     /**
      * @param p1 The first particle this constraint is connected to.

@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define("JPE/MathUtil", function(require, exports, module) {
 
     exports.ONE_EIGHTY_OVER_PI = 180 / Math.PI;
     exports.PI_OVER_ONE_EIGHTY = Math.PI / 180;

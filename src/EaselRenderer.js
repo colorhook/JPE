@@ -1,14 +1,14 @@
-define(function(require, exports, module) {
+define("JPE/EaselRenderer", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var Renderer = require("./Renderer");
-    var RectangleParticle = require("./RectangleParticle");
-    var RigidRectangle = require("./RigidRectangle");
-    var CircleParticle = require("./CircleParticle");
-    var RigidCircle = require("./RigidCircle");
-    var WheelParticle = require("./WheelParticle");
-    var SpringConstraintParticle = require("./SpringConstraintParticle");
-    var SpringConstraint = require("./SpringConstraint");
+    var JPE = require("JPE/JPE");
+    var Renderer = require("JPE/Renderer");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    var RigidRectangle = require("JPE/RigidRectangle");
+    var CircleParticle = require("JPE/CircleParticle");
+    var RigidCircle = require("JPE/RigidCircle");
+    var WheelParticle = require("JPE/WheelParticle");
+    var SpringConstraintParticle = require("JPE/SpringConstraintParticle");
+    var SpringConstraint = require("JPE/SpringConstraint");
 
 
     var EaselRenderer = function(stage) {

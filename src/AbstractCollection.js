@@ -1,7 +1,7 @@
-define(function(require, exports, module) {
+define("JPE/AbstractCollection", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var CollisionDetector = require("./CollisionDetector");
+    var JPE = require("JPE/JPE");
+    var CollisionDetector = require("JPE/CollisionDetector");
 
     var AbstractCollection = function() {
         this.isParented = false;

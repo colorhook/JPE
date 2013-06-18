@@ -1,8 +1,8 @@
-define(function(require, exports, module) {
+define("JPE/AbstractConstraint", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var AbstractItem = require("./AbstractItem");
-    var Signal = require("./Signal");
+    var JPE = require("JPE/JPE");
+    var AbstractItem = require("JPE/AbstractItem");
+    var Signal = require("JPE/Signal");
 
     var AbstractConstraint = function(stiffness) {
         this.stiffness = stiffness;

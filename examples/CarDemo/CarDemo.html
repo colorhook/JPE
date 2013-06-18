@@ -35,16 +35,13 @@ body{
 
 <script charset='utf-8' src='../../lib/sea.js'></script>
 <script charset='utf-8' src='../../lib/easel.js'></script>
+
+
 <script>
 seajs.config({
 	base: './',
-
-	paths: {
-	  'JPE': '../../src'
-	}
+	preload: '../../build/JPE-2.0.0'
 });
-
-
 seajs.use("./CarDemo", function(CarDemo){
 	CarDemo.init();
 });

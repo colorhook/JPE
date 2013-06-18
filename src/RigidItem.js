@@ -1,9 +1,9 @@
-define(function(require, exports, module) {
-    var JPE = require("./JPE");
-    var AbstractParticle = require("./AbstractParticle");
-    var MathUtil = require("./MathUtil");
-    var Vector = require("./Vector");
-    var Engine = require("./Engine");
+define("JPE/RigidItem", function(require, exports, module) {
+    var JPE = require("JPE/JPE");
+    var AbstractParticle = require("JPE/AbstractParticle");
+    var MathUtil = require("JPE/MathUtil");
+    var Vector = require("JPE/Vector");
+    var Engine = require("JPE/Engine");
 
     var RigidItem = function(x, y, range, isFixed, mass, mi, elasticity, friction, radian, angularVelocity) {
         if (mass === undefined) {

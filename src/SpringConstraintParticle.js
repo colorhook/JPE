@@ -1,11 +1,11 @@
-define(function(require, exports, module) {
+define("JPE/SpringConstraintParticle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var RectangleParticle = require("./RectangleParticle");
-    var Vector = require("./Vector");
-    var MathUtil = require("./MathUtil");
-    var RectangleParticle = require("./RectangleParticle");
-    var CircleParticle = require("./CircleParticle");
+    var JPE = require("JPE/JPE");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    var Vector = require("JPE/Vector");
+    var MathUtil = require("JPE/MathUtil");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    var CircleParticle = require("JPE/CircleParticle");
 
     /**
      * @param p1 The first particle this constraint is connected to.

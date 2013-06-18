@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define("JPE/CollisionResolver", function(require, exports, module) {
 
     exports.resolve = function(pa, pb, normal, depth) {
 

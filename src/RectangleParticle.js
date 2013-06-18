@@ -1,9 +1,9 @@
-define(function(require, exports, module) {
+define("JPE/RectangleParticle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var AbstractParticle = require("./AbstractParticle");
-    var Vector = require("./Vector");
-    var MathUtil = require("./MathUtil");
+    var JPE = require("JPE/JPE");
+    var AbstractParticle = require("JPE/AbstractParticle");
+    var Vector = require("JPE/Vector");
+    var MathUtil = require("JPE/MathUtil");
 
     /**
      * @param x The initial x position.

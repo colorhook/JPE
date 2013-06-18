@@ -8,8 +8,9 @@
 	
 	<target name="bundle_javascript">
 		<echo>${dir.src}</echo>
-		 <concat destfile="${dir.build}/${build.name}.js">
-			<filelist dir="${dir.src}" files="${build.files}"/>
+		 <concat destfile="${dir.build}/${build.name}.js" fixlastline="yes">
+			<fileset file="${dir.src}/JPE.js" />
+			<fileset dir="${dir.src}" excludes="JPE.js"/>
       </concat>
       <echo>JavaScript Bundles Done!</echo>
    </target>

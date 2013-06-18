@@ -1,14 +1,14 @@
-define(function(require, exports, module) {
+define("JPE/CollisionDetector", function(require, exports, module) {
 
     var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
-    var Vector = require("./Vector");
-    var CollisionResolver = require("./CollisionResolver");
-    var RigidItem = require("./RigidItem");
-    var RectangleParticle = require("./RectangleParticle");
-    var CircleParticle = require("./CircleParticle");
-    var RigidRectangle = require("./RigidRectangle");
-    var RigidCircle = require("./RigidCircle");
-    var RigidCollisionResolver = require("./RigidCollisionResolver");
+    var Vector = require("JPE/Vector");
+    var CollisionResolver = require("JPE/CollisionResolver");
+    var RigidItem = require("JPE/RigidItem");
+    var RectangleParticle = require("JPE/RectangleParticle");
+    var CircleParticle = require("JPE/CircleParticle");
+    var RigidRectangle = require("JPE/RigidRectangle");
+    var RigidCircle = require("JPE/RigidCircle");
+    var RigidCollisionResolver = require("JPE/RigidCollisionResolver");
 
     var CollisionDetector = {
 

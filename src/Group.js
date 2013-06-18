@@ -1,7 +1,7 @@
-define(function(require, exports, module) {
+define("JPE/Group", function(require, exports, module) {
 
-    var AbstractCollection = require("./AbstractCollection");
-    var JPE = require("./JPE");
+    var AbstractCollection = require("JPE/AbstractCollection");
+    var JPE = require("JPE/JPE");
     /**
      * @param collideInternal {Boolean} Determines if the members 
      * if this Group are checked for collision with one another.

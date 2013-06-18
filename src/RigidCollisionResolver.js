@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define("JPE/RigidCollisionResolver", function(require, exports, module) {
 
     exports.RigidCollisionResolver = {
         resolve: function(pa, pb, hitpoint, normal, depth) {

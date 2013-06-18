@@ -1,4 +1,4 @@
-define(function(require, exports, module) {
+define("JPE/Collision", function(require, exports, module) {
 
     module.exports = function(vn, vt) {
         this.vn = vn;

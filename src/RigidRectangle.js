@@ -1,8 +1,8 @@
-define(function(require, exports, module) {
+define("JPE/RigidRectangle", function(require, exports, module) {
 
-    var JPE = require("./JPE");
-    var Vector = require("./Vector");
-    var RigidItem = require("./RigidItem");
+    var JPE = require("JPE/JPE");
+    var Vector = require("JPE/Vector");
+    var RigidItem = require("JPE/RigidItem");
 
     var RigidRectangle = function(x, y, width, height, radian, isFixed, mass, elasticity, friction, angularVelocity) {
         if (mass == undefined || mass == -1) {
