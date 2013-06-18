@@ -7,7 +7,7 @@ Licence
 --------------
 JPE is free to use under MIT license. 
 
-	Copyright (c) 2011 http://colorhook.com
+	Copyright (c) 2013 http://colorhook.com
 	author: colorhook@gmail.com 
 	version: 1.0.0
 	license: Released under the MIT License.

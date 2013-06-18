@@ -1,6 +1,7 @@
 define("JPE/RigidCollisionResolver", function(require, exports, module) {
 
-    exports.RigidCollisionResolver = {
+    module.exports = {
+
         resolve: function(pa, pb, hitpoint, normal, depth) {
             var mtd = normal.mult(depth);
             var te = pa._elasticity + pb._elasticity;
