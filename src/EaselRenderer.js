@@ -17,7 +17,7 @@ define("JPE/EaselRenderer", function(require, exports, module) {
         this.registerDelegate('RectangleParticle', RectangleParticle, new EaselRenderer.RectangleParticleDelegate(this));
         this.registerDelegate('RigidRectangle', RigidRectangle, new EaselRenderer.RectangleParticleDelegate(this));
         this.registerDelegate('CircleParticle', CircleParticle, new EaselRenderer.CircleParticleDelegate(this));
-        this.registerDelegate('RigidCircle', RigidCircle, new EaselRenderer.CircleParticleDelegate(this));
+        this.registerDelegate('RigidCircle', RigidCircle, new EaselRenderer.WheelParticleDelegate(this));
         this.registerDelegate('WheelParticle', WheelParticle, new EaselRenderer.WheelParticleDelegate(this));
         this.registerDelegate('SpringConstraintParticle', SpringConstraintParticle, new EaselRenderer.SpringConstraintParticleDelegate(this));
         this.registerDelegate('SpringConstraint', SpringConstraint, new EaselRenderer.SpringConstraintDelegate(this));

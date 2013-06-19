@@ -1048,6 +1048,7 @@ define("JPE/CollisionDetector", function(require, exports, module) {
         hitpoint: [],
         hp: new Vector(),
         collNormal: null,
+        collDepth: null,
         /**
          * Tests the collision between two objects. If there is a collision
          * it is passsed off to the CollisionResolver class.
@@ -1093,8 +1094,7 @@ define("JPE/CollisionDetector", function(require, exports, module) {
                 s = 1 / (objAsamples + 1),
                 t = s,
                 i;
-
-            objB.samp.copy(objB.curr);
+            //objB.samp.copy(objB.curr);
 
             for (i = 0; i <= objAsamples; i++) {
                 objA.samp.setTo(objA.prev.x + t * (objA.curr.x - objA.prev.x),
@@ -1524,7 +1524,7 @@ define("JPE/EaselRenderer", function(require, exports, module) {
         this.registerDelegate('RectangleParticle', RectangleParticle, new EaselRenderer.RectangleParticleDelegate(this));
         this.registerDelegate('RigidRectangle', RigidRectangle, new EaselRenderer.RectangleParticleDelegate(this));
         this.registerDelegate('CircleParticle', CircleParticle, new EaselRenderer.CircleParticleDelegate(this));
-        this.registerDelegate('RigidCircle', RigidCircle, new EaselRenderer.CircleParticleDelegate(this));
+        this.registerDelegate('RigidCircle', RigidCircle, new EaselRenderer.WheelParticleDelegate(this));
         this.registerDelegate('WheelParticle', WheelParticle, new EaselRenderer.WheelParticleDelegate(this));
         this.registerDelegate('SpringConstraintParticle', SpringConstraintParticle, new EaselRenderer.SpringConstraintParticleDelegate(this));
         this.registerDelegate('SpringConstraint', SpringConstraint, new EaselRenderer.SpringConstraintDelegate(this));
@@ -2303,9 +2303,24 @@ define("JPE/RigidCircle", function(require, exports, module) {
     var RigidItem = require("JPE/RigidItem");
 
 
-    var RigidCircle = function(x, y, radius, isFixed, mass, elasticity, elasticity, friction, radian, angularVelocity) {
-        if (mass == undefined || mass == -1) {
+    var RigidCircle = function(x, y, radius, isFixed, mass, elasticity, friction, radian, angularVelocity) {
+        if (mass == null) {
+            mass = -1;
+        }
+        if (mass == -1) {
             mass = Math.PI * radius * radius;
+        }
+        if(elasticity == null){
+            elasticity = 0.3;
+        }
+        if(friction == null){
+            friction = 0.2;
+        }
+        if(radian == null){
+            radian = 0;
+        }
+        if(angularVelocity == null){
+            angularVelocity = 0;
         }
         this._radius = radius;
         RigidItem.prototype.constructor.call(this, x, y, radius,
@@ -2349,8 +2364,10 @@ define("JPE/RigidCircle", function(require, exports, module) {
 });
 define("JPE/RigidCollisionResolver", function(require, exports, module) {
 
-    exports.RigidCollisionResolver = {
+    module.exports = {
+
         resolve: function(pa, pb, hitpoint, normal, depth) {
+                
             var mtd = normal.mult(depth);
             var te = pa._elasticity + pb._elasticity;
             var sumInvMass = pa.getInvMass() + pb.getInvMass();
@@ -2358,22 +2375,24 @@ define("JPE/RigidCollisionResolver", function(require, exports, module) {
             //rewrite collision resolve
             var vap = pa.getVelocityOn(hitpoint);
             var vbp = pb.getVelocityOn(hitpoint);
-
             var vabp = vap.minus(vbp);
             var vn = normal.mult(vabp.dot(normal));
             var l = vabp.minus(vn).normalize();
             var n = normal.plus(l.mult(-0.1)).normalize();
             var ra = hitpoint.minus(pa.samp);
             var rb = hitpoint.minus(pb.samp);
+
             var raxn = ra.cross(n);
             var rbxn = rb.cross(n);
             var j = -vabp.dot(n) * (1 + te / 2) / (sumInvMass + raxn * raxn / pa.mi + rbxn * rbxn / pb.mi);
+
             var vna = pa.getVelocity().plus(n.mult(j * pa.getInvMass()));
             var vnb = pb.getVelocity().plus(n.mult(-j * pb.getInvMass()));
-
+   
             var aaa = j * raxn / pa.mi;
             var aab = -j * rbxn / pb.mi;
             if (Math.abs(aaa) > 0.1 || Math.abs(aab) > 0.1) {}
+
             pa.resolveRigidCollision(aaa, pb);
             pb.resolveRigidCollision(aab, pa);
             var mtdA = mtd.mult(pa.getInvMass() / sumInvMass);
@@ -2392,16 +2411,16 @@ define("JPE/RigidItem", function(require, exports, module) {
     var Engine = require("JPE/Engine");
 
     var RigidItem = function(x, y, range, isFixed, mass, mi, elasticity, friction, radian, angularVelocity) {
-        if (mass === undefined) {
+        if (mass == null) {
             mass = 1;
         }
-        if (mi === undefined) {
+        if (mi == null) {
             mi = -1;
         }
-        if (elasticity === undefined) {
+        if (elasticity == null) {
             elasticity = 0.3;
         }
-        if (friction === undefined) {
+        if (friction == null) {
             friction = 0.2;
         }
         radian = radian || 0;
@@ -2447,6 +2466,7 @@ define("JPE/RigidItem", function(require, exports, module) {
             this.torque = 0;
         },
         addTorque: function(aa) {
+            //console.log("addTorque:" + aa);
             this.angularVelocity += aa;
         },
         resolveRigidCollision: function(aa, p) {
@@ -2479,14 +2499,17 @@ define("JPE/RigidRectangle", function(require, exports, module) {
     var RigidItem = require("JPE/RigidItem");
 
     var RigidRectangle = function(x, y, width, height, radian, isFixed, mass, elasticity, friction, angularVelocity) {
-        if (mass == undefined || mass == -1) {
+        if(mass == null){
+            mass = -1;
+        }
+        if (mass == -1) {
             mass = width * height;
         }
         radian = radian || 0;
-        if (elasticity === undefined) {
+        if (elasticity == null) {
             elasticity = 0.3;
         }
-        if (friction === undefined) {
+        if (friction == null) {
             friction = 0.2;
         }
 
@@ -3372,7 +3395,7 @@ define("JPE/Vector", function(require, exports, module) {
             return this.x * v.x + this.y * v.y;
         },
         cross: function(v) {
-            return this.x * v.y + this.y * v.x;
+            return this.x * v.y - this.y * v.x;
         },
         plus: function(v) {
             return new Vector(this.x + v.x, this.y + v.y);

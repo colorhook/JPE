@@ -6,16 +6,16 @@ define("JPE/RigidItem", function(require, exports, module) {
     var Engine = require("JPE/Engine");
 
     var RigidItem = function(x, y, range, isFixed, mass, mi, elasticity, friction, radian, angularVelocity) {
-        if (mass === undefined) {
+        if (mass == null) {
             mass = 1;
         }
-        if (mi === undefined) {
+        if (mi == null) {
             mi = -1;
         }
-        if (elasticity === undefined) {
+        if (elasticity == null) {
             elasticity = 0.3;
         }
-        if (friction === undefined) {
+        if (friction == null) {
             friction = 0.2;
         }
         radian = radian || 0;
@@ -61,6 +61,7 @@ define("JPE/RigidItem", function(require, exports, module) {
             this.torque = 0;
         },
         addTorque: function(aa) {
+            //console.log("addTorque:" + aa);
             this.angularVelocity += aa;
         },
         resolveRigidCollision: function(aa, p) {

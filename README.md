@@ -29,6 +29,7 @@ Demo
 --------------------
 * [CarDemo](http://colorhook.github.com/JPE/examples/CarDemo/CarDemo.html)
 * [RobotDemo](http://colorhook.github.com/JPE/examples/RobotDemo/RobotDemo.html)
+* [RigidDemo](http://colorhook.github.com/JPE/examples/RigidDemo/index.html)
 * [Domino Game](http://colorhook.github.com/JPE/examples/Domino/index.html)
 
 Bugs & Feedback

@@ -17,6 +17,7 @@ define("JPE/CollisionDetector", function(require, exports, module) {
         hitpoint: [],
         hp: new Vector(),
         collNormal: null,
+        collDepth: null,
         /**
          * Tests the collision between two objects. If there is a collision
          * it is passsed off to the CollisionResolver class.
@@ -62,8 +63,7 @@ define("JPE/CollisionDetector", function(require, exports, module) {
                 s = 1 / (objAsamples + 1),
                 t = s,
                 i;
-
-            objB.samp.copy(objB.curr);
+            //objB.samp.copy(objB.curr);
 
             for (i = 0; i <= objAsamples; i++) {
                 objA.samp.setTo(objA.prev.x + t * (objA.curr.x - objA.prev.x),

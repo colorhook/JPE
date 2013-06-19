@@ -5,14 +5,17 @@ define("JPE/RigidRectangle", function(require, exports, module) {
     var RigidItem = require("JPE/RigidItem");
 
     var RigidRectangle = function(x, y, width, height, radian, isFixed, mass, elasticity, friction, angularVelocity) {
-        if (mass == undefined || mass == -1) {
+        if(mass == null){
+            mass = -1;
+        }
+        if (mass == -1) {
             mass = width * height;
         }
         radian = radian || 0;
-        if (elasticity === undefined) {
+        if (elasticity == null) {
             elasticity = 0.3;
         }
-        if (friction === undefined) {
+        if (friction == null) {
             friction = 0.2;
         }
 

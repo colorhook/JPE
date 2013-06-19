@@ -4,9 +4,24 @@ define("JPE/RigidCircle", function(require, exports, module) {
     var RigidItem = require("JPE/RigidItem");
 
 
-    var RigidCircle = function(x, y, radius, isFixed, mass, elasticity, elasticity, friction, radian, angularVelocity) {
-        if (mass == undefined || mass == -1) {
+    var RigidCircle = function(x, y, radius, isFixed, mass, elasticity, friction, radian, angularVelocity) {
+        if (mass == null) {
+            mass = -1;
+        }
+        if (mass == -1) {
             mass = Math.PI * radius * radius;
+        }
+        if(elasticity == null){
+            elasticity = 0.3;
+        }
+        if(friction == null){
+            friction = 0.2;
+        }
+        if(radian == null){
+            radian = 0;
+        }
+        if(angularVelocity == null){
+            angularVelocity = 0;
         }
         this._radius = radius;
         RigidItem.prototype.constructor.call(this, x, y, radius,

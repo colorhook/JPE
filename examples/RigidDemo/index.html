@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<title>Rigid Demo - JPE demos</title>
+<style>
+html, body{margin:0;padding:0;}
+body{margin-top:20px;font-family: Verdana;}
+#container{margin:0 auto;text-align:center;}
+#myCanvas{background:#f2f2f2;}
+em{font-style:normal;color:#a11111;font-weight:700}
+</style>
+</head>
+<body>
+<a href="https://github.com/colorhook/JPE"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+<div id="container">
+<h1>Rigid Demo - JPE demo</h1>
+<p>Press <em>UP</em> key to drop more objects</p>
+<canvas id="myCanvas" width="800" height="480"></canvas>
+</div>
+
+<script charset='utf-8' src='../../lib/sea.js'></script>
+<script charset='utf-8' src='../../lib/easel.js'></script>
+<script charset='utf-8' src='../../lib/keymaster.min.js'></script>
+
+
+<script>
+seajs.on("resolve", function(data) {
+	if(data.id && data.id.indexOf("JPE/") === 0){
+		var js = data.id.replace("JPE/", "") + ".js";
+		data.uri = "../../src/" + js;
+	}
+});
+seajs.config({
+	paths: {
+		JPE: "../../src"
+	},
+	base: "./"
+});
+seajs.use("./RigidDemo", function(RigidDemo){
+	RigidDemo.init();
+});
+</script>
+</body>
+</html>
