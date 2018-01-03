@@ -1,55 +1,34 @@
-define("JPE/CircleParticle", function(require, exports, module) {
+import AbstractParticle from './AbstractParticle'
 
-    var JPE = require("JPE/JPE");
-    var AbstractParticle = require("JPE/AbstractParticle");
-
-    var CircleParticle = function(x, y, radius, fixed, mass, elasticity, friction) {
+export default class CircleParticle extends AbstractParticle {
+    constructor(x, y, radius, fixed, mass, elasticity, friction) {
         mass = mass || 1;
         elasticity = elasticity || 0.3;
         friction = friction || 0;
+        super(x, y, fixed, mass, elasticity, friction)
         this._radius = radius;
-        AbstractParticle.prototype.constructor.call(this, x, y, fixed, mass, elasticity, friction);
-    };
+    }
+    get radius() {
+        return this._radius
+    }
+    getRadius() {
+        return this.radius
+    }
+    getProjection() {
+        const c = this.samp.dot(axis); 
+        this.interval.min = c - this._radius;
+        this.interval.max = c + this._radius;
+        return this.interval;
+    }
+    getIntervalX() {
+        this.interval.min = this.curr.x - this._radius;
+        this.interval.max = this.curr.x + this._radius;
+        return this.interval;
+    }
 
-    JPE.extend(CircleParticle, AbstractParticle, {
-
-        getRadius: function() {
-            return this._radius;
-        },
-
-        /**
-         * @private
-         */
-        setRadius: function(t) {
-            this._radius = t;
-        },
-
-        /**
-         * @private
-         */
-        getProjection: function(axis) {
-
-            var c = this.samp.dot(axis);
-
-            this.interval.min = c - this._radius;
-            this.interval.max = c + this._radius;
-            return this.interval;
-        },
-        /**
-         * @private
-         */
-        getIntervalX: function() {
-            this.interval.min = this.curr.x - this._radius;
-            this.interval.max = this.curr.x + this._radius;
-            return this.interval;
-        },
-
-        getIntervalY: function() {
-            this.interval.min = this.curr.y - this._radius;
-            this.interval.max = this.curr.y + this._radius;
-            return this.interval;
-        }
-    });
-
-    module.exports = CircleParticle;
-});
+    getIntervalY() {
+        this.interval.min = this.curr.y - this._radius;
+        this.interval.max = this.curr.y + this._radius;
+        return this.interval;
+    }
+}

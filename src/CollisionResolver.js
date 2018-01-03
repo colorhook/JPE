@@ -1,7 +1,5 @@
-define("JPE/CollisionResolver", function(require, exports, module) {
-
-    exports.resolve = function(pa, pb, normal, depth) {
-
+class CollisionResolver {
+    resolve(pa, pb, normal, depth) {
         // a collision has occured. set the current positions to sample locations
         //pa.curr.copy(pa.samp);
         //pb.curr.copy(pb.samp);
@@ -38,12 +36,12 @@ define("JPE/CollisionResolver", function(require, exports, module) {
 
         pa.resolveCollision(mtdA, vnA, normal, depth, -1, pb);
         pb.resolveCollision(mtdB, vnB, normal, depth, 1, pa);
-    };
-
-    exports.clamp = function(input, min, max) {
+    }
+    clamp(input, min, max) {
         if (input > max) return max;
         if (input < min) return min;
         return input;
-    };
+    }
+}
 
-});
+export default new CollisionResolver

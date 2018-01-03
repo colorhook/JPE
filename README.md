@@ -7,16 +7,6 @@ Licence
 --------------
 JPE is free to use under MIT license. 
 
-	Copyright (c) 2013 http://colorhook.com
-	author: colorhook@gmail.com 
-	version: 1.0.0
-	license: Released under the MIT License.
-
-	Transplant from Flash AS3 APE Engine
-	http://www.cove.org/ape/
-	Copyright (c) 2006, 2007 Alec Cove
-	Released under the MIT Licenses.
-
 Wiki
 -----------------
 * [JPE Core API](https://github.com/colorhook/JPE/wiki/Core)
@@ -31,11 +21,5 @@ Demo
 * [RobotDemo](http://colorhook.github.com/JPE/examples/RobotDemo/RobotDemo.html)
 * [RigidDemo](http://colorhook.github.com/JPE/examples/RigidDemo/index.html)
 * [Domino Game](http://colorhook.github.com/JPE/examples/Domino/index.html)
-
-Bugs & Feedback
-----------------
-
-Please feel free to report bugs or feature requests.
-You can send me private message on `github`, or send me an email to: [colorhook@gmail.com]
 
 

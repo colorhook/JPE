@@ -1,3 +1,4 @@
-src-deprecated
-photowall
-photowall/*
+.vscode
+.DS_Store
+node_modules/
+*.log
