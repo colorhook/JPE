@@ -8,21 +8,19 @@ export default class Group extends AbstractCollection{
         this.collisionList = [];
         this.collideInternal = collideInternal;
     }
-    initSelf() {
-        super.initSelf()
+    init() {
+        super.init()
         for (let i = 0, l = this.composites.length; i < l; i++) {
-            this.composites[i].initSelf();
+            this.composites[i].init();
         }
     }
-
     addComposite(c) {
         this.composites.push(c);
         c.isParented = true;
         if (this.isParented) {
-            c.initSelf();
+            c.init();
         }
     }
-       
     removeComposite(c) {
         const cpos = this.composites.indexOf(c)
         if (cpos === -1) {
@@ -35,12 +33,10 @@ export default class Group extends AbstractCollection{
 
     paint() {
         super.paint()
-        var cs = this.composites,
-            i = 0,
-            c,
-            len = this.composites.length;
-        for (; i < len; i++) {
-            c = cs[i];
+        const cs = this.composites
+        const len = this.composites.length
+        for (let i = 0; i < len; i++) {
+            let c = cs[i];
             c.paint();
         }
     }
@@ -57,11 +53,8 @@ export default class Group extends AbstractCollection{
     }
 
     addCollidableList(list) {
-        var i = 0,
-            l = list.length,
-            cl = this.collisionList;
-        for (; i < l; i++) {
-            cl.push(list[i]);
+        for (let i = 0; i < list.length; i++) {
+            this.collisionList.push(list[i]);
         }
     }
 
@@ -71,29 +64,25 @@ export default class Group extends AbstractCollection{
 
     cleanup() {
         super.cleanup()
-        var cs = this.composites,
-            cl = cs.length,
-            i = 0;
-        for (; i < cl; i++) {
+        const cs = this.composites
+        const cl = cs.length
+        for (let i = 0; i < cl; i++) {
             cs[i].cleanup();
         }
     }
     integrate(dt2) {
         super.integrate(dt2)
-        var cs = this.composites,
-            cl = cs.length,
-            i = 0;
-        for (; i < cl; i++) {
+        const cs = this.composites
+        const cl = cs.length
+        for (let i = 0; i < cl; i++) {
             cs[i].integrate(dt2);
         }
-
     }
     satisfyConstraints() {
         super.satisfyConstraints()
-        var cs = this.composites,
-            cl = cs.length,
-            i = 0;
-        for (; i < cl; i++) {
+        const cs = this.composites
+        const cl = cs.length
+        for (let i = 0; i < cl; i++) {
             cs[i].satisfyConstraints();
         }
     }
@@ -102,30 +91,24 @@ export default class Group extends AbstractCollection{
             this.checkCollisionGroupInternal();
         }
 
-        var cl = this.collisionList,
-            cllen = cl.length,
-            i = 0;
-
-        for (; i < cllen; i++) {
+        const cl = this.collisionList
+        const cllen = cl.length
+        for (let i = 0; i < cllen; i++) {
             this.checkCollisionVsGroup(cl[i]);
         }
     }
     checkCollisionGroupInternal() {
         this.checkInternalCollisions();
 
-        var cs = this.composites,
-            c,
-            c2,
-            clen = cs.length,
-            i = 0,
-            j;
+        const cs = this.composites
+        const clen = cs.length
 
-        for (; i < clen; i++) {
-            c = cs[i];
+        for (let i = 0; i < clen; i++) {
+            let c = cs[i];
             c.checkCollisionsVsCollection(this);
 
-            for (j = i + 1; j < clen; j++) {
-                c2 = cs[j];
+            for (let j = i + 1; j < clen; j++) {
+                let c2 = cs[j];
                 c.checkCollisionsVsCollection(c2);
             }
         }
@@ -134,25 +117,21 @@ export default class Group extends AbstractCollection{
     checkCollisionVsGroup(g) {
         this.checkCollisionsVsCollection(g);
 
-        var cs = this.composites,
-            c,
-            gc,
-            clen = cs.length,
-            gclen = g.composites.length,
-            i = 0,
-            j;
+        const cs = this.composites
+        const clen = cs.length
+        const gclen = g.composites.length
 
-        for (; i < clen; i++) {
-            c = cs[i];
+        for (let i = 0; i < clen; i++) {
+            let c = cs[i];
             c.checkCollisionsVsCollection(g);
-            for (j = 0; j < gclen; j++) {
-                gc = g.composites[j];
+            for (let j = 0; j < gclen; j++) {
+                let gc = g.composites[j];
                 c.checkCollisionsVsCollection(gc);
             }
         }
 
-        for (j = 0; j < gclen; j++) {
-            gc = g.composites[j];
+        for (let j = 0; j < gclen; j++) {
+            let gc = g.composites[j];
             this.checkCollisionsVsCollection(gc);
         }
     }

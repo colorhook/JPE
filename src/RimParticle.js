@@ -10,19 +10,19 @@ export default class RimParticle {
         this.curr = new Vector(r, 0);
         this.prev = new Vector(0, 0);
     }
-    getSpeed() {
+    get speed() {
         return this.sp;
     }
 
-    setSpeed(s) {
+    set speed(s) {
         this.sp = s;
     }
 
-    getAngularVelocity() {
+    get angularVelocity() {
         return this.av;
     }
 
-    setAngularVelocity(s) {
+    set angularVelocity(s) {
         this.av = s;
     }
     update(dt) {

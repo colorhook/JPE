@@ -3,7 +3,7 @@ import CircleParticle from './CircleParticle'
 import MathUtil from './MathUtil'
 import Vector from './Vector'
 
-class WheelParticle extends CircleParticle {
+export default class WheelParticle extends CircleParticle {
     constructor(x, y, radius, fixed, mass, elasticity, friction, traction) {
         traction = traction || 1;
         mass = mass || 1;
@@ -15,36 +15,42 @@ class WheelParticle extends CircleParticle {
         this.normSlip = new Vector(0, 0);
         this.rp = new RimParticle(radius, 2);
         this.orientation = new Vector();
-        this.setTraction(traction);
+        this.traction = traction;
     }
-    getSpeed() {
-        return this.rp.getSpeed();
+    get speed() {
+        return this.rp.speed;
     }
-    setSpeed(t) {
-        this.rp.setSpeed(t);
+    set speed(t) {
+        this.rp.speed = t;
     }
-    getAngularVelocity() {
-        return this.rp.getAngularVelocity();
+    get angularVelocity() {
+        return this.rp.angularVelocity;
     }
-    setAngularVelocity(t) {
-        this.rp.setAngularVelocity(t);
+    set angularVelocity(t) {
+        this.rp.angularVelocity = t;
     }
-    getTraction() {
+    get traction() {
         return 1 - this._traction;
     }
-    setTraction(t) {
+    set traction(t) {
         this._traction = 1 - t;
     }
     update(dt) {
-        CircleParticle.prototype.update.call(this, dt);
+        super.update(dt)
         this.rp.update(dt);
     }
-    getRadian() {
+    get radian() {
         this.orientation.setTo(this.rp.curr.x, this.rp.curr.y);
         return Math.atan2(this.orientation.y, this.orientation.x) + Math.PI;
     }
-    getAngle() {
-        return this.getRadian() * MathUtil.ONE_EIGHTY_OVER_PI;
+    set radian(v) {
+        super.radian = v
+    }
+    get angle() {
+        return this.radian * MathUtil.ONE_EIGHTY_OVER_PI;
+    }
+    set angle(v) {
+        super.angle = v
     }
     resolveCollision(mtd, vel, n, d, o, p) {
         super.resolveCollision(mtd, vel, n, d, o, p)
@@ -62,10 +68,10 @@ class WheelParticle extends CircleParticle {
         tan = tan.normalize();
 
         // velocity of the wheel's surface 
-        var wheelSurfaceVelocity = tan.mult(rp.getSpeed());
+        var wheelSurfaceVelocity = tan.mult(rp.speed);
 
         // the velocity of the wheel's surface relative to the ground
-        var combinedVelocity = this.getVelocity().plusEquals(wheelSurfaceVelocity);
+        var combinedVelocity = this.velocity.plusEquals(wheelSurfaceVelocity);
 
         // the wheel's comb velocity projected onto the contact normal
         var cp = combinedVelocity.cross(n);
@@ -75,9 +81,9 @@ class WheelParticle extends CircleParticle {
         rp.prev.copy(rp.curr.minus(tan));
 
         // some of the wheel's torque is removed and converted into linear displacement
-        var slipSpeed = (1 - this._traction) * rp.getSpeed();
+        var slipSpeed = (1 - this._traction) * rp.speed;
         this.normSlip.setTo(slipSpeed * n.y, slipSpeed * n.x);
         this.curr.plusEquals(this.normSlip);
-        rp.setSpeed(rp.getSpeed() * this._traction);
+        rp.speed = rp.speed * this._traction;
     }
 }

@@ -2,7 +2,7 @@ import AbstractConstraint from './AbstractConstraint'
 import MathUtil from './MathUtil'
 import SpringConstraintParticle from './SpringConstraintParticle'
 
-class SpringConstraint extends AbstractConstraint {
+export default class SpringConstraint extends AbstractConstraint {
     constructor(p1, p2, stiffness, collidable, rectHeight, rectScale, scaleToLength) {
         stiffness = stiffness || 0.5;
         rectHeight = rectHeight || 1;
@@ -11,67 +11,66 @@ class SpringConstraint extends AbstractConstraint {
         this.p1 = p1;
         this.p2 = p2;
         this.checkParticlesLocation();
-        this._restLength = this.getCurrLength();
+        this._restLength = this.currLength;
         this.inited = false;
         this.setCollidable(collidable, rectHeight, rectScale, scaleToLength);
     }
 
-    getRadian() {
-        var d = this.getDelta();
+    get radian() {
+        var d = this.delta;
         return Math.atan2(d.y, d.x);
     }
 
-
-    getAngle() {
-        return this.getRadian() * MathUtil.ONE_EIGHTY_OVER_PI;
+    get angle() {
+        return this.radian * MathUtil.ONE_EIGHTY_OVER_PI;
     }
 
-    getCenter() {
+    get center() {
         return (this.p1.curr.plus(this.p2.curr)).divEquals(2);
     }
 
-    setRectScale(s) {
+    set rectScale(s) {
         if (this.scp == null) return;
-        this.scp.setRectScale(s);
+        this.scp.rectScale = s;
     }
 
-    getRectScale() {
-        return this.scp.getRectScale();
+    get rectScale() {
+        return this.scp.rectScale;
     }
 
 
-    getCurrLength() {
+    get currLength() {
         return this.p1.curr.distance(this.p2.curr);
     }
 
-    getRectHeight() {
-        return this.scp.getRectHeight();
+    get rectHeight() {
+        return this.scp.rectHeight;
     }
 
-    setRectHeight(h) {
+    set rectHeight(h) {
         if (this.scp == null) return;
-        this.scp.setRectHeight(h);
+        this.scp.rectHeight = h;
     }
 
-    getRestLength() {
+    get restLength() {
         return this._restLength;
     }
 
-    setRestLength(r) {
+    set restLength(r) {
         if (r <= 0) throw new Error("restLength must be greater than 0");
         this._restLength = r;
     }
 
-    getFixedEndLimit() {
-        return this.scp.getFixedEndLimit();
+    get fixedEndLimit() {
+        return this.scp.fixedEndLimit;
     }
 
-    setFixedEndLimit(f) {
+    set fixedEndLimit(f) {
         if (this.scp == null) return;
-        this.scp.setFixedEndLimit(f);
+        this.scp.fixedEndLimit = f;
     }
 
-    getCollidable() {
+    get collidable() {
         return this._collidable;
     }
 
@@ -85,7 +84,7 @@ class SpringConstraint extends AbstractConstraint {
             }
             this.scp = new SpringConstraintParticle(this.p1, this.p2, this, rectHeight, rectScale, scaleToLength);
             if (this.inited) {
-                this.scp.initSelf();
+                this.scp.init();
             }
         }
     }
@@ -94,39 +93,38 @@ class SpringConstraint extends AbstractConstraint {
         return (p == this.p1 || p == this.p2);
     }
 
-    getFixed() {
-        return this.p1.getFixed() && this.p2.getFixed();
+    get fixed() {
+        return this.p1.fixed && this.p2.fixed;
     }
 
-    initSelf() {
-        if (this.getCollidable()) {
-            this.scp.initSelf();
+    init() {
+        this.cleanup()
+        if (this.collidable) {
+            this.scp.init();
         }
         this.inited = true;
     }
+
     cleanup() {
-        if (this.getCollidable()) {
+        if (this.collidable) {
             this.scp.cleanup();
         }
         this.inited = false
     }
 
-    getDelta() {
+    get delta() {
         return this.p1.curr.minus(this.p2.curr);
     }
 
     resolve() {
-
-        var p1 = this.p1,
-            p2 = this.p2;
-
-        if (p1.getFixed() && p2.getFixed()) return;
-
-        var deltaLength = this.getCurrLength();
-        var diff = (deltaLength - this.getRestLength()) / (deltaLength * (p1.getInvMass() + p2.getInvMass()));
-        var dmds = this.getDelta().mult(diff * this.stiffness);
-        this.p1.curr.minusEquals(dmds.mult(p1.getInvMass()));
-        this.p2.curr.plusEquals(dmds.mult(p2.getInvMass()));
+        if (this.p1.fixed && this.p2.fixed) {
+            return;
+        }
+        const v = this.currLength * (this.p1.invMass + this.p2.invMass)
+        const diff = (this.currLength - this.restLength) / v;
+        const dmds = this.delta.mult(diff * this.stiffness);
+        this.p1.curr.minusEquals(dmds.mult(this.p1.invMass));
+        this.p2.curr.plusEquals(dmds.mult(this.p2.invMass));
     }
 
     checkParticlesLocation() {

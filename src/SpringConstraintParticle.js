@@ -5,16 +5,17 @@ import MathUtil from './MathUtil'
 
 export default class SpringConstraintParticle extends RectangleParticle{
     constructor(p1, p2, p, rectHeight, rectScale, scaleToLength) {
+        super(0, 0, 0, 0, 0, false)
         this.p1 = p1;
         this.p2 = p2;
 
+        this.s = 0;
         this.lambda = new Vector(0, 0);
         this.avgVelocity = new Vector(0, 0);
 
         this.parent = p;
-        RectangleParticle.prototype.constructor.call(this, 0, 0, 0, 0, 0, false);
-        this._rectScale = rectScale;
-        this._rectHeight = rectHeight;
+        this.rectScale = rectScale;
+        this.rectHeight = rectHeight;
         this.scaleToLength = scaleToLength;
 
         this._fixedEndLimit = 0;
@@ -22,87 +23,103 @@ export default class SpringConstraintParticle extends RectangleParticle{
         this.rcb = new Vector();
     }
 
-    setRectScale(s) {
+    set rectScale(s) {
         this._rectScale = s;
     }
 
-    getRectScale() {
+    get rectScale() {
         return this._rectScale;
     }
 
-    setRectHeight(r) {
+    set rectHeight(r) {
         this._rectHeight = r;
     }
 
-    getRectHeight() {
+    get rectHeight() {
         return this._rectHeight;
     }
-    setFixedEndLimit(f) {
+    set fixedEndLimit(f) {
         this._fixedEndLimit = f;
     }
 
-    getFixedEndLimit() {
+    get fixedEndLimit() {
         return this._fixedEndLimit;
     }
-    getMass() {
-        return (this.p1.getMass() + this.p2.getMass()) / 2;
+    get mass() {
+        return (this.p1.mass + this.p2.mass) / 2;
     }
-
-    getElasticity() {
-        return (this.p1.getElasticity() + this.p2.getElasticity()) / 2;
+    set mass(v) {
+        // super.mass = v
     }
-    getFriction() {
-        return (this.p1.getFriction() + this.p2.getFriction()) / 2;
+    get elasticity() {
+        return (this.p1.elasticity + this.p2.elasticity) / 2;
     }
-    getVelocity() {
-        var p1v = this.p1.getVelocity();
-        var p2v = this.p2.getVelocity();
+    set elasticity(v) {
+        // super.elasticity = v
+    }
+    get friction() {
+        return (this.p1.friction + this.p2.friction) / 2;
+    }
+    set friction(v) {
+        // super.friction = v
+    }
+    get velocity() {
+        const p1v = this.p1.velocity;
+        const p2v = this.p2.velocity;
 
         this.avgVelocity.setTo(((p1v.x + p2v.x) / 2), ((p1v.y + p2v.y) / 2));
         return this.avgVelocity;
     }
+    set velocity(v) {
+        // super.velocity = v
+    }
 
-    getInvMass() {
-        if (this.p1.getFixed() && this.p2.getFixed()) return 0;
-        return 1 / ((this.p1.getMass() + this.p2.getMass()) / 2);
+    get invMass() {
+        if (this.p1.fixed && this.p2.fixed) return 0;
+        return 1 / ((this.p1.mass + this.p2.mass) / 2);
     }
     updatePosition() {
-
-        var c = this.parent.getCenter();
+        const c = this.parent.center;
         this.curr.setTo(c.x, c.y);
 
-        this.setWidth((this.scaleToLength) ? this.parent.getCurrLength() * this._rectScale : this.parent.getRestLength() * this._rectScale);
-        this.setHeight(this.getRectHeight());
-        this.setRadian(this.parent.getRadian());
+        this.width = this.scaleToLength ? this.parent.currLength * this._rectScale : this.parent.restLength * this._rectScale;
+        this.height = this.rectHeight;
+        this.radian = this.parent.radian;
     }
     resolveCollision(mtd, vel, n, d, o, p) {
 
-        var t = this.getContactPointParam(p);
-        var c1 = (1 - t);
-        var c2 = t;
-        var p1 = this.p1;
-        var p2 = this.p2;
-        var fixedEndLimit = this.getFixedEndLimit();
-        var lambda = this.lambda;
+        if (this.fixed || !p.solid) {
+            return
+        }
+
+        const t = this.getContactPointParam(p);
+        const c1 = (1 - t);
+        const c2 = t;
+
+        const p1 = this.p1;
+        const p2 = this.p2;
+        const fixedEndLimit = this.fixedEndLimit;
+        const lambda = this.lambda;
+        
 
         // if one is fixed then move the other particle the entire way out of collision.
         // also, dispose of collisions at the sides of the scp. The higher the fixedEndLimit
         // value, the more of the scp not be effected by collision. 
-        if (p1.getFixed()) {
+        if (p1.fixed) {
             if (c2 <= fixedEndLimit) return;
             lambda.setTo(mtd.x / c2, mtd.y / c2);
             p2.curr.plusEquals(lambda);
-            p2.setVelocity(vel);
+            p2.velocity = vel;
 
-        } else if (p2.getFixed()) {
+        } else if (p2.fixed) {
             if (c1 <= fixedEndLimit) return;
             lambda.setTo(mtd.x / c1, mtd.y / c1);
             p1.curr.plusEquals(lambda);
-            p1.setVelocity(vel);
+            p1.velocity = vel;
 
             // else both non fixed - move proportionally out of collision
         } else {
-            var denom = (c1 * c1 + c2 * c2);
+            const denom = (c1 * c1 + c2 * c2);
             if (denom == 0) return;
             lambda.setTo(mtd.x / denom, mtd.y / denom);
 
@@ -111,19 +128,19 @@ export default class SpringConstraintParticle extends RectangleParticle{
 
             // if collision is in the middle of SCP set the velocity of both end particles
             if (t == 0.5) {
-                p1.setVelocity(vel);
-                p2.setVelocity(vel);
+                p1.velocity = vel;
+                p2.velocity = vel;
 
                 // otherwise change the velocity of the particle closest to contact
             } else {
-                var corrParticle = (t < 0.5) ? p1 : p2;
-                corrParticle.setVelocity(vel);
+                const corrParticle = (t < 0.5) ? p1 : p2;
+                corrParticle.velocity = vel;
             }
         }
     }
     closestParamPoint(c) {
-        var ab = this.p2.curr.minus(this.p1.curr);
-        var t = (ab.dot(c.minus(this.p1.curr))) / (ab.dot(ab));
+        const ab = this.p2.curr.minus(this.p1.curr);
+        const t = (ab.dot(c.minus(this.p1.curr))) / (ab.dot(ab));
         return MathUtil.clamp(t, 0, 1);
     }
 
@@ -148,7 +165,7 @@ export default class SpringConstraintParticle extends RectangleParticle{
                 if (d < shortestDistance) {
                     shortestDistance = d;
                     shortestIndex = i;
-                    paramList[i] = s;
+                    paramList[i] = this.s;
                 }
             }
             t = paramList[shortestIndex];
@@ -161,8 +178,8 @@ export default class SpringConstraintParticle extends RectangleParticle{
         var rx = r.curr.x;
         var ry = r.curr.y;
 
-        var axes = r.getAxes();
-        var extents = r.getExtents();
+        var axes = r.axes;
+        var extents = r.extents;
 
         var ae0_x = axes[0].x * extents[0];
         var ae0_y = axes[0].y * extents[0];
@@ -227,21 +244,21 @@ export default class SpringConstraintParticle extends RectangleParticle{
             denom = a * e - b * b;
 
         if (denom != 0.0) {
-            s = MathUtil.clamp((b * f - c * e) / denom, 0, 1);
+            this.s = MathUtil.clamp((b * f - c * e) / denom, 0, 1);
         } else {
-            s = 0.5 // give the midpoint for parallel lines
+            this.s = 0.5 // give the midpoint for parallel lines
         }
-        t = (b * s + f) / e;
+        t = (b * this.s + f) / e;
 
         if (t < 0) {
             t = 0;
-            s = MathUtil.clamp(-c / a, 0, 1);
+            this.s = MathUtil.clamp(-c / a, 0, 1);
         } else if (t > 0) {
             t = 1;
-            s = MathUtil.clamp((b - c) / a, 0, 1);
+            this.s = MathUtil.clamp((b - c) / a, 0, 1);
         }
 
-        var c1 = pp1.plus(d1.mult(s));
+        var c1 = pp1.plus(d1.mult(this.s));
         var c2 = pp2.plus(d2.mult(t));
         var c1mc2 = c1.minus(c2);
         return c1mc2.dot(c1mc2);

@@ -1,21 +1,18 @@
-define("Rotator", function(require, exports, module){
-    
-    var JPE = require("JPE/JPE");
-    var Group = require("JPE/Group");
-    var Vector = require("JPE/Vector");
-    var CircleParticle = require("JPE/CircleParticle");
-    var RectangleParticle = require("JPE/RectangleParticle");
-    var SpringConstraint = require("JPE/SpringConstraint");
-    
+import {
+	Vector,
+	Group,
+	CircleParticle,
+	RectangleParticle,
+	SpringConstraint,
+} from '../../src/'
 
-    var RectComposite = require("./RectComposite");
+import RectComposite from "./RectComposite"
 
-    var Rotator = function(colA, colB){
-
-		Group.prototype.constructor.apply(this, [true]);
-
+export default class Rotator extends Group {
+	constructor(colA, colB) {
+		super()
 		this.collideInternal = true;
-	
+		
 		var ctr = this.ctr = new Vector(555,175);
 		this.rectComposite = new RectComposite(ctr, colA, colB);
 		this.addComposite(this.rectComposite);
@@ -39,17 +36,9 @@ define("Rotator", function(require, exports, module){
 		var connectorB = new SpringConstraint(this.rectComposite.getPc(), rectB, 1);
 		connectorB.setStyle(2, colB);
 		this.addConstraint(connectorB);
-		
 	}
 
-    JPE.extend(Rotator, Group, {
-        ctr: null,
-        rectComposite: null,
-        rotateByRadian: function(a){
-          this.rectComposite.rotateByRadian(a, this.ctr);
-        }
-    });
-
-    module.exports = Rotator;
-
-});
+	rotateByRadian(a) {
+		this.rectComposite.rotateByRadian(a, this.ctr);
+	}
+}

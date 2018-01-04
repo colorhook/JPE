@@ -1,14 +1,13 @@
-define("Surfaces", function(require, exports, module){
-    
-    var JPE = require("JPE/JPE");
-    var Group = require("JPE/Group");
-    var CircleParticle = require("JPE/CircleParticle");
-    var RectangleParticle = require("JPE/RectangleParticle");
-    
-    var Surfaces = function(colA, colB, colC, colD, colE){
+import {
+	Group,
+	CircleParticle,
+	RectangleParticle,
+	SpringConstraint,
+} from '../../src/index'
 
-		Group.prototype.constructor.apply(this);
-
+export default class Surfaces extends Group {
+	constructor(colA, colB, colC, colD, colE) {
+		super()
 		var floor = new RectangleParticle(340,327,550,50,0,true);
 		floor.setStyle(0, colD, 1, colD);
 		this.addParticle(floor);
@@ -40,7 +39,7 @@ define("Surfaces", function(require, exports, module){
 		
 		var bouncePad = new RectangleParticle(35,370,40,60,0,true);
 		bouncePad.setStyle(0, colD, 1, 0x996633);
-		bouncePad.setElasticity(4);
+		bouncePad.elasticity = 4;
 		this.addParticle(bouncePad);
 		
 		var leftWall = new RectangleParticle(1,99,30,500,0,true);
@@ -75,8 +74,4 @@ define("Surfaces", function(require, exports, module){
 		bridgeEnd.setStyle(0, colD, 1, colD);
 		this.addParticle(bridgeEnd);
 	}
-
-    JPE.extend(Surfaces, Group);
-
-    module.exports = Surfaces;
-});
+}

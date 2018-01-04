@@ -1,18 +1,19 @@
-define("Robot", function(require, exports, module){
+import {
+	Engine,
+	Group,
+	SpringConstraint,
 
-	var JPE = require("JPE/JPE");
-	var Engine = require("JPE/Engine");
-	var Group = require("JPE/Group");
-	var SpringConstraint = require("JPE/SpringConstraint");
+} from '../../src/'
 
-	var Body = require("./Body");
-	var Motor = require("./Motor");
-	var Leg = require("./Leg");
+import Body from "./Body";
+import Motor from "./Motor";
+import Leg from "./Leg";
 
-	var Robot = function(px, py, scale, power){
+export default class Robot extends Group {
+	
+	constructor(px, py, scale, power){
 
-		Group.prototype.constructor.apply(this);
-
+		super()
 	// legs
 		var legLA = this.legLA = new Leg(px, py, -1, scale, 2, 0x444444, 1, 0x222222, 1);
 		var legRA = this.legRA = new Leg(px, py,  1, scale, 2, 0x444444, 1, 0x222222, 1);
@@ -37,18 +38,18 @@ define("Robot", function(require, exports, module){
 
 		
 		// connect the legs to the motor
-		legLA.getCam().setPosition(motor.getRimA().getPosition());
-		legRA.getCam().setPosition(motor.getRimA().getPosition());
+		legLA.getCam().position = motor.getRimA().position;
+		legRA.getCam().position = motor.getRimA().position;
 		var connLAA = new SpringConstraint(legLA.getCam(), motor.getRimA(), 1);
 		var connRAA = new SpringConstraint(legRA.getCam(), motor.getRimA(), 1);
 		
-		legLB.getCam().setPosition(motor.getRimB().getPosition());
-		legRB.getCam().setPosition(motor.getRimB().getPosition());
+		legLB.getCam().position = motor.getRimB().position;
+		legRB.getCam().position = motor.getRimB().position;
 		var connLBB = new SpringConstraint(legLB.getCam(), motor.getRimB(), 1);
 		var connRBB = new SpringConstraint(legRB.getCam(), motor.getRimB(), 1);		
 		
-		legLC.getCam().setPosition(motor.getRimC().getPosition());
-		legRC.getCam().setPosition(motor.getRimC().getPosition());
+		legLC.getCam().position = motor.getRimC().position;
+		legRC.getCam().position = motor.getRimC().position;
 		var connLCC = new SpringConstraint(legLC.getCam(), motor.getRimC(), 1);
 		var connRCC = new SpringConstraint(legRC.getCam(), motor.getRimC(), 1);
 		
@@ -89,97 +90,71 @@ define("Robot", function(require, exports, module){
 		
 		this.powered = true;
 		this.legsVisible=true;
-	};
-
-	JPE.extend(Robot, Group, {
-	  body:null,
-	  motor:null,
+	}
+	get px () {
+		return this.body.center.px;
+	}
 	
-	  direction:null,
-	  powerLevel:null,
+	get py () {
+		return this.body.center.py;
+	}
 	
-	  powered:null,
-	  legsVisible:null,
+	run () {
+		this.motor.run();
+	}
 	
-	  legLA:null,
-	  legRA:null,
-	  legLB:null,
-	  legRB:null,
-	  legLC:null,
-	  legRC:null,
-
-		getPx: function () {
-			return this.body.center.getPx();
-		},
+	
+	togglePower () {
 		
+		this.powered = !this.powered
 		
-		getPy: function () {
-			return this.body.center.getPy();
-		},
-		
-		
-		run: function () {
-			this.motor.run();
-		},
-		
-		
-		togglePower: function () {
-			
-			this.powered = !this.powered
-			
-			if (this.powered) {
-				this.motor.setPower(this.powerLevel * this.direction);
-				this.setStiffness(1);
-				Engine.damping = 0.99;
-			} else {
-				this.motor.setPower(0);
-				this.setStiffness (0.2);				
-				Engine.damping = 0.35;
-			}
-		},
-		
-		
-		toggleDirection: function () {
-			this.direction *= -1;
+		if (this.powered) {
 			this.motor.setPower(this.powerLevel * this.direction);
-		},
-		
-		toggleLegs: function (){
-			this.legsVisible = ! this.legsVisible;
+			this.setStiffness(1);
+			Engine.damping = 0.99;
+		} else {
+			this.motor.setPower(0);
+			this.setStiffness (0.2);				
+			Engine.damping = 0.35;
+		}
+	}
+	
+	
+	toggleDirection () {
+		this.direction *= -1;
+		this.motor.setPower(this.powerLevel * this.direction);
+	}
+	
+	toggleLegs (){
+		this.legsVisible = ! this.legsVisible;
 
-			if (!this.legsVisible) {
-				this.legLA.setVisible(false);
-				this.legRA.setVisible(false);
-				this.legLB.setVisible(false);
-				this.legRB.setVisible(false);
-			} else {
-				this.legLA.setVisible(true);
-				this.legRA.setVisible(true);		
-				this.legLB.setVisible(true);
-				this.legRB.setVisible(true);
-			}
-		},
+		if (!this.legsVisible) {
+			this.legLA.setVisible(false);
+			this.legRA.setVisible(false);
+			this.legLB.setVisible(false);
+			this.legRB.setVisible(false);
+		} else {
+			this.legLA.setVisible(true);
+			this.legRA.setVisible(true);		
+			this.legLB.setVisible(true);
+			this.legRB.setVisible(true);
+		}
+	}
+	
+	setStiffness(s) {
 		
+		// top level constraints in the group
+		for (var i = 0, l = this.constraints.length;i < l; i++) {
+			var sp = this.constraints[i]; 
+			sp.stiffness = s;
+		}
 		
-		setStiffness: function (s) {
-			
-			// top level constraints in the group
-			for (var i = 0, l = this.constraints.length;i < l; i++) {
-				var sp = this.constraints[i]; 
+		// constraints within this groups composites
+		for (var j = 0, m= this.composites.length; j < m; j++) {
+			for (i = 0; i < this.composites[j].constraints.length; i++) {
+				sp = this.composites[j].constraints[i]; 
 				sp.stiffness = s;
 			}
-			
-			// constraints within this groups composites
-			for (var j = 0, m= this.composites.length; j < m; j++) {
-				for (i = 0; i < this.composites[j].constraints.length; i++) {
-					sp = this.composites[j].constraints[i]; 
-					sp.stiffness = s;
-				}
-			}
 		}
-	});
-
-	module.exports = Robot;
-
-});
-
+	}
+}

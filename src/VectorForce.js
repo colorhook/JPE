@@ -2,9 +2,9 @@ import Vector from './Vector'
 
 export default class VectorForce {
     constructor(useMass, vx, vy) {
-        this.vx = vx;
-        this.vy = vy;
-        this.useMass = useMass;
+        this._useMass = useMass;
+        this._vx = vx;
+        this._vy = vy;
         this._value = new Vector(vx, vy);
     }
     set vx(x) {
@@ -12,16 +12,16 @@ export default class VectorForce {
         this._value.x = x;
     }
     set vy(y) {
-        this.fvy = y;
+        this._vy = y;
         this._value.y = y;
     }
     set useMass(b) {
         this._useMass = b;
     }
-    get value() {
-        if (this.scaleMass) {
-            this.value.setTo(this.fvx * invMass, this.fvy * invMass);
+    getValue(invMass) {
+        if (this._useMass) {
+            this._value.setTo(this._vx * invMass, this._vy * invMass);
         } 
-        return this.value;
+        return this._value;
     }
 }

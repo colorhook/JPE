@@ -8,31 +8,27 @@ export default class Composite extends AbstractCollection{
         this.delta = new Vector()
     }
     rotateByRadian(angleRadians, center) {
-        let p
-        const pa = this.particles
-        const len = pa.length
-
-        for (let i = 0; i < len; i++) {
-            p = pa[i];
-            const radius = p.getCenter().distance(center);
-            const angle = this.getRelativeAngle(center, p.getCenter()) + angleRadians;
-            p.setPx(Math.cos(angle) * radius + center.x);
-            p.setPy(Math.sin(angle) * radius + center.y);
+        for (let i = 0; i < this.particles.length; i++) {
+            let p = this.particles[i];
+            const radius = p.center.distance(center)
+            const angle = this.getRelativeAngle(center, p.center) + angleRadians
+            p.px = Math.cos(angle) * radius + center.x
+            p.py = Math.sin(angle) * radius + center.y
         }
     }
     rotateByAngle(angleDegrees, center) {
         const angleRadians = angleDegrees * MathUtil.PI_OVER_ONE_EIGHTY;
         this.rotateByRadian(angleRadians, center);
     }
-    getFixed() {
-        for (var i = 0, l = this.particles.length; i < l; i++) {
-            if (!particles[i].getFixed()) return false;
+    get fixed() {
+        for (let i = 0, l = this.particles.length; i < l; i++) {
+            if (!particles[i].fixed) return false;
         }
         return true;
     }
-    setFixed(b) {
-        for (var i = 0, l = this.particles.length; i < l; i++) {
-            this.particles[i].setFixed(b);
+    set fixed(b) {
+        for (let i = 0, l = this.particles.length; i < l; i++) {
+            this.particles[i].fixed = b;
         }
     }
     getRelativeAngle(center, p) {

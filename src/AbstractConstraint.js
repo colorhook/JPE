@@ -1,13 +1,16 @@
 import AbstractItem from './AbstractItem'
-import Signal from './Signal'
 
 export default class AbstractConstraint extends AbstractItem{
-    constructor() {
+    constructor(stiffness) {
+        super()
         this.stiffness = stiffness;
         this.setStyle();
-        this._pool = {};
-        this.beforeRenderSignal = new Signal();
-        this.afterRenderSignal = new Signal();
+    }
+    get stiffness() {
+        return this._stiffness
+    }
+    set stiffness(v) {
+        this._stiffness = v
     }
     resolve() {
 

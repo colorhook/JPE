@@ -3,4 +3,7 @@ export default class Interval{
         this.min = min
         this.max = max
     }
+    toString() {
+        return `${this.min} : ${this.max}`
+    }
 }

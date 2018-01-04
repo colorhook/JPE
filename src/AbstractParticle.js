@@ -1,8 +1,8 @@
-import Signal from './Signal'
 import Vector from './Vector'
 import Interval from './Interval'
 import AbstractItem from './AbstractItem'
 import Collision from './Collision'
+import Engine from './Engine'
 
 export default class AbstractParticle extends AbstractItem {
     constructor(x, y, isFixed, mass, elasticity, friction) {
@@ -12,98 +12,96 @@ export default class AbstractParticle extends AbstractItem {
         this.prev = new Vector(x, y);
         this.samp = new Vector();
         this.temp = new Vector();
-        this.smashable = false;
-        this.maxExitVelocity = 0;
-        this.smashSignal = new Signal();
+        this.fixed = isFixed;
+
         this.forces = new Vector();
         this.forceList = [];
+
         this.collision = new Collision(new Vector(), new Vector());
+        this.collidable = true;
         this.firstCollision = false;
-        this._fixed = isFixed;
-        this._collidable = true;
-        this.setMass(mass);
-        this._elasticity = elasticity;
-        this._friction = friction;
+
+        this.mass = mass;
+        this.elasticity = elasticity;
+        this.friction = friction;
         this._center = new Vector();
         this._multisample = 0;
         this.setStyle();
     }
 
-    getElasticity() {
+    get elasticity() {
         return this._elasticity;
     }
-    setElasticity(value) {
+    set elasticity(value) {
         this._elasticity = value;
     }
-    getMultisample() {
+    get multisample() {
         return this._multisample;
     }
-    setMultisample(value) {
-        return this._multisample = value;
+    set multisample(value) {
+        this._multisample = value;
     }
-    getCollidable() {
+    get collidable() {
         return this._collidable;
     }
-    setCollidable(collidable) {
+    set collidable(collidable) {
         this._collidable = collidable;
     }
-    getFixed() {
+    get fixed() {
         return this._fixed;
     }
-    setFixed(fixed) {
+    set fixed(fixed) {
         this._fixed = fixed;
     }
-    getMass() {
+    get mass() {
         return this._mass;
     }
-    setMass(m) {
+    set mass(m) {
         if (m <= 0) throw new Error("mass may not be set <= 0");
         this._mass = m;
         this._invMass = 1 / this._mass;
     }
-    getCenter() {
-        this._center.setTo(this.getPx(), this.getPy())
+    get center() {
+        this._center.setTo(this.px, this.py)
         return this._center;
     }
-    getFriction() {
+    get friction() {
         return this._friction;
     }
-    setFriction(f) {
+    set friction(f) {
         if (f < 0 || f > 1) throw new Error("Legal friction must be >= 0 and <=1");
         this._friction = f;
     }
 
-    getPosition() {
+    get position() {
         return new Vector(this.curr.x, this.curr.y);
     }
 
-
-    setPosition(p) {
+    set position(p) {
         this.curr.copy(p);
         this.prev.copy(p);
     }
-    getPx() {
+    get px() {
         return this.curr.x;
     }
 
-    setPx(x) {
+    set px(x) {
         this.curr.x = x;
         this.prev.x = x;
     }
 
-
-    getPy() {
+    get py() {
         return this.curr.y;
     }
-    setPy(y) {
+    set py(y) {
         this.curr.y = y;
         this.prev.y = y;
     }
-    getVelocity() {
+    get velocity() {
         return this.curr.minus(this.prev);
     }
 
-    setVelocity(v) {
+    set velocity(v) {
         this.prev = this.curr.minus(v);
     }
 
@@ -111,19 +109,15 @@ export default class AbstractParticle extends AbstractItem {
         this.forceList.push(f);
     }
 
-
     accumulateForces() {
-        var f;
-        var len = this.forceList.length;
-        for (var i = 0; i < len; i++) {
-            f = this.forceList[i];
+        for (let i = 0; i < this.forceList.length; i++) {
+            let f = this.forceList[i];
             this.forces.plusEquals(f.getValue(this._invMass));
         }
 
-        var globalForces = Engine.forces;
-        len = globalForces.length;
-        for (i = 0; i < len; i++) {
-            f = globalForces[i];
+        const globalForces = Engine.forces;
+        for (let i = 0; i < globalForces.length; i++) {
+            let f = globalForces[i];
             this.forces.plusEquals(f.getValue(this._invMass));
         }
     }
@@ -133,21 +127,14 @@ export default class AbstractParticle extends AbstractItem {
         this.forces.setTo(0, 0);
     }
 
-
     update(dt2) {
-
-        if (this.getFixed()) return;
-
+        if (this.fixed) return;
         this.accumulateForces();
-
         // integrate
         this.temp.copy(this.curr);
-
-        var nv = this.getVelocity().plus(this.forces.multEquals(dt2));
-
+        const nv = this.velocity.plus(this.forces.multEquals(dt2));
         this.curr.plusEquals(nv.multEquals(Engine.damping));
         this.prev.copy(this.temp);
-
         // clear the forces
         this.clearForces();
     }
@@ -157,30 +144,22 @@ export default class AbstractParticle extends AbstractItem {
     }
 
     getComponents(collisionNormal) {
-        var vel = this.getVelocity();
-        var vdotn = collisionNormal.dot(vel);
+        const vdotn = collisionNormal.dot(this.velocity);
         this.collision.vn = collisionNormal.mult(vdotn);
-        this.collision.vt = vel.minus(this.collision.vn);
+        this.collision.vt = this.velocity.minus(this.collision.vn);
         return this.collision;
     }
 
-
     resolveCollision(mtd, vel, n, d, o, p) {
-        if (this.smashable) {
-            var ev = vel.magnitude();
-            if (ev > this.maxExitVelocity) {
-                this.smashSignal.dispatch("collision");
-            }
-        }
-        if (this.getFixed() || !this.solid || !p.solid) {
+        if (this.fixed || !this.solid || !p.solid) {
             return;
         }
         this.curr.copy(this.samp);
         this.curr.plusEquals(mtd);
-        this.setVelocity(vel);
+        this.velocity = vel;
     }
 
-    getInvMass() {
-        return (this.getFixed()) ? 0 : this._invMass;
+    get invMass() {
+        return this.fixed ? 0 : this._invMass;
     }
 }

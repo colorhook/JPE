@@ -1,4 +1,49 @@
 {
   "name": "jpe",
-  "version": "2.0.0"
+  "version": "3.0.0",
+  "description": "javascript physical engine",
+  "keywords": [
+    "physical",
+    "engine"
+  ],
+  "main": "./src/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "webpack",
+    "car": "parcel examples/car/index.html",
+    "robot": "parcel examples/robot/index.html",
+    "domino": "parcel examples/domino/index.html",
+    "test": "echo 1"
+  },
+  "author": "colorhook <colorhook@gmail.com>",
+  "maintainers": [
+    {
+      "name": "colorhook",
+      "email": "colorhook@gmail.com",
+      "url": "http://github.com/colorhook"
+    }
+  ],
+  "contributors": [],
+  "bugs": {
+    "email": "colorhook@gmail.com",
+    "url": "http://github.com/colorhook/JPE/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^3.10.0",
+    "parcel": "*"
+  },
+  "homepage": "https://github.com/colorhook/JPE",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/colorhook/JPE.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/colorhook/JPE/blob/master/LICENSE"
+    }
+  ]
 }

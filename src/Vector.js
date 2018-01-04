@@ -11,7 +11,7 @@ export default class Vector {
         this.x = v.x
         this.y = v.y
     }
-    dot() {
+    dot(v) {
         return this.x * v.x + this.y * v.y
     }
     cross(v) {
@@ -24,6 +24,9 @@ export default class Vector {
         this.x += v.x;
         this.y += v.y;
         return this;
+    }
+    minus(v) {
+        return new Vector(this.x - v.x, this.y - v.y);
     }
     minusEquals(v) {
         this.x -= v.x;

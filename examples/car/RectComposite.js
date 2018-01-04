@@ -1,15 +1,13 @@
-define("RectComposite", function(require, exports, module){
-    
-    var JPE = require("JPE/JPE");
-    var Composite = require("JPE/Composite");
-    var CircleParticle = require("JPE/CircleParticle");
-    var RectangleParticle = require("JPE/RectangleParticle");
-    var SpringConstraint = require("JPE/SpringConstraint");
-   
-    var RectComposite =  function(ctr, colA, colB){
+import {
+    Composite,
+    CircleParticle,
+    RectangleParticle,
+    SpringConstraint,
+} from '../../src/'
 
-		Composite.prototype.constructor.apply(this);
-	
+export default class RectComposite extends Composite {
+    constructor(ctr, colA, colB) {
+        super()
         // just hard coding here for the purposes of the demo, you should pass
         // everything in the constructor to do it right.
         var rw = 75;
@@ -31,10 +29,10 @@ define("RectComposite", function(require, exports, module){
         // since it would be a waste to repaint a non moving particle. in this case
         // we are going to be rotating a group of fixed particles, so we'll turn on 
         // always repaint for each one.
-        cpA.setAlwaysRepaint(true);
-        cpB.setAlwaysRepaint(true);
-        cpC.setAlwaysRepaint(true);
-        cpD.setAlwaysRepaint(true);
+        cpA.alwaysRepaint = true;
+        cpB.alwaysRepaint = true;
+        cpC.alwaysRepaint = true;
+        cpD.alwaysRepaint = true;
         
         var sprA = new SpringConstraint(cpA,cpB,0.5,true,rad * 2);
         var sprB = new SpringConstraint(cpB,cpC,0.5,true,rad * 2);
@@ -49,10 +47,10 @@ define("RectComposite", function(require, exports, module){
         // by default all fixed SpringConstraints are not repainted as well. A
         // SpringConstraint will be fixed if both its attached Particles are
         // fixed.
-        sprA.setAlwaysRepaint(true);
-        sprB.setAlwaysRepaint(true);
-        sprC.setAlwaysRepaint(true);
-        sprD.setAlwaysRepaint(true);	
+        sprA.alwaysRepaint = true;
+        sprB.alwaysRepaint = true;
+        sprC.alwaysRepaint = true;
+        sprD.alwaysRepaint = true;	
         
         this.addParticle(cpA);
         this.addParticle(cpB);
@@ -65,19 +63,12 @@ define("RectComposite", function(require, exports, module){
         this.addConstraint(sprD);
         this.cpA = cpA;
         this.cpC = cpC;
-    };
-		
-    JPE.extend(RectComposite, Composite, {
-        cpA: null,
-        cpC: null,
-        getPa:function() {
-			return this.cpA;
-		},
-		getPc:function() {
-			return this.cpC;
-		}
-    });
+    }
 
-    module.exports = RectComposite;
-
-});
+    getPa() {
+        return this.cpA;
+    }
+    getPc() {
+        return this.cpC;
+    }
+}
