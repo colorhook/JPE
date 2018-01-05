@@ -76,7 +76,7 @@ export default class SpringConstraint extends AbstractConstraint {
 
     setCollidable(b, rectHeight, rectScale, scaleToLength) {
         this._collidable = b;
-        this.scp = null;
+        // this.scp = null;
 
         if (this._collidable) {
             if (this.scp) {

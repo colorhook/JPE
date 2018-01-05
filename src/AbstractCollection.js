@@ -37,9 +37,9 @@ export default class AbstractCollection {
     }
     addConstraint(c) {
         this.constraints.push(c);
-        c.isParented = true;
+        // c.isParented = true;
         if (this.isParented) {
-            c.initSelf();
+            c.init();
         }
     }
     
@@ -107,7 +107,7 @@ export default class AbstractCollection {
         for (let i = 0; i < pl; i++) {
 
             let p = ps[i];
-            if (!p || p.collidable) continue;
+            if (!p || !p.collidable) continue;
 
             for (let j = i + 1; j < pl; j++) {
                 const p2 = ps[j];
@@ -160,7 +160,7 @@ export default class AbstractCollection {
 
             for (let n = 0; n < acpl; n++) {
                 const p = acps[n];
-                if (p != null && p.collidable && !cga.isConnectedTo(p)) {
+                if (p && p.collidable && !cga.isConnectedTo(p)) {
                     cga.scp.updatePosition();
                     CollisionDetector.test(p, cga.scp);
                 }

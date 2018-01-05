@@ -10,7 +10,7 @@ export default class Body extends Composite {
 			super()
 			
 
-			var cpx = (right.px + left.py) / 2;
+			var cpx = (right.px + left.px) / 2;
 			var cpy = right.py; 
 			
 			

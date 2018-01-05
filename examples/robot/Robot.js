@@ -36,7 +36,6 @@ export default class Robot extends Group {
 		var connLC = new SpringConstraint(body.left,  legLC.getFix(), 1);
 		var connRC = new SpringConstraint(body.right, legRC.getFix(), 1);
 
-		
 		// connect the legs to the motor
 		legLA.getCam().position = motor.getRimA().position;
 		legRA.getCam().position = motor.getRimA().position;

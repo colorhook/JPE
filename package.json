@@ -11,7 +11,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "parcel build src/index.js -d dist/ --no-minify && uglifyjs dist/jpe.js -o dist/jpe.min.js -c -m",
     "car": "parcel examples/car/index.html",
     "robot": "parcel examples/robot/index.html",
     "domino": "parcel examples/domino/index.html",
@@ -30,10 +30,11 @@
     "email": "colorhook@gmail.com",
     "url": "http://github.com/colorhook/JPE/issues"
   },
-  "dependencies": {},
   "devDependencies": {
-    "webpack": "^3.10.0",
-    "parcel": "*"
+    "babel-preset-es2015": "^6.24.1",
+    "parcel": "*",
+    "source-map": "^0.6.1",
+    "uglify-js": "^3.3.4"
   },
   "homepage": "https://github.com/colorhook/JPE",
   "repository": {
@@ -45,5 +46,6 @@
       "type": "MIT",
       "url": "http://github.com/colorhook/JPE/blob/master/LICENSE"
     }
-  ]
+  ],
+  "dependencies": {}
 }

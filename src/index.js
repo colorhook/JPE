@@ -1,8 +1,8 @@
 /*!
  * Copyright (c) 2017 http://github.com/colorhook
- * @author: colorhook
- * @version: 3.0.0
- * @license: Released under the MIT License.
+ * @author colorhook
+ * @version 3.0.0
+ * @license Released under the MIT License.
  */
  export { default as AbstractCollection } from './AbstractCollection'
  export { default as AbstractConstraint } from './AbstractConstraint'
