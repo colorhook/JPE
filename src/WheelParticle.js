@@ -54,7 +54,7 @@ export default class WheelParticle extends CircleParticle {
     }
     resolveCollision(mtd, vel, n, d, o, p) {
         super.resolveCollision(mtd, vel, n, d, o, p)
-        // review the o (order) need here - its a hack fix
+        // review the o (order)
         this.resolve(n.mult(MathUtil.sign(d * o)));
     }
     resolve(n) {
