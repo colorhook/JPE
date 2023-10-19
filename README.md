@@ -27,10 +27,10 @@ Wiki
 
 Demo
 --------------------
-* [CarDemo](http://colorhook.github.com/JPE/examples/CarDemo/CarDemo.html)
-* [RobotDemo](http://colorhook.github.com/JPE/examples/RobotDemo/RobotDemo.html)
-* [RigidDemo](http://colorhook.github.com/JPE/examples/RigidDemo/index.html)
-* [Domino Game](http://colorhook.github.com/JPE/examples/Domino/index.html)
+* [CarDemo](http://colorhook.github.io/JPE/examples/CarDemo/CarDemo.html)
+* [RobotDemo](http://colorhook.github.io/JPE/examples/RobotDemo/RobotDemo.html)
+* [RigidDemo](http://colorhook.github.io/JPE/examples/RigidDemo/index.html)
+* [Domino Game](http://colorhook.github.io/JPE/examples/Domino/index.html)
 
 Bugs & Feedback
 ----------------
